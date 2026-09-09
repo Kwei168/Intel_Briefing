@@ -5,6 +5,10 @@ on:
     - cron: '51 23 * * *'  # UTC 23:51 = 北京 07:51（避开整点高峰）
   workflow_dispatch:
 
+concurrency:
+  group: daily-report
+  cancel-in-progress: true
+
 jobs:
   generate:
     runs-on: ubuntu-latest
@@ -32,17 +36,57 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python cli.py
 
-      # Optional: push the generated report to a separate frontend (PWA) repo.
-      # Configure repository variable PWA_REPO (e.g. "your-name/your-pwa-repo")
-      # and secret PWA_DEPLOY_TOKEN. If either is missing, this step is skipped,
-      # so forks without a PWA frontend won't fail here.
+      # --- GitHub Pages: 构建站点 ---
+      - name: Build Pages site
+        run: |
+          mkdir -p docs/reports
+
+          DATE=$(date -u +%Y-%m-%d)
+          REPORT="reports/daily_briefings/Morning_Report_${DATE}.md"
+
+          if [ -f "$REPORT" ]; then
+            cp "$REPORT" docs/reports/
+            echo "Copied report: $REPORT"
+          else
+            echo "Warning: Report not found at $REPORT"
+            ls -la reports/daily_briefings/ 2>/dev/null || echo "Directory does not exist"
+          fi
+
+          # 生成日报索引 JSON
+          python3 -c "
+          import os, json
+          reports = []
+          d = 'docs/reports'
+          if os.path.isdir(d):
+              for f in sorted(os.listdir(d), reverse=True):
+                  if f.endswith('.md') and 'TEST' not in f:
+                      date = f.replace('Morning_Report_','').replace('.md','')
+                      reports.append({'file': f, 'title': date + ' 情报日报', 'date': date})
+          with open('docs/reports.json', 'w') as fp:
+              json.dump(reports, fp, ensure_ascii=False)
+          print(f'Indexed {len(reports)} reports')
+          "
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      # --- 可选: 投递到 PWA 前端仓库 ---
       - name: Deliver report to PWA (optional)
         env:
           PWA_DEPLOY_TOKEN: ${{ secrets.PWA_DEPLOY_TOKEN }}
           PWA_REPO: ${{ vars.PWA_REPO }}
         run: |
           if [ -z "$PWA_DEPLOY_TOKEN" ] || [ -z "$PWA_REPO" ]; then
-            echo "ℹ️ PWA delivery skipped (set PWA_REPO variable and PWA_DEPLOY_TOKEN secret to enable)."
+            echo "PWA delivery skipped (set PWA_REPO variable and PWA_DEPLOY_TOKEN secret to enable)."
             exit 0
           fi
 
@@ -51,40 +95,37 @@ jobs:
           SUMMARIES="reports/summaries/${DATE}.json"
 
           if [ ! -f "$REPORT" ]; then
-            echo "❌ Report not found: $REPORT"
+            echo "Report not found: $REPORT"
             ls -la reports/daily_briefings/ 2>/dev/null || echo "Directory does not exist"
             exit 1
           fi
 
-          echo "📄 Report found: $(wc -c < "$REPORT") bytes"
+          echo "Report found: $(wc -c < "$REPORT") bytes"
 
           git clone https://x-access-token:${PWA_DEPLOY_TOKEN}@github.com/${PWA_REPO}.git /tmp/pwa
           cp "$REPORT" /tmp/pwa/data/daily_briefings/
 
-          # Copy pre-generated summaries if available
           if [ -f "$SUMMARIES" ]; then
             mkdir -p /tmp/pwa/public/data/summaries
             cp "$SUMMARIES" /tmp/pwa/public/data/summaries/
-            echo "📝 Summaries found: $(wc -c < "$SUMMARIES") bytes"
+            echo "Summaries found: $(wc -c < "$SUMMARIES") bytes"
           else
-            echo "⚠️ No summaries file found, PWA will generate on build"
+            echo "No summaries file found, PWA will generate on build"
           fi
 
           cd /tmp/pwa
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/daily_briefings/
-          # Only stage summaries if they were actually copied (dir may not exist)
           if [ -d public/data/summaries ]; then
             git add -f public/data/summaries/
           fi
           git diff --cached --stat
 
           if git diff --cached --quiet; then
-            echo "✅ No changes to commit"
+            echo "No changes to commit"
           else
             git commit -m "data: add daily report ${DATE}"
             git push
-            echo "✅ Report delivered to ${PWA_REPO}"
+            echo "Report delivered to ${PWA_REPO}"
           fi
-

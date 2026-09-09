@@ -1,0 +1,6 @@
+title: "Intel Briefing - 每日情报"
+description: "AI 情报聚合系统日报归档"
+theme: minima
+markdown: kramdown
+kramdown:
+  input: GFM

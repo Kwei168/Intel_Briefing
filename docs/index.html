@@ -1,0 +1,58 @@
+---
+layout: default
+title: 每日情报日报
+---
+
+<style>
+  .report-list { list-style: none; padding: 0; }
+  .report-list li {
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #0366d6;
+    transition: background 0.2s;
+  }
+  .report-list li:hover { background: #eef1f5; }
+  .report-list a {
+    font-weight: 600;
+    font-size: 1.05em;
+    text-decoration: none;
+    color: #0366d6;
+  }
+  .report-list a:hover { text-decoration: underline; }
+  .report-list .date {
+    float: right;
+    color: #666;
+    font-size: 0.9em;
+  }
+  .empty-msg { color: #888; font-style: italic; }
+</style>
+
+<h1>每日情报日报</h1>
+<p>由 Unified Intelligence Engine 自动生成，每日更新。</p>
+
+<div id="report-list">
+  <p class="empty-msg">加载中...</p>
+</div>
+
+<script>
+  fetch('./reports.json')
+    .then(function(r) { return r.json(); })
+    .then(function(reports) {
+      var el = document.getElementById('report-list');
+      if (!reports.length) {
+        el.innerHTML = '<p class="empty-msg">暂无日报</p>';
+        return;
+      }
+      var html = '<ul class="report-list">';
+      reports.forEach(function(r) {
+        html += '<li><a href="./reports/' + r.file + '">' + r.title + '</a><span class="date">' + r.date + '</span></li>';
+      });
+      html += '</ul>';
+      el.innerHTML = html;
+    })
+    .catch(function() {
+      document.getElementById('report-list').innerHTML = '<p class="empty-msg">加载失败，请刷新重试</p>';
+    });
+</script>
