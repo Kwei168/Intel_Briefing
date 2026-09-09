@@ -70,7 +70,6 @@ class IntelConfig:
     # === StarHub Bridge ===
     starhub_snapshot_url: str = "https://kwei168.github.io/starhub/rss_api_snapshot.json"
     starhub_bridge_enabled: bool = True
-    starhub_max_items_per_cat: int = 50
 
     # === Feature Flags ===
     enable_grok_sentiment: bool = True
@@ -111,7 +110,6 @@ class IntelConfig:
                 "https://kwei168.github.io/starhub/rss_api_snapshot.json",
             ),
             starhub_bridge_enabled=os.getenv("STARHUB_BRIDGE_ENABLED", "true").lower() == "true",
-            starhub_max_items_per_cat=int(os.getenv("STARHUB_MAX_ITEMS_PER_CAT", "50")),
         )
 
     def validate(self) -> list[str]:
@@ -143,4 +141,3 @@ JINA_MAX_CHARS = cfg.jina_max_chars
 CONTENT_TRUNCATE_LIMIT = cfg.content_truncate_limit
 STARHUB_SNAPSHOT_URL = cfg.starhub_snapshot_url
 STARHUB_BRIDGE_ENABLED = cfg.starhub_bridge_enabled
-STARHUB_MAX_ITEMS_PER_CAT = cfg.starhub_max_items_per_cat
