@@ -29,7 +29,14 @@ def main():
     print(f"\n{'='*50}")
     print(f"  Unified Intelligence Fetcher V2")
     print(f"  Date: {date_str} | Limit: {limit}/source")
-    print(f"  Sources: HN, GitHub, 36Kr, WS, V2EX, PH, ArXiv, X, TC, MIT-TR")
+    # Check StarHub bridge status
+    _sh_status = ""
+    try:
+        from src.config import STARHUB_BRIDGE_ENABLED
+        _sh_status = " + StarHub(716 RSS)" if STARHUB_BRIDGE_ENABLED else " (StarHub disabled)"
+    except ImportError:
+        pass
+    print(f"  Sources: HN, GitHub, 36Kr, WS, V2EX, PH, ArXiv, X, TC, MIT-TR{_sh_status}")
     print(f"{'='*50}\n")
     
     # Fetch

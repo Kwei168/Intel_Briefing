@@ -67,6 +67,11 @@ class IntelConfig:
     content_truncate_limit: int = 3000
     gemini_rate_limit_delay: float = 1.5
 
+    # === StarHub Bridge ===
+    starhub_snapshot_url: str = "https://kwei168.github.io/starhub/rss_api_snapshot.json"
+    starhub_bridge_enabled: bool = True
+    starhub_max_items_per_cat: int = 50
+
     # === Feature Flags ===
     enable_grok_sentiment: bool = True
     enable_link_verification: bool = True
@@ -101,6 +106,12 @@ class IntelConfig:
             content_truncate_limit=int(os.getenv("CONTENT_TRUNCATE_LIMIT", "3000")),
             enable_grok_sentiment=os.getenv("ENABLE_GROK_SENTIMENT", "true").lower() == "true",
             enable_link_verification=os.getenv("ENABLE_LINK_VERIFICATION", "true").lower() == "true",
+            starhub_snapshot_url=os.getenv(
+                "STARHUB_SNAPSHOT_URL",
+                "https://kwei168.github.io/starhub/rss_api_snapshot.json",
+            ),
+            starhub_bridge_enabled=os.getenv("STARHUB_BRIDGE_ENABLED", "true").lower() == "true",
+            starhub_max_items_per_cat=int(os.getenv("STARHUB_MAX_ITEMS_PER_CAT", "50")),
         )
 
     def validate(self) -> list[str]:
@@ -130,3 +141,6 @@ JINA_READER_URL = cfg.jina_reader_url
 JINA_TIMEOUT = cfg.jina_timeout
 JINA_MAX_CHARS = cfg.jina_max_chars
 CONTENT_TRUNCATE_LIMIT = cfg.content_truncate_limit
+STARHUB_SNAPSHOT_URL = cfg.starhub_snapshot_url
+STARHUB_BRIDGE_ENABLED = cfg.starhub_bridge_enabled
+STARHUB_MAX_ITEMS_PER_CAT = cfg.starhub_max_items_per_cat

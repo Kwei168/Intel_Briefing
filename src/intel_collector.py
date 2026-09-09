@@ -290,7 +290,12 @@ def fetch_all_sources(limit_per_source: int = 10) -> dict:
         "community": [],
         "research": [],
         "social": [],
-        "insights": []
+        "insights": [],
+        # StarHub bridge categories
+        "global_news": [],
+        "media_radar": [],
+        "cn_media": [],
+        "horizon": [],
     }
     
     # ========== BATCH 1: Concurrent Independent Sensors ==========
@@ -384,6 +389,38 @@ Keep it concise but informative. If no data found, say "暂无X平台讨论数�
             logger.exception("Grok API failed")
         _timings["X/Grok Scan"] = time.time() - _t
     
+    # ========== BATCH 3: StarHub RSS Snapshot Bridge ==========
+    _starhub_analysis = None
+    try:
+        from src.config import STARHUB_BRIDGE_ENABLED, STARHUB_SNAPSHOT_URL, STARHUB_MAX_ITEMS_PER_CAT
+        if STARHUB_BRIDGE_ENABLED:
+            print(f"\n[*] Batch 3: StarHub RSS snapshot bridge...")
+            _t = time.time()
+            from src.sensors.starhub_bridge import (
+                fetch_starhub_snapshot, adapt_to_intel, dedup_with_sensors,
+                run_full_analysis
+            )
+            snapshot = fetch_starhub_snapshot(STARHUB_SNAPSHOT_URL)
+            if snapshot:
+                starhub_intel = adapt_to_intel(snapshot, max_per_cat=STARHUB_MAX_ITEMS_PER_CAT)
+                # Dedup: sensor data takes priority
+                starhub_intel = dedup_with_sensors(starhub_intel, intel)
+                # Merge into intel dict
+                for cat in starhub_intel:
+                    intel[cat].extend(starhub_intel[cat])
+                # Run analysis pipeline
+                _starhub_analysis = run_full_analysis(snapshot)
+            _timings["StarHub Bridge"] = time.time() - _t
+        else:
+            print("\n[*] Batch 3: StarHub bridge disabled (STARHUB_BRIDGE_ENABLED=false)")
+    except Exception as e:
+        logger.warning("StarHub bridge failed: %s", e)
+        _safe_print(f"  \u26a0\ufe0f StarHub bridge failed: {e}")
+
+    # Store analysis data for report generator
+    if _starhub_analysis:
+        intel["_starhub_analysis"] = _starhub_analysis
+
     # ========== RUNTIME BUDGET SUMMARY ==========
     _total_elapsed = time.time() - _total_start
     print(f"\n{'='*60}")
