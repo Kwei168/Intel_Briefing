@@ -1,110 +1,222 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Intel Briefing - 每日情报日报</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      background: #f6f8fa;
-      color: #24292f;
-      line-height: 1.6;
-    }
-    .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
-    header {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-    header h1 {
-      font-size: 2em;
-      margin-bottom: 8px;
-      color: #0366d6;
-    }
-    header p {
-      color: #57606a;
-      font-size: 1.05em;
-    }
-    .report-list { list-style: none; }
-    .report-list li {
-      padding: 16px 20px;
-      margin-bottom: 10px;
-      background: #fff;
-      border-radius: 8px;
-      border-left: 4px solid #0366d6;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: box-shadow 0.2s, transform 0.15s;
-    }
-    .report-list li:hover {
-      box-shadow: 0 3px 8px rgba(0,0,0,0.12);
-      transform: translateY(-1px);
-    }
-    .report-list a {
-      font-weight: 600;
-      font-size: 1.05em;
-      text-decoration: none;
-      color: #0366d6;
-    }
-    .report-list a:hover { text-decoration: underline; }
-    .report-list .date {
-      color: #57606a;
-      font-size: 0.9em;
-      white-space: nowrap;
-      margin-left: 16px;
-    }
-    .empty-msg {
-      text-align: center;
-      color: #888;
-      font-style: italic;
-      padding: 40px 0;
-    }
-    footer {
-      text-align: center;
-      margin-top: 40px;
-      color: #888;
-      font-size: 0.85em;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Intel Briefing - 每日情报日报</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ========== tokens (StarHub Editorial Data-Book) ========== */
+:root{
+  --bg:#faf9f7; --card:#fffdf9; --card-2:#f3efe6;
+  --border:#ddd6c9; --border2:#eae4d8;
+  --text:#1c1917; --muted:#5f594c; --faint:#746d60;
+  --brand:#2f5d8a; --brand-strong:#24496e; --brand-line:#b9cde0; --brand-weak:#e7eef4;
+  --accent:var(--brand); --accent-line:var(--brand-line); --accent-weak:var(--brand-weak);
+  --accent-solid:#2f5d8a; --on-strong:#fdfcf9;
+  --hover:#f2efe8; --hover-line:#b3ab9b;
+  --line:#e4ddd0; --line-strong:#b9b0a2;
+  --display:'Noto Serif SC','Songti SC','STSong','SimSun',serif;
+  --body:'Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Consolas,'Liberation Mono',monospace;
+  --radius:4px;
+  --shadow:0 1px 2px rgba(28,25,23,.05);
+  --shadow-lift:0 6px 18px rgba(28,25,23,.08),0 1px 3px rgba(28,25,23,.05);
+}
+[data-theme="dark"]{
+  --bg:#161412; --card:#1d1a17; --card-2:#221f1a;
+  --border:#37312a; --border2:#2b2621;
+  --text:#ece7df; --muted:#a59d90; --faint:#8a8275;
+  --brand:#8fb3d9; --brand-strong:#b0cbe6; --brand-line:#3d5a78; --brand-weak:#22303f;
+  --accent:var(--brand); --accent-line:var(--brand-line); --accent-weak:var(--brand-weak);
+  --accent-solid:#9db8d4; --on-strong:#16181d;
+  --hover:#242019; --hover-line:#4a4339;
+  --line:#2a2d33; --line-strong:#4a4e57;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+  --shadow-lift:0 8px 22px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4);
+}
+
+/* ========== base ========== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+body{
+  font-family:var(--body);background:var(--bg);color:var(--text);
+  line-height:1.65;font-size:15px;-webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none;}
+::selection{background:var(--brand-weak);color:var(--text);}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px;}
+
+/* ========== topbar ========== */
+.paper{max-width:980px;margin:0 auto;padding:0 20px 64px;}
+.topbar{display:flex;align-items:center;gap:10px;padding:14px 0 4px;}
+.back{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;
+  background:var(--card);border:1px solid var(--border);font-size:13px;transition:all .15s;
+}
+.back:hover{border-color:var(--accent);color:var(--brand-strong);}
+.topbar .spacer{flex:1;}
+.theme-btn{
+  width:36px;height:36px;border-radius:999px;background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);
+  transition:all .15s;
+}
+.theme-btn:hover{border-color:var(--accent);color:var(--brand-strong);}
+.theme-btn svg{width:16px;height:16px;}
+.icon-moon{display:none;}
+[data-theme="dark"] .icon-sun{display:none;}
+[data-theme="dark"] .icon-moon{display:block;}
+
+/* ========== masthead ========== */
+.masthead{text-align:center;padding:26px 0 0;}
+.mast-rule{display:flex;align-items:center;gap:14px;margin:0 0 4px;}
+.mast-rule::before,.mast-rule::after{content:"";flex:1;height:1px;background:var(--line-strong);}
+.mast-meta{font-size:11.5px;letter-spacing:.14em;color:var(--muted);font-weight:500;white-space:nowrap;}
+.mast-title{
+  font-family:var(--display);font-size:clamp(36px,6vw,52px);font-weight:900;
+  letter-spacing:.06em;line-height:1.15;margin:6px 0 2px;
+}
+.mast-title .tick{color:var(--accent);}
+.mast-sub{font-size:12.5px;color:var(--muted);letter-spacing:.1em;}
+.mast-strip{
+  margin-top:14px;padding:8px 12px;border-top:3px double var(--line-strong);border-bottom:1px solid var(--line-strong);
+  font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 18px;justify-content:center;
+}
+.mast-strip b{color:var(--text);font-weight:600;}
+
+/* ========== report list ========== */
+.report-section{margin:28px 0 0;}
+.section-head{
+  display:flex;align-items:baseline;gap:14px;padding-bottom:8px;
+  border-bottom:3px double var(--line-strong);margin-bottom:16px;
+}
+.section-num{font-size:18px;font-weight:800;flex:none;color:var(--accent);}
+.section-name{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:.04em;margin:0;line-height:1.3;}
+.section-cnt{margin-left:auto;font-size:12px;color:var(--muted);white-space:nowrap;font-family:var(--mono);}
+
+.report-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;column-gap:34px;row-gap:0;}
+.report-item{
+  padding:13px 0;border-bottom:1px solid var(--line);break-inside:avoid;
+  display:flex;flex-direction:column;gap:4px;
+}
+.report-item:first-child{grid-column:1/-1;padding:16px 18px;background:var(--card-2);border:1px solid var(--border);margin-bottom:8px;border-radius:var(--radius);}
+.report-date{
+  font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.06em;
+}
+.report-title{font-size:15px;font-weight:700;line-height:1.5;margin:0;}
+.report-title a{transition:color .15s;}
+.report-title a:hover{color:var(--brand-strong);}
+.report-item:first-child .report-title{font-size:17px;}
+.report-desc{font-size:12.5px;color:var(--muted);line-height:1.6;}
+
+/* ========== empty / loading ========== */
+.empty-msg{
+  text-align:center;color:var(--faint);font-style:italic;padding:40px 0;
+  grid-column:1/-1;font-size:14px;
+}
+
+/* ========== footer ========== */
+.foot{
+  margin-top:40px;padding-top:14px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between;
+}
+.foot a{color:var(--brand-strong);font-weight:500;}
+.foot a:hover{text-decoration:underline;}
+
+/* ========== responsive ========== */
+@media (max-width:760px){
+  .paper{padding:0 14px 48px;}
+  .report-list{grid-template-columns:1fr;}
+  .report-item:first-child{grid-column:1;}
+  .mast-title{letter-spacing:.03em;}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *{transition:none!important;animation:none!important;}
+}
+</style>
+<script>try{var _t=localStorage.getItem('wb_starhub_theme_v1')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=_t;}catch(e){}</script>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Intel Briefing</h1>
-      <p>每日情报日报 — 由 Unified Intelligence Engine 自动生成</p>
-    </header>
+<div class="paper">
 
-    <div id="report-list">
-      <p class="empty-msg">加载中...</p>
-    </div>
-
-    <footer>
-      Powered by GitHub Actions &middot; 每日 UTC 23:51 自动更新
-    </footer>
+  <div class="topbar">
+    <a class="back" href="https://kwei168.github.io/StarHub/" title="返回 StarHub">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      StarHub
+    </a>
+    <div class="spacer"></div>
+    <button class="theme-btn" id="btnTheme" title="切换明暗主题" aria-label="切换明暗主题">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M18.7 5.3 17 7M7 17l-1.7 1.7"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></svg>
+    </button>
   </div>
 
-  <script>
-    fetch('./reports.json')
-      .then(function(r) { return r.json(); })
-      .then(function(reports) {
-        var el = document.getElementById('report-list');
-        if (!reports.length) {
-          el.innerHTML = '<p class="empty-msg">暂无日报</p>';
-          return;
-        }
-        var html = '<ul class="report-list">';
-        reports.forEach(function(r) {
-          html += '<li><a href="./reports/' + r.file + '">' + r.title + '</a><span class="date">' + r.date + '</span></li>';
-        });
-        html += '</ul>';
-        el.innerHTML = html;
-      })
-      .catch(function() {
-        document.getElementById('report-list').innerHTML = '<p class="empty-msg">加载失败，请刷新重试</p>';
-      });
-  </script>
+  <header class="masthead">
+    <div class="mast-rule"><span class="mast-meta">DAILY INTELLIGENCE BRIEFING</span><span class="mast-meta">每日自动更新</span></div>
+    <h1 class="mast-title">Intel<span class="tick"> </span>Briefing</h1>
+    <div class="mast-sub">UNIFIED INTELLIGENCE ENGINE &nbsp;&middot;&nbsp; 多源聚合 &middot; AI 驱动 &middot; 每日生成</div>
+    <div class="mast-strip">
+      <span>数据源 <b>GitHub Trending</b> &middot; <b>Hacker News</b> &middot; <b>Product Hunt</b> &middot; <b>arXiv</b> &middot; <b>36氪</b> &middot; <b>AtlasNote</b> 等 10+ 源</span>
+    </div>
+  </header>
+
+  <section class="report-section">
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <h2 class="section-name">日报归档</h2>
+      <span class="section-cnt" id="report-count">加载中...</span>
+    </div>
+    <ul class="report-list" id="report-list">
+      <li class="empty-msg">正在加载日报列表...</li>
+    </ul>
+  </section>
+
+  <footer class="foot">
+    <span>由 <a href="https://github.com/Kwei168/Intel_Briefing" target="_blank" rel="noopener">Intel_Briefing</a> 引擎自动生成</span>
+    <span>每日 UTC 23:51（北京 07:51）自动更新</span>
+    <span>内容版权归原作者 &middot; <a href="https://kwei168.github.io/StarHub/">StarHub</a></span>
+  </footer>
+</div>
+
+<script>
+/* theme toggle */
+var btn=document.getElementById('btnTheme');
+if(btn) btn.onclick=function(){
+  var t=document.documentElement.dataset.theme==='dark'?'light':'dark';
+  try{localStorage.setItem('wb_starhub_theme_v1',t);}catch(e){}
+  document.documentElement.dataset.theme=t;
+};
+
+/* load reports */
+fetch('./reports.json')
+  .then(function(r){return r.json();})
+  .then(function(reports){
+    var el=document.getElementById('report-list');
+    var cnt=document.getElementById('report-count');
+    if(!reports||!reports.length){
+      el.innerHTML='<li class="empty-msg">暂无日报，请等待下次自动构建</li>';
+      cnt.textContent='0 份';
+      return;
+    }
+    cnt.textContent=reports.length+' 份';
+    var html='';
+    reports.forEach(function(r,i){
+      var cls=i===0?'report-item':'report-item';
+      html+='<li class="'+cls+'">';
+      html+='<span class="report-date">'+r.date+'</span>';
+      html+='<h3 class="report-title"><a href="./reports/'+r.file+'">'+r.title+'</a></h3>';
+      if(i===0) html+='<p class="report-desc">最新一期情报日报，点击上方链接查看完整内容。</p>';
+      html+='</li>';
+    });
+    el.innerHTML=html;
+  })
+  .catch(function(){
+    document.getElementById('report-list').innerHTML='<li class="empty-msg">加载失败，请刷新重试</li>';
+    document.getElementById('report-count').textContent='--';
+  });
+</script>
 </body>
 </html>
