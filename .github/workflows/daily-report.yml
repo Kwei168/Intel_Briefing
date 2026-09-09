@@ -2,7 +2,7 @@ name: Daily Intelligence Report
 
 on:
   schedule:
-    - cron: '51 23 * * *'  # UTC 23:51 = 北京 07:51（避开整点高峰）
+    - cron: '51 23 * * *'  # UTC 23:51 = Beijing 07:51
   workflow_dispatch:
 
 concurrency:
@@ -29,7 +29,7 @@ jobs:
           python-version: '3.13'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt markdown
 
       - name: Generate Morning Report
         env:
@@ -41,36 +41,10 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python cli.py
 
-      # --- GitHub Pages: 构建站点 ---
       - name: Build Pages site
         run: |
           mkdir -p docs/reports
-
-          DATE=$(date -u +%Y-%m-%d)
-          REPORT="reports/daily_briefings/Morning_Report_${DATE}.md"
-
-          if [ -f "$REPORT" ]; then
-            cp "$REPORT" docs/reports/
-            echo "Copied report: $REPORT"
-          else
-            echo "Warning: Report not found at $REPORT"
-            ls -la reports/daily_briefings/ 2>/dev/null || echo "Directory does not exist"
-          fi
-
-          # 生成日报索引 JSON
-          python3 -c "
-          import os, json
-          reports = []
-          d = 'docs/reports'
-          if os.path.isdir(d):
-              for f in sorted(os.listdir(d), reverse=True):
-                  if f.endswith('.md') and 'TEST' not in f:
-                      date = f.replace('Morning_Report_','').replace('.md','')
-                      reports.append({'file': f, 'title': date + ' 情报日报', 'date': date})
-          with open('docs/reports.json', 'w') as fp:
-              json.dump(reports, fp, ensure_ascii=False)
-          print(f'Indexed {len(reports)} reports')
-          "
+          python3 .github/build_pages.py
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -84,53 +58,35 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      # --- 可选: 投递到 PWA 前端仓库 ---
       - name: Deliver report to PWA (optional)
         env:
           PWA_DEPLOY_TOKEN: ${{ secrets.PWA_DEPLOY_TOKEN }}
           PWA_REPO: ${{ vars.PWA_REPO }}
         run: |
           if [ -z "$PWA_DEPLOY_TOKEN" ] || [ -z "$PWA_REPO" ]; then
-            echo "PWA delivery skipped (set PWA_REPO variable and PWA_DEPLOY_TOKEN secret to enable)."
+            echo "PWA delivery skipped."
             exit 0
           fi
-
           DATE=$(date -u +%Y-%m-%d)
           REPORT="reports/daily_briefings/Morning_Report_${DATE}.md"
           SUMMARIES="reports/summaries/${DATE}.json"
-
           if [ ! -f "$REPORT" ]; then
             echo "Report not found: $REPORT"
-            ls -la reports/daily_briefings/ 2>/dev/null || echo "Directory does not exist"
             exit 1
           fi
-
-          echo "Report found: $(wc -c < "$REPORT") bytes"
-
           git clone https://x-access-token:${PWA_DEPLOY_TOKEN}@github.com/${PWA_REPO}.git /tmp/pwa
           cp "$REPORT" /tmp/pwa/data/daily_briefings/
-
           if [ -f "$SUMMARIES" ]; then
             mkdir -p /tmp/pwa/public/data/summaries
             cp "$SUMMARIES" /tmp/pwa/public/data/summaries/
-            echo "Summaries found: $(wc -c < "$SUMMARIES") bytes"
-          else
-            echo "No summaries file found, PWA will generate on build"
           fi
-
           cd /tmp/pwa
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/daily_briefings/
-          if [ -d public/data/summaries ]; then
-            git add -f public/data/summaries/
-          fi
+          if [ -d public/data/summaries ]; then git add -f public/data/summaries/; fi
           git diff --cached --stat
-
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
+          if ! git diff --cached --quiet; then
             git commit -m "data: add daily report ${DATE}"
             git push
-            echo "Report delivered to ${PWA_REPO}"
           fi
