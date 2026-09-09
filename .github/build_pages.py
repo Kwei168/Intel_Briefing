@@ -58,7 +58,7 @@ header{{position:sticky;top:0;z-index:40;background:rgba(250,249,247,.94);backdr
 [data-theme="dark"] .icon-sun{{display:none;}}
 [data-theme="dark"] .icon-moon{{display:block;}}
 
-/* ══════════════ Masthead ═════════════ */
+/* ═════════════ Masthead ═════════════ */
 .masthead{{text-align:center;padding:28px 0 0;}}
 .mast-rule{{display:flex;align-items:center;gap:14px;margin:0 0 4px;}}
 .mast-rule::before,.mast-rule::after{{content:"";flex:1;height:1px;background:var(--line-strong);}}
@@ -73,17 +73,14 @@ header{{position:sticky;top:0;z-index:40;background:rgba(250,249,247,.94);backdr
 /* Article title */
 .article h1{{font-family:var(--display);font-size:clamp(22px,3.5vw,30px);font-weight:900;margin:0 0 20px;line-height:1.3;color:var(--ink);}}
 
-/* Meta info card */
-.article .meta-card{{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px;margin-bottom:32px;}}
-.article .meta-card dl{{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0;font-size:14px;}}
-.article .meta-card dt{{color:var(--muted);font-weight:500;white-space:nowrap;}}
-.article .meta-card dd{{color:var(--ink);margin:0;line-height:1.6;}}
-.article .meta-card dd a{{color:var(--brand-strong);border-bottom:1px solid var(--brand-line);}}
-.article .meta-card dd a:hover{{border-bottom-color:var(--brand-strong);}}
+/* Meta info - target paragraphs with strong labels */
+.article p:has(strong){{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;margin-bottom:12px;font-size:14px;}}
+.article p:has(strong) strong{{color:var(--muted);font-weight:600;margin-right:8px;}}
+.article p:has(strong) a{{color:var(--brand-strong);border-bottom:1px solid var(--brand-line);}}
+.article p:has(strong) a:hover{{border-bottom-color:var(--brand-strong);}}
 
 /* Section headings */
 .article h2{{font-family:var(--display);font-size:clamp(18px,2.8vw,24px);font-weight:700;margin:36px 0 16px;padding-bottom:10px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;color:var(--ink);}}
-.article h2 .sec-icon{{width:8px;height:8px;border-radius:2px;background:var(--brand);flex:none;}}
 .article h3{{font-family:var(--display);font-size:17px;font-weight:700;margin:24px 0 10px;color:var(--ink);}}
 .article h4{{font-size:15px;font-weight:700;margin:20px 0 8px;color:var(--ink);}}
 
@@ -104,10 +101,6 @@ header{{position:sticky;top:0;z-index:40;background:rgba(250,249,247,.94);backdr
 .article blockquote p:last-child{{margin-bottom:0;}}
 .article blockquote a{{color:var(--brand-strong);font-weight:500;}}
 
-/* Source chips */
-.article .source-chip{{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:var(--brand-weak);border:1px solid var(--brand-line);border-radius:4px;font-size:12px;color:var(--brand-strong);font-weight:500;margin-right:6px;margin-bottom:4px;}}
-.article .source-chip .chip-icon{{font-size:10px;opacity:.7;}}
-
 /* Code */
 .article code{{font-family:var(--mono);font-size:13px;background:var(--card-2);padding:2px 6px;border-radius:4px;color:var(--ink);}}
 .article pre{{background:var(--card-2);padding:16px;border-radius:var(--radius);overflow-x:auto;margin:16px 0;border:1px solid var(--line);}}
@@ -125,23 +118,12 @@ header{{position:sticky;top:0;z-index:40;background:rgba(250,249,247,.94);backdr
 /* Horizontal rule */
 .article hr{{border:0;border-top:1px solid var(--line);margin:32px 0;}}
 
-/* Card-style numbered items */
-.article .item-card{{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px;margin-bottom:16px;transition:border-color .15s,box-shadow .15s;}}
-.article .item-card:hover{{border-color:var(--brand-line);box-shadow:var(--shadow);}}
-.article .item-card h3{{margin:0 0 10px;font-size:16px;font-weight:700;line-height:1.5;}}
-.article .item-card h3 a{{color:var(--ink);border-bottom:none;}}
-.article .item-card h3 a:hover{{color:var(--brand-strong);}}
-.article .item-card .item-meta{{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);margin-top:10px;padding-top:10px;border-top:1px solid var(--line);}}
-.article .item-card .item-meta .chip{{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:var(--card-2);border-radius:4px;font-size:11.5px;color:var(--faint);}}
-.article .item-card .item-meta .chip.brand{{background:var(--brand-weak);color:var(--brand-strong);}}
-.article .item-card p{{margin:10px 0 0;font-size:14px;color:var(--muted);line-height:1.7;}}
-
 /* ═════════════ Footer ══════════════ */
 .foot{{margin-top:48px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between;}}
 .foot a{{color:var(--brand-strong);font-weight:500;}}
 .foot a:hover{{text-decoration:underline;}}
 
-/* ══════════════ Back to top ══════════════ */
+/* ══════════════ Back to top ═════════════ */
 .back-top{{position:fixed;bottom:24px;right:24px;width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transition:all .2s;z-index:90;box-shadow:0 2px 8px rgba(0,0,0,.08);}}
 .back-top.show{{opacity:1;pointer-events:auto;}}
 .back-top:hover{{color:var(--brand-strong);border-color:var(--brand-line);background:var(--brand-weak);}}
@@ -161,10 +143,7 @@ header{{position:sticky;top:0;z-index:40;background:rgba(250,249,247,.94);backdr
   .article h1{{font-size:20px;}}
   .article h2{{font-size:18px;}}
   .article p{{font-size:14px;}}
-  .article .item-card{{padding:14px 16px;}}
-  .article .item-card h3{{font-size:15px;}}
-  .article .meta-card{{padding:14px 16px;}}
-  .article .meta-card dl{{font-size:13px;}}
+  .article p:has(strong){{padding:10px 14px;font-size:13px;}}
 }}
 </style>
 <script>try{{var _t=localStorage.getItem('wb_starhub_theme_v1')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=_t}}catch(e){{}}</script>
@@ -183,7 +162,7 @@ header{{position:sticky;top:0;z-index:40;background:rgba(250,249,247,.94);backdr
     </div>
     <div class="nav-links">
       <a href="https://kwei168.github.io/StarHub/">🏠 首页</a>
-      <a href="https://kwei168.github.io/StarHub/rss-aggregator.html"> RSS</a>
+      <a href="https://kwei168.github.io/StarHub/rss-aggregator.html">📡 RSS</a>
       <a href="https://kwei168.github.io/StarHub/ai-daily.html">📰 AI 晨报</a>
       <a href="../index.html" class="active">📋 日报</a>
     </div>
@@ -194,7 +173,7 @@ header{{position:sticky;top:0;z-index:40;background:rgba(250,249,247,.94);backdr
   </div>
 </header>
 
-<!-- ── Masthead ── -->
+<!-- ─ Masthead ── -->
 <div class="article-wrap">
   <header class="masthead">
     <div class="mast-rule"><span class="mast-meta">{date}</span><span class="mast-meta">INTEL BRIEFING</span></div>
@@ -213,7 +192,7 @@ header{{position:sticky;top:0;z-index:40;background:rgba(250,249,247,.94);backdr
   </footer>
 </div>
 
-<!-- ── Back to top ── -->
+<!-- ─ Back to top ── -->
 <button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
 </button>
