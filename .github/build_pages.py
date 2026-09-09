@@ -334,6 +334,34 @@ def _clean_head(text):
     return re.sub(r'^[^\w\u4e00-\u9fff\u3400-\u4dbf(（]+', '', text).strip()
 
 
+def _strip_emoji_html(html):
+    """去掉 HTML 文本内容中的 emoji（保留标签结构）。"""
+    _EMOJI_RE = re.compile(
+        "["
+        "\u200d"                    # ZWJ
+        "\u203c\u2049"             # double exclamation etc
+        "\u20e0-\u20e3"            # combining enclosing keycap etc
+        "\u2122\u2139"             # TM, info
+        "\u2194-\u21aa"            # arrows
+        "\u231a-\u23ff"            # watch, fast-forward etc
+        "\u24c2"                    # circled M
+        "\u25aa-\u25fe"            # squares
+        "\u2600-\u27bf"            # weather, symbols, dingbats
+        "\u2934-\u2935"            # arrows
+        "\u2b05-\u2b55"            # arrows, stars
+        "\u3030\u303d"             # wavy dash, part alternation
+        "\u3297\u3299"             # circled ideograph
+        "\ufe0f"                    # variation selector-16
+        "\U0001f000-\U0001ffff"    # all supplementary emoji
+        "]"
+    )
+    parts = re.split(r'(<[^>]+>)', html)
+    for i in range(len(parts)):
+        if parts[i] and parts[i][0] != '<':
+            parts[i] = _EMOJI_RE.sub('', parts[i])
+    return ''.join(parts)
+
+
 def _rm_headerlink(html):
     return re.sub(r'<a class="headerlink"[^>]*>.*?</a>', '', html, flags=re.S)
 
@@ -396,18 +424,18 @@ def _split_summary(inner):
 def _card_html(c):
     parts = ['<div class="intel-card">']
     num = '<span class="ic-num">%s</span>' % c['num'] if c['num'] else ''
-    parts.append('<div class="ic-head">%s<h3>%s</h3></div>' % (num, c['head']))
+    parts.append('<div class="ic-head">%s<h3>%s</h3></div>' % (num, _strip_emoji_html(c['head'])))
     if c['meta']:
-        parts.append('<div class="ic-meta">%s</div>' % c['meta'])
+        parts.append('<div class="ic-meta">%s</div>' % _strip_emoji_html(c['meta']))
     if c['summary']:
         sum_html, foot_html = _split_summary(_inner_of('blockquote', c['summary']))
-        parts.append('<blockquote class="ic-summary">%s</blockquote>' % sum_html)
+        parts.append('<blockquote class="ic-summary">%s</blockquote>' % _strip_emoji_html(sum_html))
         if foot_html and not c['foot']:
             c['foot'] = foot_html
     if c['body']:
-        parts.append('<div class="ic-body">%s</div>' % ''.join(c['body']))
+        parts.append('<div class="ic-body">%s</div>' % _strip_emoji_html(''.join(c['body'])))
     if c['foot']:
-        parts.append('<div class="ic-foot">%s</div>' % c['foot'])
+        parts.append('<div class="ic-foot">%s</div>' % _strip_emoji_html(c['foot']))
     parts.append('</div>')
     return ''.join(parts)
 
@@ -428,7 +456,7 @@ def _toc_nav(sections):
         return ''
     chips = ''.join(
         '<a class="toc-chip" href="#sec-%d">%s<span class="n">%d</span></a>'
-        % (s['num'], _strip_tags(s['title']), s['count'])
+        % (s['num'], _strip_emoji_html(_strip_tags(s['title'])), s['count'])
         for s in sections)
     return ('<nav class="toc" aria-label="章节目录"><span class="toc-label">CONTENTS</span>'
             '<div class="toc-chips">%s</div></nav>' % chips)
@@ -463,7 +491,7 @@ def _enhance(html, date):
             continue
         if tag == 'h2':
             flush_card()
-            cur_sec = {'num': len(sections) + 1, 'title': _rm_headerlink(_inner_of('h2', blk)),
+            cur_sec = {'num': len(sections) + 1, 'title': _clean_head(_rm_headerlink(_inner_of('h2', blk))),
                        'src': '', 'count': 0, 'blocks': []}
             sections.append(cur_sec)
             continue
@@ -526,6 +554,8 @@ def _enhance(html, date):
     content = ''.join(chunks)
     # 站内内容条目均为外链，统一新窗口打开
     content = re.sub(r'<a href="(https?://[^"]+)"', r'<a href="\1" target="_blank" rel="noopener"', content)
+    # 清除残留 emoji 装饰（源数据中的符号残留）
+    content = _strip_emoji_html(content)
 
     total = sum(s['count'] for s in sections)
     return h1_text, meta_items, _toc_nav(sections), content, total
