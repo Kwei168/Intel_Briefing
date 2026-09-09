@@ -14,9 +14,33 @@ if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
 
 # Import from centralized config
-from src.config import GEMINI_API_KEY, GEMINI_API_URL, GEMINI_MODEL, GEMINI_TIMEOUT, GEMINI_MAX_RETRIES
+from src.config import (GEMINI_API_KEY, GEMINI_API_URL, GEMINI_MODEL, GEMINI_TIMEOUT, GEMINI_MAX_RETRIES, AGNES_API_KEY, AGNES_API_URL, AGNES_MODEL)
+from src.utils.llm_provider import LLMRouter
 
-def translate_to_chinese(text: str, max_chars: int = 100) -> str:
+
+def _chat(prompt, max_tokens=None, temperature=None, router=None, budget=None):
+    if not (AGNES_API_KEY or GEMINI_API_KEY):
+        return None
+    try:
+        router = router or LLMRouter(agnes_base_url=AGNES_API_URL, agnes_api_key=AGNES_API_KEY or "", agnes_model=AGNES_MODEL, gemini_api_key=GEMINI_API_KEY or "", gemini_model=GEMINI_MODEL, gemini_api_url=GEMINI_API_URL)
+        for provider in (getattr(router, "agnes", None), getattr(router, "gemini", None)):
+            if provider is not None:
+                if max_tokens is not None:
+                    provider.max_tokens = max_tokens
+                if temperature is not None:
+                    provider.temperature = temperature
+        if budget is not None:
+            cached = router.get_cached(prompt) if hasattr(router, "get_cached") else None
+            if cached is not None:
+                return cached
+            if getattr(getattr(router, "agnes", None), "api_key", None) and not budget.acquire():
+                return None
+        return router.chat(prompt)
+    except Exception as exc:
+        logger.warning("LLM 路由失败: %s", exc)
+        return None
+
+def translate_to_chinese(text: str, max_chars: int = 100, _router=None, _budget=None) -> str:
     """
     将英文文本翻译成简体中文。
     
@@ -27,8 +51,8 @@ def translate_to_chinese(text: str, max_chars: int = 100) -> str:
     Returns:
         翻译后的中文文本，如果失败则返回原文
     """
-    if not GEMINI_API_KEY:
-        logger.warning("GEMINI_API_KEY 未配置，跳过翻译")
+    if not (AGNES_API_KEY or GEMINI_API_KEY):
+        logger.warning("LLM provider key 未配置，跳过翻译")
         return text[:max_chars] + "..." if len(text) > max_chars else text
     
     if not text or len(text) < 10:
@@ -42,48 +66,14 @@ def translate_to_chinese(text: str, max_chars: int = 100) -> str:
 原文：
 {text}"""
 
-    url = f"{GEMINI_API_URL}/{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
-
-    payload = {
-        "contents": [{
-            "parts": [{"text": prompt}]
-        }],
-        "generationConfig": {
-            "temperature": 0.3,
-            "maxOutputTokens": 1024
-        }
-    }
-
-    for attempt in range(GEMINI_MAX_RETRIES):
-        try:
-            response = httpx.post(url, json=payload, timeout=GEMINI_TIMEOUT)
-            response.raise_for_status()
-            
-            data = response.json()
-            result = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-            
-            if result:
-                return result.strip()
-            else:
-                # API 返回空结果，重试
-                if attempt < GEMINI_MAX_RETRIES - 1:
-                    logger.warning(f"Gemini 返回空结果，重试 ({attempt + 1}/{GEMINI_MAX_RETRIES})...")
-                    time.sleep(2 ** attempt)
-                    continue
-                return text[:max_chars] + "..." if len(text) > max_chars else text
-
-        except (httpx.HTTPError, httpx.TimeoutException, ValueError, KeyError) as e:
-            if attempt < GEMINI_MAX_RETRIES - 1:
-                logger.warning(f"Gemini 翻译失败 ({attempt + 1}/{GEMINI_MAX_RETRIES}): {e}")
-                time.sleep(2 ** attempt)
-                continue
-            logger.error(f"Gemini 翻译最终失败: {e}")
-            return text[:max_chars] + "..." if len(text) > max_chars else text
-    
+    result = _chat(prompt, max_tokens=1024, temperature=0.3, router=_router, budget=_budget)
+    if result and result.text:
+        return result.text.strip()
     return text[:max_chars] + "..." if len(text) > max_chars else text
 
 
-def generate_brief(content: str, category: str = "general") -> str:
+
+def generate_brief(content: str, category: str = "general", _router=None, _budget=None) -> str:
     """
     为内容生成编辑风格的中文摘要（80-120字）。
     替代旧的 translate+truncate 模式，输出更自然、有信息量。
@@ -95,7 +85,7 @@ def generate_brief(content: str, category: str = "general") -> str:
     Returns:
         中文摘要（80-120字），失败则返回空字符串
     """
-    if not GEMINI_API_KEY or not content or len(content) < 20:
+    if not (AGNES_API_KEY or GEMINI_API_KEY) or not content or len(content) < 20:
         return ""
     
     prompt = f"""你是世界顶级的科技情报编辑。请用2-3句自然流畅的中文概括以下内容（80-120字）。
@@ -111,24 +101,9 @@ def generate_brief(content: str, category: str = "general") -> str:
 内容：
 {content[:3000]}"""
     
-    url = f"{GEMINI_API_URL}/{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
-    payload = {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {
-            "temperature": 0.5,
-            "maxOutputTokens": 256
-        }
-    }
-    
-    try:
-        response = httpx.post(url, json=payload, timeout=60)
-        response.raise_for_status()
-        data = response.json()
-        result = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-        return result.strip() if result else ""
-    except Exception:
-        logger.exception("generate_brief 失败")
-        return ""
+    result = _chat(prompt, max_tokens=256, temperature=0.5, router=_router, budget=_budget)
+    return result.text.strip() if result and result.text else ""
+
 
 
 def translate_summary_pair(summary: str) -> tuple[str, str]:
@@ -154,7 +129,7 @@ def translate_summary_pair(summary: str) -> tuple[str, str]:
     return (brief_cn, detail_cn)
 
 
-def summarize_blog_article(content: str, mode: str = "brief") -> str:
+def summarize_blog_article(content: str, mode: str = "brief", _router=None, _budget=None) -> str:
     """
     为技术博客文章生成情报简报风格的中文摘要。
     
@@ -165,7 +140,7 @@ def summarize_blog_article(content: str, mode: str = "brief") -> str:
     Returns:
         中文摘要
     """
-    if not GEMINI_API_KEY or not content or len(content) < 50:
+    if not (AGNES_API_KEY or GEMINI_API_KEY) or not content or len(content) < 50:
         return ""
     
     if mode == "brief":
@@ -196,33 +171,13 @@ def summarize_blog_article(content: str, mode: str = "brief") -> str:
 {content[:6000]}"""
         max_tokens = 1024
     
-    url = f"{GEMINI_API_URL}/{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
-    
-    payload = {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {
-            "temperature": 0.4,
-            "maxOutputTokens": max_tokens
-        }
-    }
-    
-    try:
-        with httpx.Client(timeout=GEMINI_TIMEOUT) as client:
-            response = client.post(url, json=payload)
-            if response.status_code == 200:
-                data = response.json()
-                result = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-                return result.strip() if result else ""
-            else:
-                logger.warning(f"Gemini 摘要失败: HTTP {response.status_code}")
-                return ""
-    except (httpx.HTTPError, httpx.TimeoutException, ValueError, KeyError) as e:
-        logger.warning(f"Gemini 摘要出错: {e}")
-        return ""
+    result = _chat(prompt, max_tokens=max_tokens, temperature=0.4, router=_router, budget=_budget)
+    return result.text.strip() if result and result.text else ""
+
 
 
 def generate_news_brief(title: str, content: str = "", category: str = "tech",
-                        _depth: int = 0) -> str:
+                        _depth: int = 0, _router=None, _budget=None) -> str:
     """
     为 Tech/Capital 类新闻生成情报风格的中文短报（80-120字）。
     包含 [JUNK] 熔断协议：如果内容是垃圾，AI 返回 [JUNK] 时自动降级为标题推断。
@@ -237,7 +192,7 @@ def generate_news_brief(title: str, content: str = "", category: str = "tech",
     Returns:
         中文短报（80-120字），失败则返回空字符串
     """
-    if not GEMINI_API_KEY or not title:
+    if not (AGNES_API_KEY or GEMINI_API_KEY) or not title:
         return ""
     
     # 无内容时做标题推断
@@ -268,42 +223,20 @@ def generate_news_brief(title: str, content: str = "", category: str = "tech",
 6. 直接输出摘要，不要前缀。"""
         max_tokens = 256
     
-    url = f"{GEMINI_API_URL}/{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
-    payload = {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {
-            "temperature": 0.3,
-            "maxOutputTokens": max_tokens
-        }
-    }
-    
-    try:
-        response = httpx.post(url, json=payload, timeout=60)
-        response.raise_for_status()
-        data = response.json()
-        result = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-        
-        if not result:
-            return ""
-        
-        result = result.strip()
-        
-        # [JUNK] 熔断：AI 自己检测到垃圾内容
-        if "[JUNK]" in result:
-            print(f"    🚧 [JUNK] AI 检测到垃圾内容: {title[:30]}...")
-            if _depth >= 1:
-                # 二次降级仍判 JUNK，放弃以免无限递归 + 烧 API
-                return ""
-            # 降级为标题推断（递归，无内容模式）
-            return generate_news_brief(title, "", category, _depth=_depth + 1)
-
-        return result
-    except Exception:
-        logger.exception("generate_news_brief 失败")
+    result = _chat(prompt, max_tokens=max_tokens, temperature=0.3, router=_router, budget=_budget)
+    if not result or not result.text:
         return ""
+    result_text = result.text.strip()
+    if "[JUNK]" in result_text:
+        print(f"    🚧 [JUNK] AI 检测到垃圾内容: {title[:30]}...")
+        if _depth >= 1:
+            return ""
+        return generate_news_brief(title, "", category, _depth=_depth + 1, _router=_router, _budget=_budget)
+    return result_text
 
 
-def expand_product_tagline(name: str, tagline: str) -> str:
+
+def expand_product_tagline(name: str, tagline: str, _router=None, _budget=None) -> str:
     """
     将 Product Hunt 英文 tagline 扩展为中文产品定位描述（30-60字）。
     Ported from the companion PWA frontend's product tagline expansion logic.
@@ -315,7 +248,7 @@ def expand_product_tagline(name: str, tagline: str) -> str:
     Returns:
         中文产品描述（30-60字），失败则返回空字符串
     """
-    if not GEMINI_API_KEY or not name:
+    if not (AGNES_API_KEY or GEMINI_API_KEY) or not name:
         return ""
     
     prompt = f"""这是一个新产品：
@@ -324,24 +257,9 @@ def expand_product_tagline(name: str, tagline: str) -> str:
 
 请用一句自然中文描述这个产品的定位和卖点（30-60字）。直接输出，不要前缀。"""
     
-    url = f"{GEMINI_API_URL}/{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
-    payload = {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {
-            "temperature": 0.4,
-            "maxOutputTokens": 128
-        }
-    }
-    
-    try:
-        response = httpx.post(url, json=payload, timeout=60)
-        response.raise_for_status()
-        data = response.json()
-        result = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-        return result.strip() if result else ""
-    except Exception:
-        logger.exception("expand_product_tagline 失败")
-        return ""
+    result = _chat(prompt, max_tokens=128, temperature=0.4, router=_router, budget=_budget)
+    return result.text.strip() if result and result.text else ""
+
 
 
 if __name__ == "__main__":

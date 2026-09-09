@@ -39,6 +39,13 @@ jobs:
           XAI_MODEL: x-ai/grok-4-fast
           PRODUCTHUNT_TOKEN: ${{ secrets.PRODUCTHUNT_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+          LLM_PROVIDER: agnes
+          LLM_FALLBACK_PROVIDER: gemini
+          AGNES_MODEL: agnes-2.5-flash
+          AGNES_MAX_CALLS_PER_RUN: 3
+          AGNES_MIN_INTERVAL: 45
+          AGNES_CONCURRENCY: 1
         run: python cli.py
 
       - name: Build Pages site

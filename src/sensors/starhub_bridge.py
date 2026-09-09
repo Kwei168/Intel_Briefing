@@ -68,13 +68,19 @@ def adapt_to_intel(snapshot):
             if not title or not url:
                 continue
             summary = (item.get("s") or "")[:500]
-            result.setdefault(ib_cat, []).append({
+            adapted = {
                 "title": title, "url": url, "summary": summary,
                 "content": summary, "time": (item.get("d") or "")[:16],
                 "category": src_name, "source_color": src_color,
                 "source_url": src_url, "source_category": source_cat,
                 "starhub": True,
-            })
+            }
+            # 仅透传快照中已有的预计算字段，空值不写入，交给下游管线复用
+            for field in ("summary_cn", "translation", "analysis_brief"):
+                value = item.get(field)
+                if isinstance(value, str) and value.strip():
+                    adapted[field] = value
+            result.setdefault(ib_cat, []).append(adapted)
             valid += 1
     total = sum(len(v) for v in result.values())
     cats = [k for k, v in result.items() if v]

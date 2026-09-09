@@ -12,14 +12,20 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-from src.config import GEMINI_RATE_LIMIT_DELAY
+from src.config import (
+    GEMINI_RATE_LIMIT_DELAY, AGNES_API_KEY, GEMINI_API_KEY,
+    AGNES_API_URL, AGNES_MODEL, GEMINI_API_URL, GEMINI_MODEL,
+)
+from src.utils.llm_provider import AgnesBudget, LLMCache, LLMRouter, cache_key
 
 # --- Gemini Translator ---
 try:
-    from src.utils.gemini_translator import translate_to_chinese, summarize_blog_article, generate_brief, generate_news_brief
+    from src.utils.gemini_translator import translate_to_chinese, summarize_blog_article, generate_brief, generate_news_brief, expand_product_tagline
     GEMINI_AVAILABLE = True
+    LLM_AVAILABLE = bool(AGNES_API_KEY or GEMINI_API_KEY)
 except ImportError:
     GEMINI_AVAILABLE = False
+    LLM_AVAILABLE = False
 
 # --- Jina Reader (Full Content Fetcher) ---
 try:
@@ -31,18 +37,37 @@ except ImportError:
 
 if not GEMINI_AVAILABLE:
     logger.info("Gemini translator not available, using English summaries.")
-    def translate_to_chinese(text, max_chars=100):
+    def translate_to_chinese(text, max_chars=100, _router=None, _budget=None):
         return text[:max_chars] + "..." if len(text) > max_chars else text
 
-    def summarize_blog_article(content, mode="brief"):
+    def summarize_blog_article(content, mode="brief", _router=None, _budget=None):
         return ""
 
-    def generate_brief(content, category="general"):
+    def generate_brief(content, category="general", _router=None, _budget=None):
         return ""
 
-    def generate_news_brief(title, content="", category="tech", _depth=0):
+    def generate_news_brief(title, content="", category="tech", _depth=0, _router=None, _budget=None):
         return ""
 
+    def expand_product_tagline(name, tagline, _router=None, _budget=None):
+        return ""
+
+
+BRIEF_TASK = "news_brief"
+BRIEF_PROMPT_VERSION = "v1"
+_BRIEF_CACHE = LLMCache()
+_BRIEF_BUDGET = AgnesBudget()
+_BRIEF_ROUTER = LLMRouter(
+    agnes_base_url=AGNES_API_URL,
+    agnes_api_key=AGNES_API_KEY or "",
+    agnes_model=AGNES_MODEL,
+    gemini_api_key=GEMINI_API_KEY or "",
+    gemini_model=GEMINI_MODEL,
+    gemini_api_url=GEMINI_API_URL,
+    cache=_BRIEF_CACHE,
+    task=BRIEF_TASK,
+    prompt_version=BRIEF_PROMPT_VERSION,
+)
 
 def _select_diverse_items(items, limit, max_per_source=2):
     """按来源轮询选取条目，避免单一信源占满一个栏目。"""
@@ -79,19 +104,89 @@ def _select_diverse_items(items, limit, max_per_source=2):
 
 
 def _signal_brief(item, category):
-    """优先使用 Gemini 对 StarHub 摘要做短报；无密钥时保留原始摘要。"""
+    """按预计算、中文复用、缓存、预算、LLM、RSS 的顺序生成短报。
+
+    设置条目级字段:
+    - _analysis_stage: precomputed | reused | agnes | gemini | rss_fallback | source_summary
+    - _provider: agnes | gemini | None
+    - _model: model string | None
+    - _cached: bool
+    - _failure_reason: budget_exhausted | llm_failed | no_content | llm_unavailable | None
+    """
     if item.get("analysis_brief"):
-        item["_analysis_stage"] = "precomputed"
+        # Only set stage if not already set (avoid override on second call)
+        if not item.get("_analysis_stage"):
+            item["_analysis_stage"] = "precomputed"
+        item.setdefault("_provider", None)
+        item.setdefault("_model", None)
+        item.setdefault("_cached", False)
         return item["analysis_brief"]
+
+    for field in ("summary_cn", "translation"):
+        value = item.get(field)
+        if isinstance(value, str) and value.strip():
+            value = value.strip()
+            item["analysis_brief"] = value
+            item["_analysis_stage"] = "reused"
+            item["_provider"] = None
+            item["_model"] = None
+            item["_cached"] = False
+            return value
+
     content = (item.get("content") or item.get("summary") or "").strip()
-    if item.get("starhub") and content and GEMINI_AVAILABLE:
-        brief = generate_news_brief(item.get("title", ""), content, category=category)
+    rss_summary = (item.get("summary") or item.get("content") or "").strip()
+    request_content = "\n".join((item.get("title", ""), category, content))
+    failure_reason = None
+    if item.get("starhub") and content and LLM_AVAILABLE:
+        for provider, model in (("agnes", AGNES_MODEL), ("gemini", GEMINI_MODEL)):
+            cached = _BRIEF_CACHE.get(cache_key(provider, model, BRIEF_TASK, BRIEF_PROMPT_VERSION, request_content))
+            if cached is not None:
+                item["analysis_brief"] = cached.text
+                item["_analysis_stage"] = "reused"
+                item["_provider"] = cached.provider
+                item["_model"] = cached.model
+                item["_cached"] = True
+                return cached.text
+        if not _BRIEF_BUDGET.available():
+            brief = ""
+            failure_reason = "budget_exhausted"
+        else:
+            brief = generate_news_brief(
+                item.get("title", ""),
+                content,
+                category=category,
+                _router=_BRIEF_ROUTER,
+                _budget=_BRIEF_BUDGET,
+            )
+            if not brief:
+                failure_reason = "llm_failed"
         if brief:
+            latest = _BRIEF_ROUTER.last_result
+            if latest is not None and latest.text == brief:
+                _BRIEF_CACHE.put(
+                    cache_key(latest.provider, latest.model, BRIEF_TASK, BRIEF_PROMPT_VERSION, request_content),
+                    latest,
+                )
+            provider_name = latest.provider if latest else "agnes"
             item["analysis_brief"] = brief
-            item["_analysis_stage"] = "gemini_news_brief"
+            item["_analysis_stage"] = provider_name
+            item["_provider"] = provider_name
+            item["_model"] = latest.model if latest else None
+            item["_cached"] = False
             return brief
-    item["_analysis_stage"] = "rss_fallback" if item.get("starhub") else "source_summary"
-    return content[:240] if content else ""
+    elif item.get("starhub"):
+        if not content:
+            failure_reason = "no_content"
+        elif not LLM_AVAILABLE:
+            failure_reason = "llm_unavailable"
+    if item.get("starhub"):
+        item["_analysis_stage"] = "rss_fallback"
+        if failure_reason:
+            item["_failure_reason"] = failure_reason
+    else:
+        item["_analysis_stage"] = "source_summary"
+    fallback = rss_summary if item.get("starhub") else content
+    return fallback[:240] if fallback else ""
 
 
 def generate_report(intel: dict, date_str: str) -> str:
@@ -180,14 +275,14 @@ def generate_report(intel: dict, date_str: str) -> str:
 
             # Two-Tier Summary Logic
             # 1. Brief: 编辑风格摘要（80-120字，有主角有判断）
-            brief_cn = generate_brief(summary, category="research") if summary else ""
+            brief_cn = generate_brief(summary, category="research", _router=_BRIEF_ROUTER, _budget=_BRIEF_BUDGET) if summary else ""
             
             # 添加延迟以避免 API 限速
-            if GEMINI_AVAILABLE and summary:
+            if LLM_AVAILABLE and summary:
                 time.sleep(GEMINI_RATE_LIMIT_DELAY)
             
             # 2. Detail: 完整翻译（允许完整输出）
-            detail_cn = translate_to_chinese(summary, max_chars=1200) if summary else ""
+            detail_cn = translate_to_chinese(summary, max_chars=1200, _router=_BRIEF_ROUTER, _budget=_BRIEF_BUDGET) if summary else ""
 
             lines.append(f"### {i}. [{title}]({url})")
             if brief_cn:
@@ -231,6 +326,20 @@ def generate_report(intel: dict, date_str: str) -> str:
             lines.append("")
 
             analysis_brief = item.get("analysis_brief", "")
+            if not analysis_brief:
+                for field in ("summary_cn", "translation"):
+                    val = item.get(field)
+                    if isinstance(val, str) and val.strip():
+                        analysis_brief = val.strip()
+                        item["analysis_brief"] = analysis_brief
+                        break
+            if not analysis_brief and tagline and LLM_AVAILABLE and item.get("starhub"):
+                expanded = expand_product_tagline(
+                    title, tagline, _router=_BRIEF_ROUTER, _budget=_BRIEF_BUDGET,
+                )
+                if expanded:
+                    analysis_brief = expanded
+                    item["analysis_brief"] = expanded
             if analysis_brief:
                 lines.append(f"> ⚡ {analysis_brief}")
                 lines.append("")
@@ -310,10 +419,10 @@ def generate_report(intel: dict, date_str: str) -> str:
 
             brief_cn = ""
             detail_cn = ""
-            if source_text and GEMINI_AVAILABLE:
-                brief_cn = summarize_blog_article(source_text, mode="brief")
+            if source_text and LLM_AVAILABLE:
+                brief_cn = summarize_blog_article(source_text, mode="brief", _router=_BRIEF_ROUTER, _budget=_BRIEF_BUDGET)
                 time.sleep(GEMINI_RATE_LIMIT_DELAY)
-                detail_cn = summarize_blog_article(source_text, mode="detail")
+                detail_cn = summarize_blog_article(source_text, mode="detail", _router=_BRIEF_ROUTER, _budget=_BRIEF_BUDGET)
 
             lines.append(f"### {i}. [{title}]({url})")
             if brief_cn:
@@ -346,6 +455,28 @@ def generate_report(intel: dict, date_str: str) -> str:
         )
         provenance["selected"] = selected
         provenance["analysis"] = dict(analysis)
+
+        # Task 7: report-level provider/fallback counts
+        starhub_items = [
+            item for items in selected_by_category.values()
+            for item in items if item.get("starhub")
+        ]
+        selected_count = len(starhub_items)
+        fallback_count = sum(
+            1 for item in starhub_items
+            if item.get("_analysis_stage") == "rss_fallback"
+        )
+        provider_counts = Counter(
+            item.get("_provider") or "none"
+            for item in starhub_items
+        )
+        provenance["selected_count"] = selected_count
+        provenance["fallback_count"] = fallback_count
+
+        logger.info(
+            "[PROVENANCE] selected_count=%d fallback_count=%d providers=%s stages=%s",
+            selected_count, fallback_count, dict(provider_counts), dict(analysis),
+        )
         logger.info("[TRACE] StarHub selected=%s analysis=%s", selected, dict(analysis))
         routed = provenance.get("routed", {})
         routed_text = ", ".join(f"{k}={v}" for k, v in sorted(routed.items()))

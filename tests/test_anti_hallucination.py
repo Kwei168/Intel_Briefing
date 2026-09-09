@@ -68,6 +68,7 @@ def test_generate_news_brief_junk_recursion_guard(monkeypatch):
 
     monkeypatch.setattr(gt.httpx, "post", _fake_post)
     monkeypatch.setattr(gt, "GEMINI_API_KEY", "fake-key-for-test")
+    monkeypatch.setattr(gt, "AGNES_API_KEY", None, raising=False)
 
     result = gt.generate_news_brief("Fake Title", "some real content " * 5)
 
