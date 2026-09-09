@@ -31,7 +31,7 @@ a{{color:inherit;text-decoration:none}}
 [data-theme=dark] .icon-moon{{display:block}}
 .masthead{{text-align:center;padding:26px 0 0}}
 .mast-rule{{display:flex;align-items:center;gap:14px;margin:0 0 4px}}
-.mast-rule::before,.mast-rule::after{{content:;flex:1;height:1px;background:var(--line-strong)}}
+.mast-rule::before,.mast-rule::after{{content:"";flex:1;height:1px;background:var(--line-strong)}}
 .mast-meta{{font-size:11.5px;letter-spacing:.14em;color:var(--muted);font-weight:500;white-space:nowrap}}
 .mast-title{{font-family:var(--display);font-size:clamp(28px,5vw,42px);font-weight:900;letter-spacing:.06em;line-height:1.15;margin:6px 0 2px}}
 .mast-sub{{font-size:12.5px;color:var(--muted);letter-spacing:.1em}}
@@ -64,12 +64,12 @@ a{{color:inherit;text-decoration:none}}
 <body>
 <div class="paper">
   <div class="topbar">
-    <a class="back" href="../index.html" title="\u8fd4\u56de\u65e5\u62a5\u5217\u8868">
+    <a class="back" href="../index.html" title="日报列表">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-      \u65e5\u62a5\u5217\u8868
+      日报列表
     </a>
     <div class="spacer"></div>
-    <button class="theme-btn" id="btnTheme" title="\u5207\u6362\u660e\u6697\u4e3b\u9898" aria-label="\u5207\u6362\u660e\u6697\u4e3b\u9898">
+    <button class="theme-btn" id="btnTheme" title="切换明暗主题" aria-label="切换明暗主题">
       <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M18.7 5.3 17 7M7 17l-1.7 1.7"/></svg>
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></svg>
     </button>
@@ -77,15 +77,15 @@ a{{color:inherit;text-decoration:none}}
   <header class="masthead">
     <div class="mast-rule"><span class="mast-meta">{date}</span><span class="mast-meta">INTEL BRIEFING</span></div>
     <h1 class="mast-title">Intel Briefing</h1>
-    <div class="mast-sub">UNIFIED INTELLIGENCE ENGINE &middot; \u6bcf\u65e5\u60c5\u62a5\u65e5\u62a5</div>
+    <div class="mast-sub">UNIFIED INTELLIGENCE ENGINE &middot; 每日情报日报</div>
   </header>
   <article class="article">
 {content}
   </article>
   <footer class="foot">
-    <span>\u7531 <a href="https://github.com/Kwei168/Intel_Briefing" target="_blank" rel="noopener">Intel_Briefing</a> \u5f15\u64ce\u81ea\u52a8\u751f\u6210</span>
-    <span>{date} &middot; \u5185\u5bb9\u7248\u6743\u5f52\u539f\u4f5c\u8005\u6240\u6709</span>
-    <span><a href="../index.html">\u8fd4\u56de\u9996\u9875</a> &middot; <a href="https://kwei168.github.io/StarHub/">StarHub</a></span>
+    <span>由 <a href="https://github.com/Kwei168/Intel_Briefing" target="_blank" rel="noopener">Intel_Briefing</a> 引擎自动生成</span>
+    <span>{date} &middot; 内容版权归原作者所有</span>
+    <span><a href="../index.html">返回首页</a> &middot; <a href="https://kwei168.github.io/StarHub/">StarHub</a></span>
   </footer>
 </div>
 <script>
@@ -94,6 +94,17 @@ if(btn)btn.onclick=function(){{var t=document.documentElement.dataset.theme==='d
 </script>
 </body>
 </html>"""
+
+
+
+def render_page(date, md_content):
+    """Render one Markdown report into a UTF-8 HTML page."""
+    html_content = markdown.markdown(
+        md_content,
+        extensions=['tables', 'fenced_code', 'toc', 'nl2br'],
+    )
+    title = date + ' 情报日报'
+    return HTML_TEMPLATE.format(title=title, date=date, content=html_content)
 
 
 def main():
@@ -105,11 +116,10 @@ def main():
             continue
         date = fname.replace('Morning_Report_', '').replace('.md', '')
         html_name = fname.replace('.md', '.html')
-        title = date + ' \u60c5\u62a5\u65e5\u62a5'
+        title = date + ' 情报日报'
         with open(md_path, 'r', encoding='utf-8') as f:
             md_content = f.read()
-        html_content = markdown.markdown(md_content, extensions=['tables', 'fenced_code', 'toc', 'nl2br'])
-        full_html = HTML_TEMPLATE.format(title=title, date=date, content=html_content)
+        full_html = render_page(date, md_content)
         out_path = os.path.join('docs/reports', html_name)
         os.makedirs('docs/reports', exist_ok=True)
         with open(out_path, 'w', encoding='utf-8') as f:

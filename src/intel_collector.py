@@ -16,6 +16,7 @@ import re
 import time
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from collections import Counter
 from threading import Lock
 
 # --- Logging Setup ---
@@ -135,7 +136,51 @@ def _dedup_items(items: list[dict]) -> list[dict]:
     return result
 
 
-def validate_grok_report(markdown_content: str) -> str:
+def _route_starhub_item(item: dict) -> str:
+    """按来源语义将已适配条目路由到现有日报栏目。"""
+    source = str(item.get("category", ""))
+    source_cat = str(item.get("source_category", ""))
+    source_url = str(item.get("source_url", ""))
+    text = f"{source} {source_cat} {source_url}".lower()
+    base = {
+        "ai": "tech_trends", "tech": "tech_trends", "cn_tech": "tech_trends",
+        "news": "tech_trends", "wechat": "tech_trends",
+        "dev": "community", "insights": "insights", "podcast": "insights",
+        "youtube": "insights", "horizon": "research",
+    }.get(source_cat, "tech_trends")
+    if any(term in text for term in ("product hunt", "producthunt")):
+        return "product_gems"
+    if any(term in text for term in ("arxiv", "paper", "research", "nature", "quanta", "science", "hugging face", "hf daily")):
+        return "research"
+    if any(term in text for term in ("36kr", "36氪", "wallstreet", "capital", "invest", "finance", "venture", "fundrais", "economy", "business")):
+        return "capital_flow"
+    if any(term in text for term in ("v2ex", "hacker news", "reddit", "nodeseek", "zhihu", "forum", "stack overflow")):
+        return "community"
+    if any(term in text for term in ("x/twitter", "twitter", "weibo", "微博")):
+        return "social"
+    if any(term in text for term in ("blog", "newsletter", "podcast", "youtube", "mit technology review", "techcrunch")):
+        return "insights"
+    return base
+
+
+def _merge_starhub_items(intel: dict, adapted: dict) -> Counter:
+    """把适配结果送入现有栏目，并返回路由审计计数。"""
+    routed = Counter()
+    for items in adapted.values():
+        for item in items:
+            category = _route_starhub_item(item)
+            item["intel_category"] = category
+            if category == "product_gems":
+                item.setdefault("tagline", item.get("summary", ""))
+                item.setdefault("heat", "StarHub RSS")
+                item.setdefault("topics", ["starhub", "rss"])
+            if category in intel:
+                intel[category].append(item)
+                routed[category] += 1
+    return routed
+
+
+def validate_grok_report(markdown_content: str):
     """
     Anti-Hallucination Layer: Extract and validate all links in Grok's output.
     Appends warning to invalid links.
@@ -348,18 +393,27 @@ def fetch_all_sources(limit_per_source: int = 10) -> dict:
     
 
     # ========== StarHub RSS Merge (post-Batch 1, pre-Batch 2) ==========
+    starhub_provenance = {
+        "enabled": False, "snapshot_sources": 0, "snapshot_items": 0,
+        "adapted_items": 0, "routed": {},
+    }
     if STARHUB_AVAILABLE:
         try:
             from src.config import STARHUB_BRIDGE_ENABLED, STARHUB_SNAPSHOT_URL
+            starhub_provenance["enabled"] = STARHUB_BRIDGE_ENABLED
             if STARHUB_BRIDGE_ENABLED:
                 print(f"\n[*] StarHub RSS bridge: merging into existing categories...")
                 _t = time.time()
                 snapshot = fetch_starhub_snapshot(STARHUB_SNAPSHOT_URL)
                 if snapshot:
-                    starhub_items = adapt_to_intel(snapshot)
-                    for cat, items in starhub_items.items():
-                        if cat in intel:
-                            intel[cat].extend(items)
+                    sources = snapshot.get("sources", [])
+                    starhub_provenance["snapshot_sources"] = len(sources)
+                    starhub_provenance["snapshot_items"] = sum(len(s.get("items", [])) for s in sources)
+                    adapted = adapt_to_intel(snapshot)
+                    starhub_provenance["adapted_items"] = sum(len(v) for v in adapted.values())
+                    routed = _merge_starhub_items(intel, adapted)
+                    starhub_provenance["routed"] = dict(routed)
+                    _safe_print(f"  [TRACE] StarHub route: {dict(routed)}")
                 _timings["StarHub Bridge"] = time.time() - _t
             else:
                 print("\n[*] StarHub bridge disabled (STARHUB_BRIDGE_ENABLED=false)")
@@ -428,11 +482,15 @@ Keep it concise but informative. If no data found, say "暂无X平台讨论数�
     if _total_elapsed > 600:
         print(f"  ⚠️  WARNING: Approaching 15-min GitHub Actions limit!")
     print(f"{'='*60}\n")
-    # ========== POST-PROCESSING: Deduplicate research ==========
-    # HF Papers + ArXiv may return the same paper (same arXiv ID)
-    if intel["research"]:
-        intel["research"] = _dedup_items(intel["research"])
-    
+    # ========== POST-PROCESSING: Existing deduplication for every section ==========
+    dedup_counts = {}
+    for category in tuple(intel):
+        before = len(intel[category])
+        intel[category] = _dedup_items(intel[category])
+        dedup_counts[category] = {"before": before, "after": len(intel[category])}
+    starhub_provenance["dedup"] = dedup_counts
+    intel["_provenance"] = {"starhub": starhub_provenance, "timings": dict(_timings)}
+    _safe_print(f"  [TRACE] Final category counts: { {k: len(v) for k, v in intel.items() if isinstance(v, list)} }")
     return intel
 
 

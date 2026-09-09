@@ -7,6 +7,7 @@ Report Generator - 报告生成模块
 
 import time
 import logging
+from collections import Counter, OrderedDict
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -15,7 +16,7 @@ from src.config import GEMINI_RATE_LIMIT_DELAY
 
 # --- Gemini Translator ---
 try:
-    from src.utils.gemini_translator import translate_to_chinese, summarize_blog_article, generate_brief
+    from src.utils.gemini_translator import translate_to_chinese, summarize_blog_article, generate_brief, generate_news_brief
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -39,9 +40,81 @@ if not GEMINI_AVAILABLE:
     def generate_brief(content, category="general"):
         return ""
 
+    def generate_news_brief(title, content="", category="tech", _depth=0):
+        return ""
+
+
+def _select_diverse_items(items, limit, max_per_source=2):
+    """按来源轮询选取条目，避免单一信源占满一个栏目。"""
+    groups = OrderedDict()
+    seen_titles = set()
+    seen_urls = set()
+    for item in items or []:
+        title = " ".join(str(item.get("title", "")).split()).casefold()
+        url = str(item.get("url", "")).strip()
+        if not title or (title in seen_titles) or (url and url in seen_urls):
+            continue
+        seen_titles.add(title)
+        if url:
+            seen_urls.add(url)
+        source = str(item.get("category") or item.get("source") or "Unknown")
+        groups.setdefault(source, []).append(item)
+    selected = []
+    source_counts = {}
+    while len(selected) < limit and groups:
+        progressed = False
+        for source in list(groups):
+            queue = groups[source]
+            if queue and source_counts.get(source, 0) < max_per_source:
+                selected.append(queue.pop(0))
+                source_counts[source] = source_counts.get(source, 0) + 1
+                progressed = True
+                if len(selected) >= limit:
+                    break
+            if not queue or source_counts.get(source, 0) >= max_per_source:
+                del groups[source]
+        if not progressed:
+            break
+    return selected
+
+
+def _signal_brief(item, category):
+    """优先使用 Gemini 对 StarHub 摘要做短报；无密钥时保留原始摘要。"""
+    if item.get("analysis_brief"):
+        item["_analysis_stage"] = "precomputed"
+        return item["analysis_brief"]
+    content = (item.get("content") or item.get("summary") or "").strip()
+    if item.get("starhub") and content and GEMINI_AVAILABLE:
+        brief = generate_news_brief(item.get("title", ""), content, category=category)
+        if brief:
+            item["analysis_brief"] = brief
+            item["_analysis_stage"] = "gemini_news_brief"
+            return brief
+    item["_analysis_stage"] = "rss_fallback" if item.get("starhub") else "source_summary"
+    return content[:240] if content else ""
+
 
 def generate_report(intel: dict, date_str: str) -> str:
     """Generate magazine-style markdown report."""
+    tech_items = _select_diverse_items(intel.get("tech_trends", []), 10)
+    capital_items = _select_diverse_items(intel.get("capital_flow", []), 10)
+    research_items = _select_diverse_items(intel.get("research", []), 5)
+    product_items = _select_diverse_items(intel.get("product_gems", []), 8)
+    community_items = _select_diverse_items(intel.get("community", []), 5)
+    insights_items = _select_diverse_items(intel.get("insights", []), 5)
+    selected_by_category = {
+        "tech_trends": tech_items,
+        "capital_flow": capital_items,
+        "research": research_items,
+        "product_gems": product_items,
+        "community": community_items,
+        "social": [],
+        "insights": insights_items,
+    }
+    for category, selected in selected_by_category.items():
+        for item in selected:
+            if item.get("starhub"):
+                _signal_brief(item, category)
     lines = [
         f"# 🌐 全球情报日报 (Global Intel Briefing)",
         f"**日期:** {date_str}",
@@ -56,8 +129,8 @@ def generate_report(intel: dict, date_str: str) -> str:
     lines.append("## 🛠️ 技术趋势 (Tech Trends)")
     lines.append("> Hacker News + GitHub Trending\n")
 
-    if intel.get("tech_trends"):
-        for i, item in enumerate(intel["tech_trends"][:10], 1):
+    if tech_items:
+        for i, item in enumerate(tech_items, 1):
             title = item.get("title", "Untitled")
             url = item.get("url", "#")
             heat = item.get("heat", "")
@@ -66,6 +139,9 @@ def generate_report(intel: dict, date_str: str) -> str:
 
             lines.append(f"### {i}. [{title}]({url})")
             lines.append(f"📍 {cat} | 🔥 {heat} | 🕒 {time_str}")
+            brief = _signal_brief(item, "tech")
+            if brief:
+                lines.append(f"> ⚡ {brief}")
             lines.append("")
     else:
         lines.append("*暂无数据*\n")
@@ -74,8 +150,8 @@ def generate_report(intel: dict, date_str: str) -> str:
     lines.append("## 💰 资本动向 (Capital Flow)")
     lines.append("> 36Kr + 华尔街见闻\n")
 
-    if intel.get("capital_flow"):
-        for i, item in enumerate(intel["capital_flow"][:10], 1):
+    if capital_items:
+        for i, item in enumerate(capital_items, 1):
             title = item.get("title", "Untitled")
             url = item.get("url", "#")
             time_str = item.get("time", "")
@@ -83,6 +159,9 @@ def generate_report(intel: dict, date_str: str) -> str:
 
             lines.append(f"### {i}. [{title}]({url})")
             lines.append(f"📍 {cat} | 🕒 {time_str}")
+            brief = _signal_brief(item, "capital")
+            if brief:
+                lines.append(f"> ⚡ {brief}")
             lines.append("")
     else:
         lines.append("*暂无数据*\n")
@@ -91,8 +170,8 @@ def generate_report(intel: dict, date_str: str) -> str:
     lines.append("## 📚 学术前沿 (Research)")
     lines.append("> ArXiv AI/ML Papers\n")
 
-    if intel.get("research"):
-        for i, item in enumerate(intel["research"][:5], 1):
+    if research_items:
+        for i, item in enumerate(research_items, 1):
             title = item.get("title", "Untitled")
             url = item.get("url", "#")
             authors = item.get("authors", "")
@@ -108,7 +187,7 @@ def generate_report(intel: dict, date_str: str) -> str:
                 time.sleep(GEMINI_RATE_LIMIT_DELAY)
             
             # 2. Detail: 完整翻译（允许完整输出）
-            detail_cn = translate_to_chinese(summary, max_chars=2000) if summary else ""
+            detail_cn = translate_to_chinese(summary, max_chars=1200) if summary else ""
 
             lines.append(f"### {i}. [{title}]({url})")
             if brief_cn:
@@ -128,8 +207,8 @@ def generate_report(intel: dict, date_str: str) -> str:
     lines.append("## 💎 产品精选 (Product Gems)")
     lines.append("> Product Hunt Today\n")
 
-    if intel.get("product_gems"):
-        for i, item in enumerate(intel["product_gems"][:8], 1):
+    if product_items:
+        for i, item in enumerate(product_items, 1):
             title = item.get("title", "Untitled")
             url = item.get("url", "#")
             heat = item.get("heat", "")
@@ -151,6 +230,10 @@ def generate_report(intel: dict, date_str: str) -> str:
                 lines.append(f"🔥 {heat}")
             lines.append("")
 
+            analysis_brief = item.get("analysis_brief", "")
+            if analysis_brief:
+                lines.append(f"> ⚡ {analysis_brief}")
+                lines.append("")
             if grok_review:
                 lines.append(f"> **🦅 Grok 舆情核查**: {grok_review}")
                 lines.append("")
@@ -184,14 +267,16 @@ def generate_report(intel: dict, date_str: str) -> str:
     lines.append("## 🗣️ 社区热点 (Community)")
     lines.append("> V2EX 热门\n")
 
-    if intel.get("community"):
-        for i, item in enumerate(intel["community"][:5], 1):
+    if community_items:
+        for i, item in enumerate(community_items, 1):
             title = item.get("title", "Untitled")
             url = item.get("url", "#")
             heat = item.get("heat", "")
 
             lines.append(f"### {i}. [{title}]({url})")
             lines.append(f"💬 {heat}")
+            if item.get("analysis_brief"):
+                lines.append(f"> ⚡ {item['analysis_brief']}")
             lines.append("")
     else:
         lines.append("*暂无数据*\n")
@@ -202,8 +287,8 @@ def generate_report(intel: dict, date_str: str) -> str:
     lines.append("## 💡 深度洞察 (Insights)")
     lines.append("> HN Top Blogs + MIT Technology Review — 精选深度分析\n")
 
-    if intel.get("insights"):
-        for i, item in enumerate(intel["insights"][:5], 1):
+    if insights_items:
+        for i, item in enumerate(insights_items, 1):
             title = item.get("title", "Untitled")
             url = item.get("url", "#")
             author = item.get("author", "")
@@ -246,6 +331,26 @@ def generate_report(intel: dict, date_str: str) -> str:
 
         
 
+    provenance = intel.get("_provenance", {}).get("starhub", {})
+    if provenance.get("enabled") and provenance.get("snapshot_sources"):
+        selected = {
+            category: sum(1 for item in items if item.get("starhub"))
+            for category, items in selected_by_category.items()
+        }
+        selected = {category: count for category, count in selected.items() if count}
+        analysis = Counter(
+            item.get("_analysis_stage", "unprocessed")
+            for items in selected_by_category.values()
+            for item in items
+            if item.get("starhub")
+        )
+        provenance["selected"] = selected
+        provenance["analysis"] = dict(analysis)
+        logger.info("[TRACE] StarHub selected=%s analysis=%s", selected, dict(analysis))
+        routed = provenance.get("routed", {})
+        routed_text = ", ".join(f"{k}={v}" for k, v in sorted(routed.items()))
+        lines.append(f"**分析溯源:** StarHub {provenance['snapshot_sources']} 源 / {provenance['snapshot_items']} 条 → 适配 {provenance['adapted_items']} 条 → 路由 {routed_text}")
+        lines.append("")
     lines.append("---")
     lines.append("*报告由 Unified Intelligence Engine V2 自动生成 (含 StarHub 716 RSS 源分析)*")
 

@@ -37,6 +37,15 @@ def main():
     except ImportError:
         pass
     print(f"  Sources: HN, GitHub, 36Kr, WS, V2EX, PH, ArXiv, X, TC, MIT-TR{_sh_status}")
+    try:
+        from src.config import cfg
+        print("  Credentials: XAI=%s | Gemini=%s | ProductHunt=%s" % (
+            "SET" if cfg.xai_api_key else "UNSET",
+            "SET" if cfg.gemini_api_key else "UNSET",
+            "SET" if cfg.producthunt_token else "UNSET",
+        ))
+    except (ImportError, AttributeError):
+        print("  Credentials: unavailable")
     print(f"{'='*50}\n")
     
     # Fetch

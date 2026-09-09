@@ -7,6 +7,8 @@ import sys
 import os
 import re
 import json
+import html as html_mod
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from typing import List, Optional
 
@@ -27,6 +29,51 @@ class PHProduct:
 
 # Use unified config layer
 from src.config import cfg
+
+
+ATOM_NS = "{http://www.w3.org/2005/Atom}"
+
+
+def _parse_rss_products(xml_text: str, limit: int = 10) -> List[PHProduct]:
+    """Parse Product Hunt's public Atom feed using only verified URLs."""
+    root = ET.fromstring(xml_text)
+    products = []
+    for entry in root.findall(f".//{ATOM_NS}entry")[:limit]:
+        title = entry.findtext(f"{ATOM_NS}title", default="").strip()
+        summary = entry.findtext(f"{ATOM_NS}summary", default="").strip()
+        link = ""
+        for link_el in entry.findall(f"{ATOM_NS}link"):
+            if link_el.get("rel", "alternate") == "alternate" and link_el.get("href"):
+                link = link_el.get("href")
+                break
+        if not link:
+            continue
+        published = entry.findtext(f"{ATOM_NS}published", default="")
+        products.append(PHProduct(
+            name=html_mod.unescape(title),
+            tagline=html_mod.unescape(re.sub(r"<[^>]+>", "", summary)),
+            url=link,
+            votes_count=0,
+            website=None,
+            topics=[],
+            maker_name="Unknown",
+            maker_twitter=None,
+        ))
+    return products
+
+
+def _fetch_via_rss(limit: int) -> List[PHProduct]:
+    """Fetch Product Hunt's official public Atom feed as a no-token fallback."""
+    print("    (Using Product Hunt official Atom RSS fallback)")
+    resp = httpx.get(
+        "https://www.producthunt.com/feed",
+        headers={"User-Agent": "Intel-Briefing/2.0"},
+        timeout=15,
+        follow_redirects=True,
+    )
+    resp.raise_for_status()
+    return _parse_rss_products(resp.text, limit)
+
 
 def fetch_trending_products(limit: int = 10) -> List[PHProduct]:
     """Fetch trending products from Product Hunt."""
@@ -130,8 +177,8 @@ def _fetch_via_hydration(limit: int) -> List[PHProduct]:
         # 1. Extract __NEXT_DATA__ JSON blob
         match = re.search(r'<script id="__NEXT_DATA__" type="application/json">(.+?)</script>', html)
         if not match:
-            print("    ⚠️ Could not find __NEXT_DATA__ on page.")
-            return _fetch_via_scraping_fallback(limit)
+            print("    [WARN] Could not find __NEXT_DATA__ on page; trying official RSS.")
+            return _fetch_via_rss(limit)
             
         data = json.loads(match.group(1))
         
@@ -181,10 +228,12 @@ def _fetch_via_hydration(limit: int) -> List[PHProduct]:
         return products
         
     except Exception as e:
-        print(f"    ⚠️ Hydration extraction failed: {e}")
-        # STOP: Do not fall back to Grok (AI Generation) to avoid hallucinations.
-        # return _fetch_via_scraping_fallback(limit) 
-        return []
+        print(f"    [WARN] Hydration extraction failed: {e}; trying official RSS.")
+        try:
+            return _fetch_via_rss(limit)
+        except Exception as rss_error:
+            print(f"    [WARN] Product Hunt RSS fallback failed: {rss_error}")
+            return []
 
 def _fetch_via_scraping_fallback(limit: int) -> List[PHProduct]:
     """Fallback: Use Grok Sensor to fetch Product Hunt data."""
