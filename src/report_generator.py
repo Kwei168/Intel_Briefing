@@ -34,7 +34,7 @@ except (ImportError, Exception):
 
 # --- Jina Reader (Full Content Fetcher) ---
 try:
-    from src.utils.jina_reader import fetch_full_content
+    from src.utils.jina_reader import fetch_full_content, fetch_content_with_fallback
     JINA_AVAILABLE = True
 except ImportError:
     JINA_AVAILABLE = False
@@ -178,6 +178,91 @@ def _extract_meaningful_summary(item, title_cn):
     if extras:
         return f"{title_clean} — {' / '.join(extras)}"
     return f"{title_clean} — 今日情报精选"
+
+
+def _is_meaningful_summary(summary, title_cn):
+    """检测摘要是否为有意义的内容简介（而非元数据拼接）。"""
+    if not summary:
+        return False
+    s = summary.strip()
+    # 太短的不是有效摘要
+    if len(s) < 20:
+        return False
+    # 等于标题的不是摘要
+    title_clean = _strip_emoji(title_cn or "").strip()
+    if s == title_clean:
+        return False
+    # 纯 "标题 — 来源 / 热度 / 描述" 模式不是有效摘要
+    if " — " in s:
+        after_dash = s.split(" — ", 1)[1]
+        # 如果破折号后的内容全是元数据（来源/热度/域名描述），则不是有效摘要
+        parts = [p.strip() for p in after_dash.split("/")]
+        metadata_keywords = {
+            "开源项目", "视频内容", "微信公众号文章", "Apple 官方",
+            "Hacker News 讨论", "TechCrunch 报道", "华尔街见闻资讯",
+            "V2EX 社区讨论", "今日在 Product Hunt 发布", "36氪报道",
+            "Medium 文章", "Substack 专栏", "Twitter 讨论", "X/Twitter 讨论",
+        }
+        # 如果所有部分都是短元数据片段，则不是有效摘要
+        all_meta = all(
+            len(p) < 30 and (p in metadata_keywords or re.match(r'^\d', p) or re.match(r'^🔥', p))
+            for p in parts if p.strip()
+        )
+        if all_meta and len(parts) >= 2:
+            return False
+    # 包含 URL 模式（文章网址/评论网址）的不是有效摘要
+    if re.search(r'(文章网址|评论网址|article url|comment url)', s, re.IGNORECASE):
+        return False
+    return True
+
+
+def _enhance_summary(item, title_cn, initial_summary, category=""):
+    """当初始摘要不够有意义时，通过 Jina/DDG 抓取原文生成更好的摘要。"""
+    if _is_meaningful_summary(initial_summary, title_cn):
+        return initial_summary
+    
+    url = item.get("url", "#")
+    if not url or url == "#" or not url.startswith("http"):
+        return initial_summary or _extract_meaningful_summary(item, title_cn)
+    
+    # 跳过不适合抓取的 URL
+    skip_domains = {"youtube.com", "youtu.be", "twitter.com", "x.com", "producthunt.com"}
+    from urllib.parse import urlparse
+    domain = (urlparse(url).hostname or "").replace("www.", "")
+    if domain in skip_domains:
+        return initial_summary or _extract_meaningful_summary(item, title_cn)
+    
+    # 通过 Jina/DDG 抓取内容
+    title_raw = item.get("title", "")
+    fetched = fetch_content_with_fallback(url, title=title_raw)
+    if not fetched or len(fetched) < 100:
+        return initial_summary or _extract_meaningful_summary(item, title_cn)
+    
+    # 从抓取的内容中提取前几个句子作为摘要
+    text = fetched[:2000].replace("\n", " ")
+    sentences = re.split(r'(?<=[.。!！?？])\s+', text)
+    summary_parts = []
+    total_len = 0
+    for sent in sentences:
+        sent = sent.strip()
+        if len(sent) < 10:
+            continue
+        if _is_metadata_text(sent):
+            continue
+        translated = _tr(sent[:200])
+        if translated and not _is_metadata_text(translated):
+            summary_parts.append(translated)
+            total_len += len(translated)
+            if total_len >= 150:
+                break
+    
+    if summary_parts:
+        result = " ".join(summary_parts)
+        if _is_meaningful_summary(result, title_cn):
+            return result
+    
+    # 最终 fallback
+    return initial_summary or _extract_meaningful_summary(item, title_cn)
 
 
 def _fetch_bing_tokens():
@@ -741,7 +826,8 @@ def generate_report(intel: dict, date_str: str) -> str:
     for i, item in enumerate(tech_items, 1):
         brief = _signal_brief(item, "tech")
         title_cn = _strip_emoji(_tr_title(item.get("title", "Untitled")))
-        summary = _strip_emoji(brief) if (brief and brief != title_cn and not _is_source_only(brief)) else _extract_meaningful_summary(item, title_cn)
+        _initial = _strip_emoji(brief) if (brief and brief != title_cn and not _is_source_only(brief)) else _extract_meaningful_summary(item, title_cn)
+        summary = _enhance_summary(item, title_cn, _initial, category="tech")
         items.append({
             "num": f"{i:02d}",
             "title": title_cn,
@@ -756,7 +842,8 @@ def generate_report(intel: dict, date_str: str) -> str:
     for i, item in enumerate(capital_items, 1):
         brief = _signal_brief(item, "capital")
         title_cn = _strip_emoji(_tr_title(item.get("title", "Untitled")))
-        summary = _strip_emoji(brief) if (brief and brief != title_cn and not _is_source_only(brief)) else _extract_meaningful_summary(item, title_cn)
+        _initial = _strip_emoji(brief) if (brief and brief != title_cn and not _is_source_only(brief)) else _extract_meaningful_summary(item, title_cn)
+        summary = _enhance_summary(item, title_cn, _initial, category="capital")
         items.append({
             "num": f"{i:02d}",
             "title": title_cn,
@@ -792,7 +879,8 @@ def generate_report(intel: dict, date_str: str) -> str:
         is_grok = "grok-fallback" in (item.get("topics") or [])
         _title = _strip_emoji(_tr_title(item.get("title", "Untitled")))
         _tagline = _strip_emoji(_tr(item.get("tagline", "")))
-        _summary = _tagline if (_tagline and _tagline != _title and not _is_source_only(_tagline)) else _extract_meaningful_summary(item, _title)
+        _initial_summary = _tagline if (_tagline and _tagline != _title and not _is_source_only(_tagline)) else _extract_meaningful_summary(item, _title)
+        _summary = _enhance_summary(item, _title, _initial_summary, category="product")
         items.append({
             "num": f"{i:02d}",
             "title": _title,
@@ -826,7 +914,8 @@ def generate_report(intel: dict, date_str: str) -> str:
     for i, item in enumerate(community_items, 1):
         _title = _strip_emoji(_tr_title(item.get("title", "Untitled")))
         _brief = _strip_emoji(_tr(item.get("analysis_brief", "") or ""))
-        _summary = _brief if (_brief and _brief != _title and not _is_source_only(_brief) and not _is_metadata_text(_brief)) else _extract_meaningful_summary(item, _title)
+        _initial_summary = _brief if (_brief and _brief != _title and not _is_source_only(_brief) and not _is_metadata_text(_brief)) else _extract_meaningful_summary(item, _title)
+        _summary = _enhance_summary(item, _title, _initial_summary, category="community")
         items.append({
             "num": f"{i:02d}",
             "title": _title,
