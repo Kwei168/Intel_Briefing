@@ -77,6 +77,64 @@ def _is_metadata_text(text):
     return False
 
 
+def _extract_domain(url):
+    """从 URL 提取域名作为来源标识。"""
+    if not url or url == "#":
+        return ""
+    try:
+        from urllib.parse import urlparse
+        parsed = urlparse(url)
+        host = parsed.hostname or ""
+        return host.replace("www.", "")
+    except Exception:
+        return ""
+
+
+def _extract_meaningful_summary(item, title_cn):
+    """从条目的多个字段中提取有意义的摘要文本（确保不等于标题）。
+    
+    搜索顺序: description → summary → analysis_brief → content 中的句子
+    全部失败则从 author + domain 构造。
+    """
+    title_clean = _strip_emoji(title_cn or "").strip()
+    
+    # 1. 尝试多个文本字段
+    for field in ('description', 'summary', 'analysis_brief', 'content'):
+        text = (item.get(field) or "").strip().replace("\n", " ")
+        if not text or _is_metadata_text(text):
+            continue
+        # 从文本中提取第一个完整句子（跳过元数据行）
+        sentences = re.split(r'[.。!！?？]\s|\n', text)
+        for sent in sentences:
+            sent = sent.strip()
+            if len(sent) > 15 and not _is_metadata_text(sent) and sent != title_clean:
+                translated = _tr(sent[:200])
+                if translated and translated != title_clean and not _is_metadata_text(translated):
+                    return _strip_emoji(translated)
+        # 如果整个文本不是元数据且不等于标题
+        cleaned = text[:200]
+        if cleaned != title_clean and not _is_metadata_text(cleaned):
+            translated = _tr(cleaned)
+            if translated and translated != title_clean:
+                return _strip_emoji(translated)
+    
+    # 2. 从 author + domain 构造
+    author = (item.get("author") or "").strip()
+    domain = _extract_domain(item.get("url", ""))
+    parts = []
+    if domain:
+        parts.append(f"来源 {domain}")
+    if author:
+        parts.append(f"作者 {_tr(author)}")
+    if parts:
+        return "，".join(parts)
+    
+    # 3. 最终 fallback: 翻译标题并附加来源信息
+    if domain:
+        return f"{title_clean}（来源 {domain}）"
+    return title_cn
+
+
 def _fetch_bing_tokens():
     """访问 bing.com/translator 提取防滥用 token。"""
     global _BING_TOKENS
@@ -637,12 +695,14 @@ def generate_report(intel: dict, date_str: str) -> str:
     items = []
     for i, item in enumerate(tech_items, 1):
         brief = _signal_brief(item, "tech")
+        title_cn = _strip_emoji(_tr_title(item.get("title", "Untitled")))
+        summary = _strip_emoji(brief) if (brief and brief != title_cn) else _extract_meaningful_summary(item, title_cn)
         items.append({
             "num": f"{i:02d}",
-            "title": _strip_emoji(_tr_title(item.get("title", "Untitled"))),
+            "title": title_cn,
             "url": item.get("url", "#"),
             "meta": _clean_meta([item.get("category", ""), item.get("heat", ""), item.get("time", "")]),
-            "summary": _strip_emoji(brief) if brief else _tr_title(item.get("title", "Untitled")),
+            "summary": summary,
         })
     sections.append({"title": "技术趋势 (Tech Trends)", "src": "Hacker News + GitHub Trending", "items": items})
 
@@ -650,12 +710,14 @@ def generate_report(intel: dict, date_str: str) -> str:
     items = []
     for i, item in enumerate(capital_items, 1):
         brief = _signal_brief(item, "capital")
+        title_cn = _strip_emoji(_tr_title(item.get("title", "Untitled")))
+        summary = _strip_emoji(brief) if (brief and brief != title_cn) else _extract_meaningful_summary(item, title_cn)
         items.append({
             "num": f"{i:02d}",
-            "title": _strip_emoji(_tr_title(item.get("title", "Untitled"))),
+            "title": title_cn,
             "url": item.get("url", "#"),
             "meta": _clean_meta([item.get("category", ""), item.get("time", "")]),
-            "summary": _strip_emoji(brief) if brief else _tr_title(item.get("title", "Untitled")),
+            "summary": summary,
         })
     sections.append({"title": "资本动向 (Capital Flow)", "src": "36Kr + 华尔街见闻", "items": items})
 
@@ -683,12 +745,15 @@ def generate_report(intel: dict, date_str: str) -> str:
     items = []
     for i, item in enumerate(product_items, 1):
         is_grok = "grok-fallback" in (item.get("topics") or [])
+        _title = _strip_emoji(_tr_title(item.get("title", "Untitled")))
+        _tagline = _strip_emoji(_tr(item.get("tagline", "")))
+        _summary = _tagline if (_tagline and _tagline != _title) else _extract_meaningful_summary(item, _title)
         items.append({
             "num": f"{i:02d}",
-            "title": _strip_emoji(_tr_title(item.get("title", "Untitled"))),
+            "title": _title,
             "url": item.get("url", "#") if not is_grok else "",
             "meta": _clean_meta([item.get("heat", "")]),
-            "summary": _strip_emoji(_tr(item.get("tagline", ""))) or _tr_title(item.get("title", "")),
+            "summary": _summary,
         })
     sections.append({"title": "产品精选 (Product Gems)", "src": "Product Hunt Today", "items": items})
 
@@ -714,12 +779,15 @@ def generate_report(intel: dict, date_str: str) -> str:
     # --- Community ---
     items = []
     for i, item in enumerate(community_items, 1):
+        _title = _strip_emoji(_tr_title(item.get("title", "Untitled")))
+        _brief = _strip_emoji(_tr(item.get("analysis_brief", "") or ""))
+        _summary = _brief if (_brief and _brief != _title) else _extract_meaningful_summary(item, _title)
         items.append({
             "num": f"{i:02d}",
-            "title": _strip_emoji(_tr_title(item.get("title", "Untitled"))),
+            "title": _title,
             "url": item.get("url", "#"),
             "meta": _clean_meta([item.get("heat", "")]),
-            "summary": _strip_emoji(_tr(item.get("analysis_brief", "") or "") or _tr_title(item.get("title", ""))),
+            "summary": _summary,
         })
     sections.append({"title": "社区热点 (Community)", "src": "V2EX 热门", "items": items})
 
@@ -741,16 +809,15 @@ def generate_report(intel: dict, date_str: str) -> str:
             if GEMINI_AVAILABLE:
                 time.sleep(GEMINI_RATE_LIMIT_DELAY)
                 detail_cn = summarize_blog_article(source_text, mode="detail")
-        # 确保有摘要：拒绝元数据文本，fallback 到翻译标题
-        if brief_cn and not _is_metadata_text(brief_cn):
+        # 确保有摘要：拒绝元数据文本，使用智能 fallback（确保不等于标题）
+        title_cn = _strip_emoji(_tr_title(item.get("title", "Untitled")))
+        if brief_cn and not _is_metadata_text(brief_cn) and _strip_emoji(brief_cn) != title_cn:
             final_summary = _strip_emoji(brief_cn)
-        elif source_text and not _is_metadata_text(source_text):
-            final_summary = _tr(_strip_emoji(source_text[:150]))
         else:
-            final_summary = _tr_title(item.get("title", ""))
+            final_summary = _extract_meaningful_summary(item, title_cn)
         items.append({
             "num": f"{i:02d}",
-            "title": _strip_emoji(_tr_title(item.get("title", "Untitled"))),
+            "title": title_cn,
             "url": url,
             "meta": _clean_meta([item.get("author", ""), item.get("time", "")]),
             "summary": final_summary,
