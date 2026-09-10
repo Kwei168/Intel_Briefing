@@ -129,9 +129,18 @@ def _extract_meaningful_summary(item, title_cn):
     if parts:
         return "，".join(parts)
     
-    # 3. 最终 fallback: 翻译标题并附加来源信息
+    # 3. 最终 fallback: 标题 + 来源/分类信息
+    category = (item.get("category") or "").strip()
+    heat = (item.get("heat") or "").strip()
+    extras = []
+    if category and category != title_clean:
+        extras.append(category)
+    if heat:
+        extras.append(heat)
     if domain:
-        return f"{title_clean}（来源 {domain}）"
+        extras.append(f"来源 {domain}")
+    if extras:
+        return f"{title_clean} — {' / '.join(extras)}"
     return title_cn
 
 
