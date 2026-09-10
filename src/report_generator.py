@@ -106,9 +106,9 @@ def _is_metadata_text(text):
     md_link_count = len(re.findall(r'\[\]\s*\(|\[.*?\]\(https?://', stripped))
     if md_link_count >= 2:
         return True
-    # 国旗 emoji 密集（README 语言选择列表）
-    flag_emojis = re.findall(r'\U0001f1[\da-f]{2}\U0001f1[\da-f]{2}', stripped)
-    if len(flag_emojis) >= 3:
+    # 国旗 emoji 密集（README 语言选择列表 - regional indicator symbols）
+    regional_indicators = len(re.findall(r'[\U0001f1e6-\U0001f1ff]', stripped))
+    if regional_indicators >= 4:
         return True
     # 包含安装指令垃圾
     if re.search(r'复制/粘贴到您的|paste to your|copy/paste', stripped, re.IGNORECASE):
