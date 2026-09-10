@@ -54,6 +54,23 @@ def _has_cn(s):
     return bool(re.search(r"[\u4e00-\u9fff]", s or ""))
 
 
+def _clean_markdown_html(text):
+    """去除 Markdown/HTML 标记，返回纯文本（用于清洗 RSS 原始内容）。"""
+    if not text:
+        return ""
+    # 去除图片标记 ![alt](url)
+    text = re.sub(r'!\[[^\]]*\]\([^)]+\)', '', text)
+    # 去除链接标记 [text](url) → text
+    text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text)
+    # 去除 HTML 标签
+    text = re.sub(r'<[^>]+>', '', text)
+    # 去除 Markdown 格式符号
+    text = re.sub(r'[*_~`#>|]', '', text)
+    # 合并空白
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
+
 def _is_metadata_text(text):
     """检测文本是否为原始 RSS/网页元数据（非正文内容）。"""
     if not text:
@@ -101,6 +118,37 @@ def _extract_domain(url):
         return ""
 
 
+def _github_release_desc(url, title_cn, item):
+    """为 GitHub release 页面生成有意义的中文描述。"""
+    try:
+        from urllib.parse import urlparse
+        parsed = urlparse(url or "")
+        parts = [p for p in parsed.path.split("/") if p]
+        if len(parts) >= 2 and parts[1] == "releases":
+            owner, repo = parts[0], parts[2] if len(parts) > 2 else parts[0]
+            version = ""
+            if len(parts) > 4 and parts[3] == "tag":
+                version = parts[4]
+            elif len(parts) > 4 and parts[3] == "latest":
+                version = "latest"
+            desc = f"{repo} 发布了新版本"
+            if version:
+                desc = f"{repo} 发布 {version}"
+            # 尝试从 item 字段获取额外描述
+            tagline = (item.get("tagline") or "").strip()
+            description = (item.get("description") or "").strip()
+            for extra in [tagline, description]:
+                if extra and len(extra) > 15 and not _is_metadata_text(extra):
+                    cleaned = _tr(_clean_markdown_html(extra)[:200])
+                    if cleaned and not _is_metadata_text(cleaned):
+                        desc += f"。{cleaned}"
+                        break
+            return desc
+    except Exception:
+        pass
+    return ""
+
+
 def _is_source_only(text):
     """检测文本是否仅为来源/域名信息（无实质内容）。"""
     if not text:
@@ -140,44 +188,69 @@ def _extract_meaningful_summary(item, title_cn):
             if translated and translated != title_clean:
                 return _strip_emoji(translated)
     
-    # 2. 最终 fallback: 标题 + 来源上下文 + 域名描述（确保永远不等于纯标题）
-    author = (item.get("author") or "").strip()
-    domain = _extract_domain(item.get("url", ""))
-    category = (item.get("category") or "").strip()
-    heat = (item.get("heat") or "").strip()
+    # 2. 最终 fallback: 生成中文上下文描述（禁止元数据格式）
+    url = item.get("url", "")
+    domain = _extract_domain(url)
     tagline = (item.get("tagline") or "").strip()
-    extras = []
-    if category and category != title_clean:
-        extras.append(category)
-    if heat and not re.match(r'^0\s*(votes?|票|ups?)$', heat, re.IGNORECASE):
-        extras.append(heat)
-    if tagline and tagline != title_clean and not _is_metadata_text(tagline):
-        extras.append(_tr(tagline[:100]))
-    if domain:
-        # 用域名生成有意义的来源描述（而非裸域名）
-        domain_desc = {
-            "github.com": "开源项目",
-            "producthunt.com": "今日在 Product Hunt 发布",
-            "v2ex.com": "V2EX 社区讨论",
-            "techcrunch.com": "TechCrunch 报道",
-            "wallstreetcn.com": "华尔街见闻资讯",
-            "youtube.com": "视频内容",
-            "mp.weixin.qq.com": "微信公众号文章",
-            "apple.com": "Apple 官方",
-            "hackernews.com": "Hacker News 讨论",
-            "news.ycombinator.com": "Hacker News 讨论",
-            "36kr.com": "36氪报道",
-            "medium.com": "Medium 文章",
-            "substack.com": "Substack 专栏",
-            "twitter.com": "Twitter 讨论",
-            "x.com": "X/Twitter 讨论",
-        }.get(domain, f"{domain} 内容")
-        extras.append(domain_desc)
-    if author:
-        extras.append(f"作者 {_tr(author)}")
-    if extras:
-        return f"{title_clean} — {' / '.join(extras)}"
-    return f"{title_clean} — 今日情报精选"
+    description = (item.get("description") or "").strip()
+    author = (item.get("author") or "").strip()
+
+    # GitHub release 特殊处理
+    if "github.com" in domain and "/releases/" in url:
+        gh_desc = _github_release_desc(url, title_clean, item)
+        if gh_desc:
+            return gh_desc
+
+    # 域名 → 中文来源描述映射
+    domain_desc_map = {
+        "github.com": "开源项目",
+        "producthunt.com": "Product Hunt 产品",
+        "v2ex.com": "V2EX 社区讨论",
+        "techcrunch.com": "科技媒体报道",
+        "wallstreetcn.com": "华尔街见闻资讯",
+        "youtube.com": "视频内容",
+        "mp.weixin.qq.com": "微信公众号文章",
+        "36kr.com": "科技资讯",
+        "medium.com": "专栏文章",
+        "twitter.com": "社交媒体讨论",
+        "x.com": "社交媒体讨论",
+        "openai.com": "OpenAI 官方",
+        "deepmind.google": "Google DeepMind 研究",
+        "arxiv.org": "学术论文",
+        "nber.org": "经济研究论文",
+        "thehackernews.com": "网络安全资讯",
+        "technologyreview.com": "MIT 科技评论",
+        "simonwillison.net": "技术博客",
+        "blog.google": "Google 官方博客",
+        "aihot.news": "AI 资讯聚合",
+        "agihunt.info": "AI 基准评测",
+        "ersnet.org": "医学研究资讯",
+        "think-twice.me": "技术评论博客",
+    }
+
+    # 优先使用 tagline/description 生成有意义的中文描述
+    for text_field in [tagline, description]:
+        if text_field and len(text_field) > 10 and not _is_metadata_text(text_field):
+            cleaned = _clean_markdown_html(text_field)
+            if cleaned and len(cleaned) > 10 and not _is_metadata_text(cleaned):
+                translated = _tr(cleaned[:200])
+                if translated and not _is_metadata_text(translated) and translated != title_clean:
+                    return _strip_emoji(translated)
+
+    # 构造中文上下文描述
+    domain_desc = "资讯"
+    for d, desc in domain_desc_map.items():
+        if d in domain:
+            domain_desc = desc
+            break
+    if domain and domain_desc == "资讯":
+        domain_desc = f"{domain} 资讯"
+
+    desc = f"这是一则来自{domain_desc}的内容"
+    if author and not _is_metadata_text(author):
+        desc = f"作者 {_tr(author)} 分享了关于{domain_desc}的内容"
+
+    return desc
 
 
 def _is_meaningful_summary(summary, title_cn):
@@ -211,49 +284,58 @@ def _enhance_summary(item, title_cn, initial_summary, category=""):
     """当初始摘要不够有意义时，通过 Jina/DDG 抓取原文生成更好的摘要。"""
     if _is_meaningful_summary(initial_summary, title_cn):
         return initial_summary
-    
+
     url = item.get("url", "#")
     if not url or url == "#" or not url.startswith("http"):
-        return initial_summary or _extract_meaningful_summary(item, title_cn)
-    
-    # 跳过不适合抓取的 URL
-    skip_domains = {"youtube.com", "youtu.be", "twitter.com", "x.com", "producthunt.com"}
+        return _extract_meaningful_summary(item, title_cn)
+
     from urllib.parse import urlparse
     domain = (urlparse(url).hostname or "").replace("www.", "")
-    if domain in skip_domains:
-        return initial_summary or _extract_meaningful_summary(item, title_cn)
-    
-    # 通过 Jina/DDG 抓取内容
+
+    # GitHub release 页面特殊处理：尝试提取 release notes
+    if "github.com" in domain and "/releases/" in url:
+        gh_desc = _github_release_desc(url, title_cn, item)
+        if gh_desc and _is_meaningful_summary(gh_desc, title_cn):
+            return gh_desc
+        fetched = fetch_content_with_fallback(url, title=item.get("title", ""))
+        if fetched and len(fetched) > 100:
+            text = _clean_markdown_html(fetched[:3000])
+            sentences = re.split(r'(?<=[.。!！?？])\s+', text)
+            for sent in sentences:
+                sent = sent.strip()
+                if len(sent) >= 30 and not _is_metadata_text(sent):
+                    translated = _tr(sent[:200])
+                    if translated and not _is_metadata_text(translated):
+                        return translated
+        return gh_desc or _extract_meaningful_summary(item, title_cn)
+
+    # 通过 Jina/DDG 抓取内容（不再跳过任何域名，最差也有中文 fallback）
     title_raw = item.get("title", "")
     fetched = fetch_content_with_fallback(url, title=title_raw)
-    if not fetched or len(fetched) < 100:
-        return initial_summary or _extract_meaningful_summary(item, title_cn)
-    
-    # 从抓取的内容中提取前几个句子作为摘要
-    text = fetched[:2000].replace("\n", " ")
-    sentences = re.split(r'(?<=[.。!！?？])\s+', text)
-    summary_parts = []
-    total_len = 0
-    for sent in sentences:
-        sent = sent.strip()
-        if len(sent) < 10:
-            continue
-        if _is_metadata_text(sent):
-            continue
-        translated = _tr(sent[:200])
-        if translated and not _is_metadata_text(translated):
-            summary_parts.append(translated)
-            total_len += len(translated)
-            if total_len >= 150:
-                break
-    
-    if summary_parts:
-        result = " ".join(summary_parts)
-        if _is_meaningful_summary(result, title_cn):
-            return result
-    
-    # 最终 fallback
-    return initial_summary or _extract_meaningful_summary(item, title_cn)
+    if fetched and len(fetched) >= 100:
+        text = fetched[:2000].replace("\n", " ")
+        sentences = re.split(r'(?<=[.。!！?？])\s+', text)
+        summary_parts = []
+        total_len = 0
+        for sent in sentences:
+            sent = sent.strip()
+            if len(sent) < 10:
+                continue
+            if _is_metadata_text(sent):
+                continue
+            translated = _tr(sent[:200])
+            if translated and not _is_metadata_text(translated):
+                summary_parts.append(translated)
+                total_len += len(translated)
+                if total_len >= 150:
+                    break
+        if summary_parts:
+            result = " ".join(summary_parts)
+            if _is_meaningful_summary(result, title_cn):
+                return result
+
+    # 最终 fallback：中文上下文描述（不再是元数据格式）
+    return _extract_meaningful_summary(item, title_cn)
 
 
 def _fetch_bing_tokens():
@@ -848,6 +930,10 @@ def generate_report(intel: dict, date_str: str) -> str:
     items = []
     for i, item in enumerate(research_items, 1):
         summary = item.get("summary", "").replace("\n", " ")
+        # 去除 arXiv 元数据前缀（公告类型、摘要标签等）
+        summary = re.sub(r'^arXiv:[\d.]+v?\d*\s*(公告类型|Announcement type)[^：:]*[：:]\s*', '', summary)
+        summary = re.sub(r'^摘要[：:]\s*', '', summary)
+        summary = re.sub(r'^Abstract[：:]\s*', '', summary, flags=re.IGNORECASE)
         brief_cn = generate_brief(summary, category="research") if summary else ""
         if GEMINI_AVAILABLE and summary:
             time.sleep(GEMINI_RATE_LIMIT_DELAY)
@@ -904,8 +990,10 @@ def generate_report(intel: dict, date_str: str) -> str:
     items = []
     for i, item in enumerate(community_items, 1):
         _title = _strip_emoji(_tr_title(item.get("title", "Untitled")))
-        _brief = _strip_emoji(_tr(item.get("analysis_brief", "") or ""))
-        _initial_summary = _brief if (_brief and _brief != _title and not _is_source_only(_brief) and not _is_metadata_text(_brief)) else _extract_meaningful_summary(item, _title)
+        _brief_raw = item.get("analysis_brief", "") or ""
+        _brief_cleaned = _clean_markdown_html(_brief_raw)
+        _brief = _strip_emoji(_tr(_brief_cleaned))
+        _initial_summary = _brief if (_brief and len(_brief) > 15 and _brief != _title and not _is_source_only(_brief) and not _is_metadata_text(_brief)) else _extract_meaningful_summary(item, _title)
         _summary = _enhance_summary(item, _title, _initial_summary, category="community")
         items.append({
             "num": f"{i:02d}",
@@ -940,6 +1028,9 @@ def generate_report(intel: dict, date_str: str) -> str:
             final_summary = _strip_emoji(brief_cn)
         else:
             final_summary = _extract_meaningful_summary(item, title_cn)
+            # 确保 Insights 也不产生元数据格式
+            if not _is_meaningful_summary(final_summary, title_cn):
+                final_summary = _extract_meaningful_summary(item, title_cn)
         items.append({
             "num": f"{i:02d}",
             "title": title_cn,
