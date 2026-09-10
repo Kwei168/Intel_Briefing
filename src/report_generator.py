@@ -273,9 +273,20 @@ def _extract_meaningful_summary(item, title_cn):
     if domain and domain_desc == "资讯":
         domain_desc = f"{domain} 资讯"
 
-    # 用标题关键词构造更有用的描述
+    # 最终描述：禁止"关于XXX的YYY报道"（信息量为零）
     if title_clean and len(title_clean) > 5:
-        desc = f"关于{title_clean}的{domain_desc}报道"
+        if domain_desc == "开源项目":
+            desc = f"GitHub 开源项目：{title_clean}"
+        elif domain_desc == "视频内容":
+            desc = f"视频内容：{title_clean}"
+        elif domain_desc == "Product Hunt 产品":
+            desc = f"Product Hunt 新品：{title_clean}"
+        elif "论文" in domain_desc or "研究" in domain_desc:
+            desc = f"学术研究：{title_clean}"
+        elif domain_desc == "V2EX 社区讨论":
+            desc = f"V2EX 社区讨论话题：{title_clean}"
+        else:
+            desc = f"{title_clean}——{domain_desc}详细内容"
     elif author and not _is_metadata_text(author):
         desc = f"作者 {_tr(author)} 分享了关于{domain_desc}的内容"
     else:
@@ -340,11 +351,13 @@ def _enhance_summary(item, title_cn, initial_summary, category=""):
                         return translated
         return gh_desc or _extract_meaningful_summary(item, title_cn)
 
-    # 通过 Jina/DDG 抓取内容（最差也有中文 fallback）
-    # 注意：YouTube 的 Jina 抓取返回 UI 文本，但 DDG 搜索可获取视频描述
-    # fetch_content_with_fallback 已有 junk 检测，会自动降级到 DDG
+    # YouTube 域名跳过 Jina（总是返回 boilerplate UI 文本），直接用 DDG
+    skip_jina_domains = {"youtube.com", "youtu.be"}
     title_raw = item.get("title", "")
-    fetched = fetch_content_with_fallback(url, title=title_raw)
+    if domain in skip_jina_domains:
+        fetched = fetch_search_snippet(title_raw, url)
+    else:
+        fetched = fetch_content_with_fallback(url, title=title_raw)
     if fetched and len(fetched) >= 100:
         # 清洗 Markdown/HTML 标记
         text = _clean_markdown_html(fetched[:3000])
@@ -355,6 +368,8 @@ def _enhance_summary(item, title_cn, initial_summary, category=""):
             r'共享链接', r'share link', r'观看历史', r'watch history',
             r'确认', r'cancel', r'自定义拒绝', r'接受自定义',
             r'您已注销', r'电视推荐', r'取消确认', r'分享链接',
+            r'欣赏您喜爱的视频', r'upload original content',
+            r'与朋友.*家人.*全世界分享', r'friends, family and the world',
         ]
         junk_score = sum(1 for p in junk_patterns if re.search(p, text[:500], re.IGNORECASE))
         if junk_score >= 2:
@@ -371,7 +386,7 @@ def _enhance_summary(item, title_cn, initial_summary, category=""):
             if _is_metadata_text(sent):
                 continue
             # 跳过含垃圾模式指示的句子
-            if re.search(r'cookie|consent|隐私政策|同意|接受自定义|共享链接|观看历史', sent, re.IGNORECASE):
+            if re.search(r'cookie|consent|隐私政策|同意|接受自定义|共享链接|观看历史|欣赏您喜爱的视频|upload original content', sent, re.IGNORECASE):
                 continue
             translated = _tr(sent[:200])
             if translated and not _is_metadata_text(translated):
