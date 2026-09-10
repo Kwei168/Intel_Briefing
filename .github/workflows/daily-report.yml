@@ -29,9 +29,9 @@ jobs:
           python-version: '3.13'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt markdown
+        run: pip install -r requirements.txt
 
-      - name: Generate Morning Report
+      - name: Generate Morning Report (HTML)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
@@ -68,7 +68,7 @@ jobs:
             exit 0
           fi
           DATE=$(date -u +%Y-%m-%d)
-          REPORT="reports/daily_briefings/Morning_Report_${DATE}.md"
+          REPORT="reports/daily_briefings/Morning_Report_${DATE}.html"
           SUMMARIES="reports/summaries/${DATE}.json"
           if [ ! -f "$REPORT" ]; then
             echo "Report not found: $REPORT"

@@ -2,13 +2,18 @@
 # -*- coding: utf-8 -*-
 """
 Report Generator - 报告生成模块
-负责将情报数据转换为 Markdown 报告
+负责将情报数据直接转换为完整 HTML 页面。
+
+数据流: fetch_all_sources() → generate_report() → HTML 字符串
+不再有 Markdown 或 JSON 中间层。
 """
 
+import re
 import time
 import logging
 from collections import Counter, OrderedDict
 from datetime import datetime
+from html import escape as html_escape
 
 logger = logging.getLogger(__name__)
 
@@ -33,15 +38,243 @@ if not GEMINI_AVAILABLE:
     logger.info("Gemini translator not available, using English summaries.")
     def translate_to_chinese(text, max_chars=100):
         return text[:max_chars] + "..." if len(text) > max_chars else text
-
     def summarize_blog_article(content, mode="brief"):
         return ""
-
     def generate_brief(content, category="general"):
         return ""
-
     def generate_news_brief(title, content="", category="tech", _depth=0):
         return ""
+
+
+# ══════════════════════════════ HTML 模板 ═════════════════════════════
+
+HTML_TEMPLATE = r"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>%%TITLE%% - Intel Briefing</title>
+<script>try{var _t=localStorage.getItem('wb_starhub_theme_v1')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=_t;}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#faf9f7; --card:#fffdf9; --card-2:#f3efe6; --card-3:#ebe6db;
+  --ink:#1c1917; --muted:#5f594c; --faint:#6e685e;
+  --line:#ddd6c9; --line-strong:#b9b0a2;
+  --brand:#2f5d8a; --brand-strong:#24496e; --brand-line:#b9cde0; --brand-weak:#e7eef4;
+  --display:"Noto Serif SC","Georgia","Times New Roman","Songti SC","SimSun","STSong",serif;
+  --body:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono","SF Mono","Fira Code","Consolas",monospace;
+  --radius:8px;
+  --shadow:0 1px 2px rgba(28,25,23,.05);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.10),0 2px 4px rgba(0,0,0,.06);
+}
+[data-theme="dark"] {
+  --bg:#161412; --card:#1d1a17; --card-2:#262019; --card-3:#2f2820;
+  --ink:#ece7df; --muted:#a59d90; --faint:#a8a090;
+  --line:#37312a; --line-strong:#4a4339;
+  --brand:#8fb3d9; --brand-strong:#b0cbe6; --brand-line:#3d5a78; --brand-weak:#22303f;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.4);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; scroll-padding-top:112px; }
+body { font-family:var(--body); background:var(--bg); color:var(--ink); line-height:1.55; font-size:14px; -webkit-font-smoothing:antialiased; }
+a { color:inherit; text-decoration:none; }
+button { font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+::selection { background:var(--brand-weak); color:var(--ink); }
+button:focus-visible, a:focus-visible { outline:2px solid var(--brand); outline-offset:2px; border-radius:var(--radius); }
+
+header { position:sticky; top:0; z-index:40; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+[data-theme="dark"] header { background:rgba(22,20,18,.94); }
+.hd { max-width:860px; margin:0 auto; padding:9px 20px; display:flex; align-items:center; gap:12px; }
+.hd .logo { display:flex; align-items:center; gap:8px; flex:none; font-family:var(--display); font-weight:900; font-size:16px; }
+.hd .logo .sub { font-size:11px; color:var(--muted); font-weight:400; margin-left:2px; font-family:var(--body); }
+.hd .logo svg { color:var(--brand); }
+.hd .nav-links { display:flex; align-items:center; gap:2px; flex:1; }
+.hd .nav-links a { display:inline-flex; align-items:center; gap:5px; white-space:nowrap; padding:5px 12px; border-radius:999px; font-size:12.5px; font-weight:500; border:1px solid transparent; transition:all .15s; }
+.hd .nav-links a:hover { background:var(--card); border-color:var(--line); }
+.hd .nav-links a.active { background:var(--brand-weak); border-color:var(--brand-line); color:var(--brand-strong); font-weight:600; }
+.theme-btn { width:30px; height:30px; border-radius:999px; background:var(--card); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; flex:none; transition:all .15s; }
+.theme-btn:hover { border-color:var(--brand-line); color:var(--brand-strong); }
+.theme-btn svg { width:14px; height:14px; }
+.icon-moon { display:none; }
+[data-theme="dark"] .icon-sun { display:none; }
+[data-theme="dark"] .icon-moon { display:block; }
+.progress { position:absolute; left:0; bottom:-1px; height:2px; background:var(--brand); width:0%; z-index:41; }
+
+.mast { max-width:860px; margin:0 auto; padding:26px 20px 0; text-align:center; }
+.mast-rule { display:flex; align-items:center; gap:14px; margin:0 0 6px; }
+.mast-rule::before,.mast-rule::after { content:""; flex:1; height:1px; background:var(--line-strong); }
+.mast-rule span { font-family:var(--mono); font-size:11px; letter-spacing:.14em; color:var(--muted); font-weight:500; white-space:nowrap; }
+.mast-title { font-family:var(--display); font-size:clamp(30px,6vw,44px); font-weight:900; letter-spacing:.05em; line-height:1.2; margin:4px 0 10px; }
+.mast-strip { display:flex; flex-wrap:wrap; gap:4px 22px; justify-content:center; align-items:baseline; margin-top:6px; padding:9px 14px; border-top:3px double var(--line-strong); border-bottom:1px solid var(--line-strong); }
+.ms-item { font-size:12px; color:var(--muted); }
+.ms-item b { font-weight:600; color:var(--faint); font-size:10.5px; letter-spacing:.08em; margin-right:6px; }
+.ms-item i { font-family:var(--mono); font-style:normal; color:var(--ink); font-size:11.5px; }
+
+.toc { position:sticky; top:52px; z-index:30; max-width:860px; margin:14px auto 0; padding:8px 20px; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; }
+[data-theme="dark"] .toc { background:rgba(22,20,18,.94); }
+.toc-label { flex:none; font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; color:var(--faint); }
+.toc-chips { display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+.toc-chips::-webkit-scrollbar { display:none; }
+.toc-chip { flex:none; display:inline-flex; align-items:center; gap:5px; padding:3px 11px; border-radius:999px; border:1px solid var(--line); background:var(--card); font-size:12px; color:var(--muted); transition:all .15s; }
+.toc-chip:hover { border-color:var(--brand-line); color:var(--brand-strong); background:var(--brand-weak); }
+.toc-chip .n { font-family:var(--mono); font-size:10px; opacity:.75; }
+
+.paper { max-width:860px; margin:0 auto; padding:0 20px 56px; }
+.article { margin-top:26px; }
+
+.intel-section { margin:34px 0 0; }
+.sec-head { display:flex; align-items:center; gap:12px; padding-bottom:10px; border-bottom:1px solid var(--line); margin-bottom:14px; }
+.sec-head h2 { display:flex; align-items:center; gap:10px; font-family:var(--display); font-size:clamp(19px,2.6vw,24px); font-weight:700; line-height:1.3; margin:0; }
+.sec-head h2::before { content:""; flex:none; width:10px; height:10px; border-radius:2px; background:var(--brand); }
+.sec-count { margin-left:auto; flex:none; font-family:var(--mono); font-size:11px; color:var(--faint); }
+.sec-src { display:flex; align-items:center; gap:8px; margin:-4px 0 14px; font-family:var(--mono); font-size:11.5px; color:var(--muted); }
+.sec-src .src-label { flex:none; font-size:9.5px; font-weight:700; letter-spacing:.1em; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:4px; padding:1px 6px; }
+
+.intel-card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px 12px; margin:0 0 12px; transition:box-shadow .18s, border-color .18s, transform .18s; }
+.intel-card:hover { border-color:var(--brand-line); box-shadow:var(--shadow-lift); transform:translateY(-2px); }
+.ic-head { display:flex; align-items:flex-start; gap:10px; }
+.ic-num { flex:none; font-family:var(--mono); font-size:11px; font-weight:700; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:6px; padding:2px 7px; margin-top:2px; }
+.ic-head h3 { font-family:var(--display); font-size:15.5px; font-weight:700; line-height:1.5; margin:0; }
+.ic-head h3 a { color:var(--ink); transition:color .15s; border-bottom:none; }
+.ic-head h3 a:hover { color:var(--brand-strong); }
+.ic-summary { margin:10px 0 0; padding:9px 14px; background:var(--brand-weak); border-left:3px solid var(--brand); border-radius:0 var(--radius) var(--radius) 0; color:var(--muted); font-size:13px; line-height:1.75; }
+.ic-summary p { margin:0; }
+.ic-detail { margin-top:10px; font-size:13.5px; color:var(--ink); line-height:1.75; }
+.ic-foot { display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:10px; padding-top:9px; border-top:1px solid var(--line); font-size:11.5px; color:var(--muted); }
+.ic-foot a { color:var(--brand-strong); font-weight:600; border-bottom:none; }
+.ic-foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+
+.foot { margin-top:44px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; display:flex; flex-wrap:wrap; gap:6px 18px; justify-content:space-between; }
+.foot a { color:var(--brand-strong); font-weight:500; }
+.foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+.back-top { position:fixed; bottom:24px; right:24px; width:40px; height:40px; border-radius:50%; background:var(--card); border:1px solid var(--line); color:var(--muted); display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; pointer-events:none; transition:all .2s; z-index:90; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+.back-top.show { opacity:1; pointer-events:auto; }
+.back-top:hover { color:var(--brand-strong); border-color:var(--brand-line); background:var(--brand-weak); }
+.back-top svg { width:18px; height:18px; }
+
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { transition-duration:0s!important; animation-duration:0s!important; } }
+
+@media (max-width:700px) {
+  .hd { padding:8px 12px; }
+  .hd .nav-links a { padding:5px 9px; font-size:12px; }
+  .mast { padding:18px 14px 0; }
+  .mast-title { letter-spacing:.02em; }
+  .mast-rule span { font-size:10px; letter-spacing:.1em; }
+  .mast-rule { gap:8px; }
+  .mast-strip { gap:3px 14px; padding:8px 10px; }
+  .toc { top:50px; padding:7px 12px; gap:8px; }
+  .paper { padding:0 14px 48px; }
+  .intel-section { margin:26px 0 0; }
+  .sec-head h2 { font-size:18px; }
+  .intel-card { padding:12px 13px 10px; }
+  .ic-head { gap:8px; }
+  .ic-head h3 { font-size:14.5px; }
+  .ic-summary { font-size:12.5px; }
+  .back-top { bottom:16px; right:16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <a class="logo" href="../index.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="2.2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4"/><path d="M7.8 16.2a6 6 0 0 1 0-8.4"/><path d="M19.1 4.9a10 10 0 0 1 0 14.2"/><path d="M4.9 19.1a10 10 0 0 1 0-14.2"/></svg>
+      <span>Intel Briefing<span class="sub">情报日报</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="../index.html" class="active">日报归档</a>
+      <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub 收藏台</a>
+    </nav>
+    <button class="theme-btn" id="btnTheme" title="切换主题 (T)" aria-label="切换明暗主题">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M18.7 5.3 17 7M7 17l-1.7 1.7"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></svg>
+    </button>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<div class="mast">
+  <div class="mast-rule"><span>%%DATE%%</span><span>MORNING INTELLIGENCE BRIEFING</span></div>
+  <h1 class="mast-title">%%H1%%</h1>
+  <div class="mast-strip">%%META%%</div>
+</div>
+
+%%TOCNAV%%
+
+<div class="paper">
+  <article class="article">
+%%CONTENT%%
+  </article>
+  <footer class="foot">
+    <span>由 <a href="https://github.com/Kwei168/Intel_Briefing" target="_blank" rel="noopener">Intel_Briefing</a> 引擎自动生成</span>
+    <span>%%DATE%% &middot; 内容版权归原作者所有</span>
+    <span><a href="../index.html">返回归档</a> &middot; <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub</a></span>
+  </footer>
+</div>
+
+<button class="back-top" id="backTop" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+
+<script>
+;(function(){
+  var btn=document.getElementById('btnTheme');
+  function setTheme(t){
+    try{ localStorage.setItem('wb_starhub_theme_v1',t); }catch(e){}
+    document.documentElement.dataset.theme=t;
+  }
+  if(btn) btn.onclick=function(){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); };
+  document.addEventListener('keydown',function(e){
+    var t=e.target, tag=(t.tagName||'').toLowerCase();
+    if(tag==='input'||tag==='textarea'||t.isContentEditable) return;
+    if(e.key==='t'||e.key==='T'){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); }
+  });
+  var bar=document.getElementById('progress');
+  var backTop=document.getElementById('backTop');
+  function onScroll(){
+    var st=window.scrollY||document.documentElement.scrollTop||0;
+    var max=document.documentElement.scrollHeight-window.innerHeight;
+    if(bar) bar.style.width=(max>0?Math.min(100,st/max*100):0)+'%';
+    if(backTop) backTop.classList.toggle('show',st>400);
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+  if(backTop) backTop.onclick=function(){ window.scrollTo({top:0,behavior:'smooth'}); };
+})();
+</script>
+</body>
+</html>"""
+
+
+# ══════════════════════════════ 工具函数 ═════════════════════════════
+
+def _esc(s):
+    """HTML 转义。"""
+    return html_escape(str(s), quote=False)
+
+
+def _strip_emoji(text):
+    """去掉文本中的 emoji 字符（保留中英文、数字、标点）。"""
+    return re.sub(
+        '['
+        '\u200d\u203c\u2049\u20e0-\u20e3\u2122\u2139\u2194-\u21aa'
+        '\u231a-\u23ff\u24c2\u25aa-\u25fe\u2600-\u27bf\u2934-\u2935'
+        '\u2b05-\u2b55\u3030\u303d\u3297\u3299\ufe0f'
+        '\U0001f000-\U0001ffff'
+        ']',
+        '', text
+    ).strip()
+
+
+def _clean_meta(parts):
+    """清理元数据字段：去掉空值、strip emoji。"""
+    return [_strip_emoji(str(p)) for p in parts if p and str(p).strip()]
 
 
 def _select_diverse_items(items, limit, max_per_source=2):
@@ -94,8 +327,78 @@ def _signal_brief(item, category):
     return content[:240] if content else ""
 
 
+# ══════════════════════════════ HTML 渲染组件 ═════════════════════════════
+
+def _render_card(item):
+    """渲染单个条目卡片 HTML — 仅标题+摘要两个核心字段。"""
+    parts = ['<div class="intel-card">']
+    num = f'<span class="ic-num">{_esc(item["num"])}</span>' if item.get("num") else ''
+    title = _esc(item.get("title", ""))
+    url = item.get("url", "")
+    if url and url != "#":
+        title_html = f'<h3><a href="{_esc(url)}" target="_blank" rel="noopener">{title}</a></h3>'
+    else:
+        title_html = f'<h3>{title}</h3>'
+    parts.append(f'<div class="ic-head">{num}{title_html}</div>')
+    summary = item.get("summary", "")
+    if summary:
+        parts.append(f'<blockquote class="ic-summary"><p>{_esc(summary)}</p></blockquote>')
+    detail = item.get("detail", "")
+    if detail:
+        parts.append(f'<div class="ic-detail">{_esc(detail)}</div>')
+    parts.append('</div>')
+    return ''.join(parts)
+
+
+def _render_section(sec, idx):
+    """渲染一个章节 HTML。"""
+    out = [f'<section class="intel-section" id="sec-{idx}">']
+    count = len(sec.get("items", []))
+    out.append(f'<div class="sec-head"><h2>{_esc(sec["title"])}</h2><span class="sec-count">{count} 条</span></div>')
+    if sec.get("src"):
+        out.append(f'<div class="sec-src"><span class="src-label">SOURCES</span> {_esc(sec["src"])}</div>')
+    items = sec.get("items", [])
+    if not items and sec.get("empty_msg"):
+        out.append(f'<p style="color:var(--muted);font-size:13px;">{_esc(sec["empty_msg"])}</p>')
+    for item in items:
+        if item.get("content"):
+            out.append(f'<div class="intel-card"><div class="ic-body"><p>{_esc(item["content"])}</p></div></div>')
+        else:
+            out.append(_render_card(item))
+    out.append('</section>')
+    return ''.join(out)
+
+
+def _render_toc(sections):
+    """渲染章节目录导航。"""
+    chips = ''.join(
+        f'<a class="toc-chip" href="#sec-{i}">{_esc(s["title"])}<span class="n">{len(s.get("items",[]))}</span></a>'
+        for i, s in enumerate(sections, 1)
+    )
+    return f'<nav class="toc" aria-label="章节目录"><span class="toc-label">CONTENTS</span><div class="toc-chips">{chips}</div></nav>'
+
+
+def _render_meta_strip(data):
+    """渲染报头信息条。"""
+    spans = []
+    spans.append(f'<span class="ms-item"><b>生成时间</b><i>{_esc(data.get("generated_time",""))}</i></span>')
+    spans.append(f'<span class="ms-item"><b>数据源</b><i>{_esc(data.get("data_sources",""))}</i></span>')
+    total = data.get("total_items", 0)
+    if total:
+        spans.append(f'<span class="ms-item"><b>条目</b><i>{total} 条</i></span>')
+    prov = data.get("provenance", "")
+    if prov:
+        spans.append(f'<span class="ms-item"><b>StarHub</b><i>{_esc(prov)}</i></span>')
+    return ''.join(spans)
+
+
+# ══════════════════════════════ 主入口 ═════════════════════════════
+
 def generate_report(intel: dict, date_str: str) -> str:
-    """Generate magazine-style markdown report."""
+    """Generate complete HTML report directly from intelligence data.
+
+    Returns a full HTML string — no intermediate Markdown or JSON.
+    """
     tech_items = _select_diverse_items(intel.get("tech_trends", []), 10)
     capital_items = _select_diverse_items(intel.get("capital_flow", []), 10)
     research_items = _select_diverse_items(intel.get("research", []), 5)
@@ -103,258 +406,166 @@ def generate_report(intel: dict, date_str: str) -> str:
     community_items = _select_diverse_items(intel.get("community", []), 5)
     insights_items = _select_diverse_items(intel.get("insights", []), 5)
     selected_by_category = {
-        "tech_trends": tech_items,
-        "capital_flow": capital_items,
-        "research": research_items,
-        "product_gems": product_items,
-        "community": community_items,
-        "social": [],
-        "insights": insights_items,
+        "tech_trends": tech_items, "capital_flow": capital_items,
+        "research": research_items, "product_gems": product_items,
+        "community": community_items, "social": [], "insights": insights_items,
     }
     for category, selected in selected_by_category.items():
         for item in selected:
             if item.get("starhub"):
                 _signal_brief(item, category)
-    lines = [
-        f"# 🌐 全球情报日报 (Global Intel Briefing)",
-        f"**日期:** {date_str}",
-        f"**生成时间:** {datetime.now().strftime('%H:%M')}",
-        f"**数据源:** HN, GitHub, 36Kr, WallStreetCN, V2EX, PH, ArXiv, X, TechCrunch, MIT TR + StarHub (716 RSS)",
-        "",
-        "---",
-        ""
-    ]
+
+    sections = []
 
     # --- Tech Trends ---
-    lines.append("## 🛠️ 技术趋势 (Tech Trends)")
-    lines.append("> Hacker News + GitHub Trending\n")
-
-    if tech_items:
-        for i, item in enumerate(tech_items, 1):
-            title = item.get("title", "Untitled")
-            url = item.get("url", "#")
-            heat = item.get("heat", "")
-            time_str = item.get("time", "")
-            cat = item.get("category", "")
-
-            lines.append(f"### {i}. [{title}]({url})")
-            lines.append(f"📍 {cat} | 🔥 {heat} | 🕒 {time_str}")
-            brief = _signal_brief(item, "tech")
-            if brief:
-                lines.append(f"> ⚡ {brief}")
-            lines.append("")
-    else:
-        lines.append("*暂无数据*\n")
+    items = []
+    for i, item in enumerate(tech_items, 1):
+        brief = _signal_brief(item, "tech")
+        items.append({
+            "num": f"{i:02d}",
+            "title": _strip_emoji(item.get("title", "Untitled")),
+            "url": item.get("url", "#"),
+            "meta": _clean_meta([item.get("category", ""), item.get("heat", ""), item.get("time", "")]),
+            "summary": _strip_emoji(brief) if brief else "",
+        })
+    sections.append({"title": "技术趋势 (Tech Trends)", "src": "Hacker News + GitHub Trending", "items": items})
 
     # --- Capital Flow ---
-    lines.append("## 💰 资本动向 (Capital Flow)")
-    lines.append("> 36Kr + 华尔街见闻\n")
+    items = []
+    for i, item in enumerate(capital_items, 1):
+        brief = _signal_brief(item, "capital")
+        items.append({
+            "num": f"{i:02d}",
+            "title": _strip_emoji(item.get("title", "Untitled")),
+            "url": item.get("url", "#"),
+            "meta": _clean_meta([item.get("category", ""), item.get("time", "")]),
+            "summary": _strip_emoji(brief) if brief else "",
+        })
+    sections.append({"title": "资本动向 (Capital Flow)", "src": "36Kr + 华尔街见闻", "items": items})
 
-    if capital_items:
-        for i, item in enumerate(capital_items, 1):
-            title = item.get("title", "Untitled")
-            url = item.get("url", "#")
-            time_str = item.get("time", "")
-            cat = item.get("category", "")
-
-            lines.append(f"### {i}. [{title}]({url})")
-            lines.append(f"📍 {cat} | 🕒 {time_str}")
-            brief = _signal_brief(item, "capital")
-            if brief:
-                lines.append(f"> ⚡ {brief}")
-            lines.append("")
-    else:
-        lines.append("*暂无数据*\n")
-
-    # --- Research (ArXiv) ---
-    lines.append("## 📚 学术前沿 (Research)")
-    lines.append("> ArXiv AI/ML Papers\n")
-
-    if research_items:
-        for i, item in enumerate(research_items, 1):
-            title = item.get("title", "Untitled")
-            url = item.get("url", "#")
-            authors = item.get("authors", "")
-            time_str = item.get("time", "")
-            summary = item.get("summary", "").replace("\n", " ")
-
-            # Two-Tier Summary Logic
-            # 1. Brief: 编辑风格摘要（80-120字，有主角有判断）
-            brief_cn = generate_brief(summary, category="research") if summary else ""
-            
-            # 添加延迟以避免 API 限速
-            if GEMINI_AVAILABLE and summary:
-                time.sleep(GEMINI_RATE_LIMIT_DELAY)
-            
-            # 2. Detail: 完整翻译（允许完整输出）
-            detail_cn = translate_to_chinese(summary, max_chars=1200) if summary else ""
-
-            lines.append(f"### {i}. [{title}]({url})")
-            if brief_cn:
-                lines.append(f"> ⚡ {brief_cn}")
-
-            lines.append(f"👤 {authors} | 📅 {time_str}")
-
-            if detail_cn:
-                lines.append("")
-                lines.append(f"**详情:** {detail_cn}")
-
-            lines.append("")
-    else:
-        lines.append("*暂无数据*\n")
+    # --- Research ---
+    items = []
+    for i, item in enumerate(research_items, 1):
+        summary = item.get("summary", "").replace("\n", " ")
+        brief_cn = generate_brief(summary, category="research") if summary else ""
+        if GEMINI_AVAILABLE and summary:
+            time.sleep(GEMINI_RATE_LIMIT_DELAY)
+        detail_cn = translate_to_chinese(summary, max_chars=1200) if summary else ""
+        items.append({
+            "num": f"{i:02d}",
+            "title": _strip_emoji(item.get("title", "Untitled")),
+            "url": item.get("url", "#"),
+            "meta": _clean_meta([item.get("authors", ""), item.get("time", "")]),
+            "summary": _strip_emoji(brief_cn) if brief_cn else "",
+            "detail": _strip_emoji(detail_cn) if detail_cn else "",
+        })
+    sections.append({"title": "学术前沿 (Research)", "src": "ArXiv AI/ML Papers", "items": items})
 
     # --- Product Gems ---
-    lines.append("## 💎 产品精选 (Product Gems)")
-    lines.append("> Product Hunt Today\n")
+    items = []
+    for i, item in enumerate(product_items, 1):
+        is_grok = "grok-fallback" in (item.get("topics") or [])
+        items.append({
+            "num": f"{i:02d}",
+            "title": _strip_emoji(item.get("title", "Untitled")),
+            "url": item.get("url", "#") if not is_grok else "",
+            "meta": _clean_meta([item.get("heat", "")]),
+            "summary": _strip_emoji(item.get("tagline", "")),
+        })
+    sections.append({"title": "产品精选 (Product Gems)", "src": "Product Hunt Today", "items": items})
 
-    if product_items:
-        for i, item in enumerate(product_items, 1):
-            title = item.get("title", "Untitled")
-            url = item.get("url", "#")
-            heat = item.get("heat", "")
-            tagline = item.get("tagline", "")
-            grok_review = item.get("grok_review")
-            topics = item.get("topics", [])
-
-            # Anti-hallucination: Grok fallback URLs are guessed slugs, not real links
-            is_grok_fallback = "grok-fallback" in topics
-            if is_grok_fallback:
-                from urllib.parse import quote
-                search_url = f"https://www.google.com/search?q=site:producthunt.com+{quote(title)}"
-                lines.append(f"### {i}. {title}")
-                lines.append(f"> {tagline}")
-                lines.append(f"⚠️ *链接未验证 (AI 推断)* | [🔍 搜索验证]({search_url})")
-            else:
-                lines.append(f"### {i}. [{title}]({url})")
-                lines.append(f"> {tagline}")
-                lines.append(f"🔥 {heat}")
-            lines.append("")
-
-            analysis_brief = item.get("analysis_brief", "")
-            if analysis_brief:
-                lines.append(f"> ⚡ {analysis_brief}")
-                lines.append("")
-            if grok_review:
-                lines.append(f"> **🦅 Grok 舆情核查**: {grok_review}")
-                lines.append("")
-    else:
-        lines.append("*暂无数据 (Product Hunt API 可能需要配置)*\n")
-
-    # --- Social (X/Twitter) ---
-    lines.append("## 🐦 社交热议 (Social)")
-    lines.append("> X (Twitter) - AI/Tech Discussions\n")
-
+    # --- Social ---
+    social_items = []
     if intel.get("social"):
         for item in intel["social"]:
             if item.get("type") == "markdown_report":
-                lines.append(f"> 来源: {item.get('source', 'X')}\n")
-                lines.append(item.get("content", "*无内容*"))
-                lines.append("")
+                social_items.append({"content": item.get("content", ""), "source": item.get("source", "X")})
             else:
-                title = item.get("title", "")
-                url = item.get("url", "#")
-                author = item.get("author", "")
-                heat = item.get("heat", "")
-
-                lines.append(f"### {author}")
-                lines.append(f"> {title}")
-                lines.append(f"❤️ {heat} | 🔗 [Link]({url})")
-                lines.append("")
-    else:
-        lines.append("*暂无数据 (需要配置 XAI_API_KEY)*\n")
+                social_items.append({
+                    "num": "",
+                    "title": _strip_emoji(item.get("author", "")),
+                    "url": item.get("url", "#"),
+                    "meta": _clean_meta([item.get("heat", "")]),
+                    "summary": _strip_emoji(item.get("title", "")),
+                })
+    sections.append({
+        "title": "社交热议 (Social)", "src": "X (Twitter) - AI/Tech Discussions",
+        "items": social_items, "empty_msg": "暂无数据 (需要配置 XAI_API_KEY)",
+    })
 
     # --- Community ---
-    lines.append("## 🗣️ 社区热点 (Community)")
-    lines.append("> V2EX 热门\n")
+    items = []
+    for i, item in enumerate(community_items, 1):
+        items.append({
+            "num": f"{i:02d}",
+            "title": _strip_emoji(item.get("title", "Untitled")),
+            "url": item.get("url", "#"),
+            "meta": _clean_meta([item.get("heat", "")]),
+            "summary": _strip_emoji(item.get("analysis_brief", "") or ""),
+        })
+    sections.append({"title": "社区热点 (Community)", "src": "V2EX 热门", "items": items})
 
-    if community_items:
-        for i, item in enumerate(community_items, 1):
-            title = item.get("title", "Untitled")
-            url = item.get("url", "#")
-            heat = item.get("heat", "")
+    # --- Insights ---
+    items = []
+    for i, item in enumerate(insights_items, 1):
+        url = item.get("url", "#")
+        rss_content = item.get("content", "").replace("\n", " ")
+        source_text = ""
+        if JINA_AVAILABLE and url and url.startswith("http"):
+            full_content = fetch_full_content(url)
+            if full_content and len(full_content) > 200:
+                source_text = full_content
+        if not source_text and rss_content:
+            source_text = rss_content
+        brief_cn = detail_cn = ""
+        if source_text and GEMINI_AVAILABLE:
+            brief_cn = summarize_blog_article(source_text, mode="brief")
+            time.sleep(GEMINI_RATE_LIMIT_DELAY)
+            detail_cn = summarize_blog_article(source_text, mode="detail")
+        items.append({
+            "num": f"{i:02d}",
+            "title": _strip_emoji(item.get("title", "Untitled")),
+            "url": url,
+            "meta": _clean_meta([item.get("author", ""), item.get("time", "")]),
+            "summary": _strip_emoji(brief_cn) if brief_cn else "",
+            "detail": _strip_emoji(detail_cn) if detail_cn else "",
+        })
+    sections.append({"title": "深度洞察 (Insights)", "src": "HN Top Blogs + MIT Technology Review", "items": items})
 
-            lines.append(f"### {i}. [{title}]({url})")
-            lines.append(f"💬 {heat}")
-            if item.get("analysis_brief"):
-                lines.append(f"> ⚡ {item['analysis_brief']}")
-            lines.append("")
-    else:
-        lines.append("*暂无数据*\n")
+    total_items = sum(len(s["items"]) for s in sections)
 
+    # --- Provenance ---
+    prov = intel.get("_provenance", {}).get("starhub", {})
+    prov_line = ""
+    if prov.get("enabled") and prov.get("snapshot_sources"):
+        routed = prov.get("routed", {})
+        prov_line = f"StarHub {prov['snapshot_sources']} 源 / {prov['snapshot_items']} 条 → 适配 {prov['adapted_items']} 条 → 路由 " + ", ".join(f"{k}={v}" for k, v in sorted(routed.items()))
 
+    # --- 组装 HTML ---
+    generated_time = datetime.now().strftime("%H:%M")
+    data_sources = "HN, GitHub, 36Kr, WallStreetCN, V2EX, PH, ArXiv, X, TechCrunch, MIT TR + StarHub (716 RSS)"
 
-    # --- Insights (HN Top Blogs) ---
-    lines.append("## 💡 深度洞察 (Insights)")
-    lines.append("> HN Top Blogs + MIT Technology Review — 精选深度分析\n")
+    meta_data = {
+        "generated_time": generated_time,
+        "data_sources": data_sources,
+        "total_items": total_items,
+        "provenance": prov_line,
+    }
 
-    if insights_items:
-        for i, item in enumerate(insights_items, 1):
-            title = item.get("title", "Untitled")
-            url = item.get("url", "#")
-            author = item.get("author", "")
-            time_str = item.get("time", "")
-            rss_content = item.get("content", "").replace("\n", " ")
+    toc_html = _render_toc(sections)
+    content_parts = [_render_section(sec, i) for i, sec in enumerate(sections, 1)]
+    content_html = ''.join(content_parts)
+    meta_html = _render_meta_strip(meta_data)
 
-            # Jina full-content analysis
-            source_text = ""
-            if JINA_AVAILABLE and url and url.startswith("http"):
-                logger.info(f"[Insights {i}] Fetching full content via Jina...")
-                full_content = fetch_full_content(url)
-                if full_content and len(full_content) > 200:
-                    source_text = full_content
-                    logger.info(f"[Insights {i}] Using Jina full content ({len(source_text)} chars)")
-
-            if not source_text and rss_content:
-                source_text = rss_content
-                logger.debug(f"[Insights {i}] Fallback to RSS content ({len(source_text)} chars)")
-
-            brief_cn = ""
-            detail_cn = ""
-            if source_text and GEMINI_AVAILABLE:
-                brief_cn = summarize_blog_article(source_text, mode="brief")
-                time.sleep(GEMINI_RATE_LIMIT_DELAY)
-                detail_cn = summarize_blog_article(source_text, mode="detail")
-
-            lines.append(f"### {i}. [{title}]({url})")
-            if brief_cn:
-                lines.append(f"> ⚡ {brief_cn}")
-
-            lines.append(f"📍 {author}{' | 📅 ' + time_str if time_str else ''}")
-
-            if detail_cn:
-                lines.append("")
-                lines.append(f"**详情:** {detail_cn}")
-
-            lines.append("")
-    else:
-        lines.append("*暂无数据 (HN Blogs 传感器不可用)*\n")
-
-        
-
-    provenance = intel.get("_provenance", {}).get("starhub", {})
-    if provenance.get("enabled") and provenance.get("snapshot_sources"):
-        selected = {
-            category: sum(1 for item in items if item.get("starhub"))
-            for category, items in selected_by_category.items()
-        }
-        selected = {category: count for category, count in selected.items() if count}
-        analysis = Counter(
-            item.get("_analysis_stage", "unprocessed")
-            for items in selected_by_category.values()
-            for item in items
-            if item.get("starhub")
-        )
-        provenance["selected"] = selected
-        provenance["analysis"] = dict(analysis)
-        logger.info("[TRACE] StarHub selected=%s analysis=%s", selected, dict(analysis))
-        routed = provenance.get("routed", {})
-        routed_text = ", ".join(f"{k}={v}" for k, v in sorted(routed.items()))
-        lines.append(f"**分析溯源:** StarHub {provenance['snapshot_sources']} 源 / {provenance['snapshot_items']} 条 → 适配 {provenance['adapted_items']} 条 → 路由 {routed_text}")
-        lines.append("")
-    lines.append("---")
-    lines.append("*报告由 Unified Intelligence Engine V2 自动生成 (含 StarHub 716 RSS 源分析)*")
-
-    return "\n".join(lines)
+    title = f"{date_str} 情报日报"
+    page = (HTML_TEMPLATE
+            .replace('%%TITLE%%', title)
+            .replace('%%DATE%%', date_str)
+            .replace('%%H1%%', '全球情报日报')
+            .replace('%%META%%', meta_html)
+            .replace('%%TOCNAV%%', toc_html)
+            .replace('%%CONTENT%%', content_html))
+    return page
 
 
 __all__ = ['generate_report']
