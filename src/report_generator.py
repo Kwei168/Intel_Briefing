@@ -90,6 +90,17 @@ def _extract_domain(url):
         return ""
 
 
+def _is_source_only(text):
+    """检测文本是否仅为来源/域名信息（无实质内容）。"""
+    if not text:
+        return True
+    stripped = text.strip()
+    # 匹配 "来源 xxx.com" 或 "source: xxx" 模式
+    if re.match(r'^(来源|source|via|from)\s+\S+$', stripped, re.IGNORECASE):
+        return True
+    return False
+
+
 def _extract_meaningful_summary(item, title_cn):
     """从条目的多个字段中提取有意义的摘要文本（确保不等于标题）。
     
@@ -705,7 +716,7 @@ def generate_report(intel: dict, date_str: str) -> str:
     for i, item in enumerate(tech_items, 1):
         brief = _signal_brief(item, "tech")
         title_cn = _strip_emoji(_tr_title(item.get("title", "Untitled")))
-        summary = _strip_emoji(brief) if (brief and brief != title_cn) else _extract_meaningful_summary(item, title_cn)
+        summary = _strip_emoji(brief) if (brief and brief != title_cn and not _is_source_only(brief)) else _extract_meaningful_summary(item, title_cn)
         items.append({
             "num": f"{i:02d}",
             "title": title_cn,
@@ -720,7 +731,7 @@ def generate_report(intel: dict, date_str: str) -> str:
     for i, item in enumerate(capital_items, 1):
         brief = _signal_brief(item, "capital")
         title_cn = _strip_emoji(_tr_title(item.get("title", "Untitled")))
-        summary = _strip_emoji(brief) if (brief and brief != title_cn) else _extract_meaningful_summary(item, title_cn)
+        summary = _strip_emoji(brief) if (brief and brief != title_cn and not _is_source_only(brief)) else _extract_meaningful_summary(item, title_cn)
         items.append({
             "num": f"{i:02d}",
             "title": title_cn,
@@ -756,7 +767,7 @@ def generate_report(intel: dict, date_str: str) -> str:
         is_grok = "grok-fallback" in (item.get("topics") or [])
         _title = _strip_emoji(_tr_title(item.get("title", "Untitled")))
         _tagline = _strip_emoji(_tr(item.get("tagline", "")))
-        _summary = _tagline if (_tagline and _tagline != _title) else _extract_meaningful_summary(item, _title)
+        _summary = _tagline if (_tagline and _tagline != _title and not _is_source_only(_tagline)) else _extract_meaningful_summary(item, _title)
         items.append({
             "num": f"{i:02d}",
             "title": _title,
@@ -790,7 +801,7 @@ def generate_report(intel: dict, date_str: str) -> str:
     for i, item in enumerate(community_items, 1):
         _title = _strip_emoji(_tr_title(item.get("title", "Untitled")))
         _brief = _strip_emoji(_tr(item.get("analysis_brief", "") or ""))
-        _summary = _brief if (_brief and _brief != _title) else _extract_meaningful_summary(item, _title)
+        _summary = _brief if (_brief and _brief != _title and not _is_source_only(_brief)) else _extract_meaningful_summary(item, _title)
         items.append({
             "num": f"{i:02d}",
             "title": _title,
