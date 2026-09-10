@@ -14,6 +14,9 @@
 # === 不收：本地运行产物 / 缓存 / 归档 ===
 # 生成的日报（你的私有情报）
 reports/
+# 但保留 GitHub Pages 部署产物（历史报告持久化）
+!docs/reports/
+!docs/reports.json
 # 归档的旧杂物
 .archive/
 # pip install -e . 的产物

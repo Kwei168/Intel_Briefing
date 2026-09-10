@@ -54,6 +54,24 @@ def _has_cn(s):
     return bool(re.search(r"[\u4e00-\u9fff]", s or ""))
 
 
+def _is_metadata_text(text):
+    """检测文本是否为原始 RSS/网页元数据（非正文内容）。"""
+    if not text:
+        return True
+    stripped = text.strip()
+    if len(stripped) < 30:
+        return True
+    metadata_patterns = [
+        r'^(Title|URL|Source|Published|Published Time|Warning|Markdown|Author|Date|Description)\s*:',
+        r'^URL\s+Source\s*:',
+        r'^已发布\s+Time',
+    ]
+    for pat in metadata_patterns:
+        if re.search(pat, stripped, re.IGNORECASE):
+            return True
+    return False
+
+
 def _fetch_bing_tokens():
     """访问 bing.com/translator 提取防滥用 token。"""
     global _BING_TOKENS
@@ -515,7 +533,7 @@ def _signal_brief(item, category):
             item["_analysis_stage"] = "gemini_news_brief"
             return brief
     item["_analysis_stage"] = "rss_fallback" if item.get("starhub") else "source_summary"
-    if content:
+    if content and not _is_metadata_text(content):
         return _tr(content[:240])
     return ""
 
@@ -718,8 +736,13 @@ def generate_report(intel: dict, date_str: str) -> str:
             if GEMINI_AVAILABLE:
                 time.sleep(GEMINI_RATE_LIMIT_DELAY)
                 detail_cn = summarize_blog_article(source_text, mode="detail")
-        # 确保有摘要
-        final_summary = _strip_emoji(brief_cn) if brief_cn else _tr(source_text[:150]) if source_text else _tr_title(item.get("title", ""))
+        # 确保有摘要：拒绝元数据文本，fallback 到翻译标题
+        if brief_cn and not _is_metadata_text(brief_cn):
+            final_summary = _strip_emoji(brief_cn)
+        elif source_text and not _is_metadata_text(source_text):
+            final_summary = _tr(_strip_emoji(source_text[:150]))
+        else:
+            final_summary = _tr_title(item.get("title", ""))
         items.append({
             "num": f"{i:02d}",
             "title": _strip_emoji(_tr_title(item.get("title", "Untitled"))),
