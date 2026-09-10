@@ -339,6 +339,7 @@ def _enhance_summary(item, title_cn, initial_summary, category=""):
             r'同意', r'接受', r'禁用', r'disable', r'preferences',
             r'共享链接', r'share link', r'观看历史', r'watch history',
             r'确认', r'cancel', r'自定义拒绝', r'接受自定义',
+            r'您已注销', r'电视推荐', r'取消确认', r'分享链接',
         ]
         junk_score = sum(1 for p in junk_patterns if re.search(p, text[:500], re.IGNORECASE))
         if junk_score >= 3:
