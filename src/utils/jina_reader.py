@@ -96,8 +96,7 @@ def is_junk_content(text: str) -> bool:
 def fetch_search_snippet(title: str, url: str, timeout: int = 8) -> Optional[str]:
     """
     Fetch article description from DuckDuckGo Lite search results.
-    When Jina fails (Cloudflare/403), search engines usually have a cached snippet.
-    Ported from the companion PWA frontend's summary-generation logic.
+    Tries site:domain first, then broader search without domain restriction.
 
     Args:
         title: Article title
@@ -110,37 +109,41 @@ def fetch_search_snippet(title: str, url: str, timeout: int = 8) -> Optional[str
     if not title:
         return None
     
-    try:
-        from urllib.parse import urlparse, quote
-        domain = urlparse(url).hostname or ""
-        query = quote(f"{title} site:{domain}")
-        search_url = f"https://html.duckduckgo.com/html/?q={query}"
-        
-        print(f"    [DDG] Searching snippet for: {title[:40]}...")
-        
-        with httpx.Client(timeout=timeout) as client:
-            response = client.get(
-                search_url,
-                headers={"User-Agent": "Mozilla/5.0 (compatible; IntelBriefing/1.0)"}
-            )
+    import re
+    from urllib.parse import urlparse, quote
+    
+    # Try two queries: site-specific first, then broader
+    domain = urlparse(url).hostname or ""
+    queries = []
+    if domain:
+        queries.append(("site:", quote(f"{title} site:{domain}")))
+    queries.append(("broad", quote(title)))
+    
+    for label, query in queries:
+        try:
+            search_url = f"https://html.duckduckgo.com/html/?q={query}"
+            print(f"    [DDG-{label}] Searching: {title[:40]}...")
             
-            if response.status_code != 200:
-                return None
-            
-            html = response.text
-            # DuckDuckGo Lite returns results in <a class="result__snippet"> elements
-            import re
-            snippet_match = re.search(r'class="result__snippet"[^>]*>([^<]+)', html)
-            if snippet_match:
-                snippet = snippet_match.group(1).strip()
-                if len(snippet) > 30:
-                    print(f"    [DDG] Got snippet ({len(snippet)} chars)")
-                    return snippet[:1000]
-        
-        return None
-    except Exception:
-        logger.exception("DDG search failed")
-        return None
+            with httpx.Client(timeout=timeout) as client:
+                response = client.get(
+                    search_url,
+                    headers={"User-Agent": "Mozilla/5.0 (compatible; IntelBriefing/1.0)"}
+                )
+                
+                if response.status_code != 200:
+                    continue
+                
+                html = response.text
+                snippet_match = re.search(r'class="result__snippet"[^>]*>([^<]+)', html)
+                if snippet_match:
+                    snippet = snippet_match.group(1).strip()
+                    if len(snippet) > 30:
+                        print(f"    [DDG-{label}] Got snippet ({len(snippet)} chars)")
+                        return snippet[:1000]
+        except Exception:
+            continue
+    
+    return None
 
 
 def fetch_content_with_fallback(url: str, title: str = "") -> Optional[str]:

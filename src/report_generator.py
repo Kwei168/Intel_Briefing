@@ -102,6 +102,17 @@ def _is_metadata_text(text):
     urls = re.findall(r'https?://\S+', stripped)
     if len(urls) >= 2 and len(re.sub(r'https?://\S+', '', stripped).strip()) < 30:
         return True
+    # Markdown/README 垃圾内容检测
+    md_link_count = len(re.findall(r'\[\]\s*\(|\[.*?\]\(https?://', stripped))
+    if md_link_count >= 2:
+        return True
+    # 国旗 emoji 密集（README 语言选择列表）
+    flag_emojis = re.findall(r'\U0001f1[\da-f]{2}\U0001f1[\da-f]{2}', stripped)
+    if len(flag_emojis) >= 3:
+        return True
+    # 包含安装指令垃圾
+    if re.search(r'复制/粘贴到您的|paste to your|copy/paste', stripped, re.IGNORECASE):
+        return True
     return False
 
 
@@ -253,7 +264,7 @@ def _extract_meaningful_summary(item, title_cn):
         except Exception:
             pass
 
-    # 构造中文上下文描述
+    # 构造中文上下文描述（尽量提供有用信息）
     domain_desc = "资讯"
     for d, desc in domain_desc_map.items():
         if d in domain:
@@ -262,9 +273,13 @@ def _extract_meaningful_summary(item, title_cn):
     if domain and domain_desc == "资讯":
         domain_desc = f"{domain} 资讯"
 
-    desc = f"这是一则来自{domain_desc}的内容"
-    if author and not _is_metadata_text(author):
+    # 用标题关键词构造更有用的描述
+    if title_clean and len(title_clean) > 5:
+        desc = f"关于{title_clean}的{domain_desc}报道"
+    elif author and not _is_metadata_text(author):
         desc = f"作者 {_tr(author)} 分享了关于{domain_desc}的内容"
+    else:
+        desc = f"这是一则来自{domain_desc}的内容"
 
     return desc
 
@@ -342,8 +357,8 @@ def _enhance_summary(item, title_cn, initial_summary, category=""):
             r'您已注销', r'电视推荐', r'取消确认', r'分享链接',
         ]
         junk_score = sum(1 for p in junk_patterns if re.search(p, text[:500], re.IGNORECASE))
-        if junk_score >= 3:
-            # 内容大部分是垃圾，跳过
+        if junk_score >= 2:
+            # 内容大部分是垃圾（降低阈值：2个匹配即判定为垃圾）
             return _extract_meaningful_summary(item, title_cn)
         
         sentences = re.split(r'(?<=[.。!！?？])\s+', text)
@@ -974,7 +989,12 @@ def generate_report(intel: dict, date_str: str) -> str:
             time.sleep(GEMINI_RATE_LIMIT_DELAY)
         detail_cn = translate_to_chinese(summary, max_chars=1200) if summary else ""
         # 确保有摘要：fallback 到翻译后的原文
-        final_summary = _strip_emoji(brief_cn) if brief_cn else (_strip_emoji(detail_cn[:200]) if detail_cn else _tr_title(item.get("title", "")))
+        _raw_summary = _strip_emoji(brief_cn) if brief_cn else (_strip_emoji(detail_cn[:200]) if detail_cn else "")
+        if _raw_summary and _is_meaningful_summary(_raw_summary, _strip_emoji(_tr_title(item.get("title", "")))):
+            final_summary = _raw_summary
+        else:
+            _initial = _extract_meaningful_summary(item, _strip_emoji(_tr_title(item.get("title", ""))))
+            final_summary = _enhance_summary(item, _strip_emoji(_tr_title(item.get("title", ""))), _initial, category="research")
         items.append({
             "num": f"{i:02d}",
             "title": _strip_emoji(_tr_title(item.get("title", "Untitled"))),
@@ -1062,10 +1082,8 @@ def generate_report(intel: dict, date_str: str) -> str:
         if brief_cn and not _is_metadata_text(brief_cn) and _strip_emoji(brief_cn) != title_cn:
             final_summary = _strip_emoji(brief_cn)
         else:
-            final_summary = _extract_meaningful_summary(item, title_cn)
-            # 确保 Insights 也不产生元数据格式
-            if not _is_meaningful_summary(final_summary, title_cn):
-                final_summary = _extract_meaningful_summary(item, title_cn)
+            _initial = _extract_meaningful_summary(item, title_cn)
+            final_summary = _enhance_summary(item, title_cn, _initial, category="insights")
         items.append({
             "num": f"{i:02d}",
             "title": title_cn,
