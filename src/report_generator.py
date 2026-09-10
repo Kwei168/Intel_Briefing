@@ -65,6 +65,11 @@ def _is_metadata_text(text):
         r'^(Title|URL|Source|Published|Published Time|Warning|Markdown|Author|Date|Description)\s*:',
         r'^URL\s+Source\s*:',
         r'^已发布\s+Time',
+        # 中文元数据模式（翻译后的 RSS 元数据）
+        r'^标题[：:]',
+        r'^URL\s*(来源|来源)',
+        r'^发布时间[：:]',
+        r'^警告[：:]',
     ]
     for pat in metadata_patterns:
         if re.search(pat, stripped, re.IGNORECASE):
