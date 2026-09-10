@@ -181,39 +181,29 @@ def _extract_meaningful_summary(item, title_cn):
 
 
 def _is_meaningful_summary(summary, title_cn):
-    """检测摘要是否为有意义的内容简介（而非元数据拼接）。"""
+    """检测摘要是否为有意义的内容简介（而非元数据拼接）。
+    
+    核心逻辑：如果破折号后全是短片段（无 >= 40 字符的实质描述），则为元数据。
+    """
     if not summary:
         return False
     s = summary.strip()
-    # 太短的不是有效摘要
     if len(s) < 20:
         return False
-    # 等于标题的不是摘要
     title_clean = _strip_emoji(title_cn or "").strip()
     if s == title_clean:
         return False
-    # 纯 "标题 — 来源 / 热度 / 描述" 模式不是有效摘要
+    # 包含 URL 元数据模式的不是有效摘要
+    if re.search(r'(文章网址|评论网址|article url|comment url)', s, re.IGNORECASE):
+        return False
+    # 核心检测：如果含有 " — "，检查破折号后是否有实质性内容
     if " — " in s:
         after_dash = s.split(" — ", 1)[1]
         parts = [p.strip() for p in after_dash.split("/") if p.strip()]
-        # 动态检测：如果所有部分都是短元数据片段（< 30 chars），则不是有效摘要
-        # 元数据特征：数字开头、emoji开头、或包含来源/类型关键词
-        meta_hints = [
-            r'^\d', r'^🔥', r'^⭐', r'^📊',
-            r'报道', r'内容', r'讨论', r'项目', r'文章', r'视频',
-            r'资讯', r'官方', r'发布', r'专栏', r'内容',
-            r'points?', r'stars?', r'votes?', r'replies?',
-            r'Featured', r'Top Product',
-        ]
-        all_meta = all(
-            len(p) < 30 and any(re.search(hint, p, re.IGNORECASE) for hint in meta_hints)
-            for p in parts
-        )
-        if all_meta and len(parts) >= 2:
+        # 至少需要一个片段 >= 40 字符才算有实质内容
+        has_substantial = any(len(p) >= 40 for p in parts)
+        if not has_substantial and len(parts) >= 2:
             return False
-    # 包含 URL 模式（文章网址/评论网址）的不是有效摘要
-    if re.search(r'(文章网址|评论网址|article url|comment url)', s, re.IGNORECASE):
-        return False
     return True
 
 
