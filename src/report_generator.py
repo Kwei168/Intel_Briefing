@@ -149,7 +149,7 @@ def _extract_meaningful_summary(item, title_cn):
     extras = []
     if category and category != title_clean:
         extras.append(category)
-    if heat:
+    if heat and not re.match(r'^0\s*(votes?|票|ups?)$', heat, re.IGNORECASE):
         extras.append(heat)
     if tagline and tagline != title_clean and not _is_metadata_text(tagline):
         extras.append(_tr(tagline[:100]))
@@ -157,7 +157,7 @@ def _extract_meaningful_summary(item, title_cn):
         # 用域名生成有意义的来源描述（而非裸域名）
         domain_desc = {
             "github.com": "开源项目",
-            "producthunt.com": "Product Hunt 今日产品",
+            "producthunt.com": "今日在 Product Hunt 发布",
             "v2ex.com": "V2EX 社区讨论",
             "techcrunch.com": "TechCrunch 报道",
             "wallstreetcn.com": "华尔街见闻资讯",

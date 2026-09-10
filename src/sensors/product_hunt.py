@@ -41,6 +41,8 @@ def _parse_rss_products(xml_text: str, limit: int = 10) -> List[PHProduct]:
     for entry in root.findall(f".//{ATOM_NS}entry")[:limit]:
         title = entry.findtext(f"{ATOM_NS}title", default="").strip()
         summary = entry.findtext(f"{ATOM_NS}summary", default="").strip()
+        # Also check <content> element as fallback for tagline
+        content_text = entry.findtext(f"{ATOM_NS}content", default="").strip()
         link = ""
         for link_el in entry.findall(f"{ATOM_NS}link"):
             if link_el.get("rel", "alternate") == "alternate" and link_el.get("href"):
@@ -49,9 +51,16 @@ def _parse_rss_products(xml_text: str, limit: int = 10) -> List[PHProduct]:
         if not link:
             continue
         published = entry.findtext(f"{ATOM_NS}published", default="")
+        # Extract tagline: strip HTML, take first meaningful line
+        raw_tagline = html_mod.unescape(re.sub(r"<[^>]+>", "", summary))
+        if not raw_tagline or len(raw_tagline.strip()) < 3:
+            # Fallback to <content> element
+            raw_tagline = html_mod.unescape(re.sub(r"<[^>]+>", "", content_text))
+        # Take first line/sentence as tagline (max 200 chars)
+        raw_tagline = raw_tagline.strip().split("\n")[0].strip()[:200]
         products.append(PHProduct(
             name=html_mod.unescape(title),
-            tagline=html_mod.unescape(re.sub(r"<[^>]+>", "", summary)),
+            tagline=raw_tagline,
             url=link,
             votes_count=0,
             website=None,
