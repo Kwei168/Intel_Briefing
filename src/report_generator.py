@@ -170,7 +170,8 @@ def _extract_meaningful_summary(item, title_cn):
     
     # 1. 尝试多个文本字段
     for field in ('description', 'summary', 'analysis_brief', 'content'):
-        text = (item.get(field) or "").strip().replace("\n", " ")
+        raw = (item.get(field) or "").strip()
+        text = _clean_markdown_html(raw).replace("\n", " ")
         if not text or _is_metadata_text(text):
             continue
         # 从文本中提取第一个完整句子（跳过元数据行）
@@ -230,9 +231,9 @@ def _extract_meaningful_summary(item, title_cn):
 
     # 优先使用 tagline/description 生成有意义的中文描述
     for text_field in [tagline, description]:
-        if text_field and len(text_field) > 10 and not _is_metadata_text(text_field):
+        if text_field and len(text_field) > 3 and not _is_metadata_text(text_field):
             cleaned = _clean_markdown_html(text_field)
-            if cleaned and len(cleaned) > 10 and not _is_metadata_text(cleaned):
+            if cleaned and len(cleaned) > 3 and not _is_metadata_text(cleaned):
                 translated = _tr(cleaned[:200])
                 if translated and not _is_metadata_text(translated) and translated != title_clean:
                     return _strip_emoji(translated)
@@ -309,11 +310,29 @@ def _enhance_summary(item, title_cn, initial_summary, category=""):
                         return translated
         return gh_desc or _extract_meaningful_summary(item, title_cn)
 
-    # 通过 Jina/DDG 抓取内容（不再跳过任何域名，最差也有中文 fallback）
+    # 跳过 Jina 抓取效果极差的域名（YouTube 返回 UI 文本，不是视频描述）
+    skip_jina_domains = {"youtube.com", "youtu.be"}
+    if domain in skip_jina_domains:
+        return _extract_meaningful_summary(item, title_cn)
+
+    # 通过 Jina/DDG 抓取内容（最差也有中文 fallback）
     title_raw = item.get("title", "")
     fetched = fetch_content_with_fallback(url, title=title_raw)
     if fetched and len(fetched) >= 100:
-        text = fetched[:2000].replace("\n", " ")
+        # 清洗 Markdown/HTML 标记
+        text = _clean_markdown_html(fetched[:3000])
+        # 检测是否为垃圾内容（cookie 同意、UI 文本等）
+        junk_patterns = [
+            r'cookie', r'consent', r'privacy policy', r'隐私政策',
+            r'同意', r'接受', r'禁用', r'disable', r'preferences',
+            r'共享链接', r'share link', r'观看历史', r'watch history',
+            r'确认', r'cancel', r'自定义拒绝', r'接受自定义',
+        ]
+        junk_score = sum(1 for p in junk_patterns if re.search(p, text[:500], re.IGNORECASE))
+        if junk_score >= 3:
+            # 内容大部分是垃圾，跳过
+            return _extract_meaningful_summary(item, title_cn)
+        
         sentences = re.split(r'(?<=[.。!！?？])\s+', text)
         summary_parts = []
         total_len = 0
@@ -322,6 +341,9 @@ def _enhance_summary(item, title_cn, initial_summary, category=""):
             if len(sent) < 10:
                 continue
             if _is_metadata_text(sent):
+                continue
+            # 跳过含垃圾模式指示的句子
+            if re.search(r'cookie|consent|隐私政策|同意|接受自定义|共享链接|观看历史', sent, re.IGNORECASE):
                 continue
             translated = _tr(sent[:200])
             if translated and not _is_metadata_text(translated):
