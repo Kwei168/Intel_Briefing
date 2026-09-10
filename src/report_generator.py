@@ -140,19 +140,33 @@ def _extract_meaningful_summary(item, title_cn):
     if parts:
         return "，".join(parts)
     
-    # 3. 最终 fallback: 标题 + 来源/分类信息
+    # 3. 最终 fallback: 标题 + 来源上下文（确保永远不等于纯标题）
     category = (item.get("category") or "").strip()
     heat = (item.get("heat") or "").strip()
+    tagline = (item.get("tagline") or "").strip()
     extras = []
     if category and category != title_clean:
         extras.append(category)
     if heat:
         extras.append(heat)
+    if tagline and tagline != title_clean and not _is_metadata_text(tagline):
+        extras.append(_tr(tagline[:100]))
     if domain:
-        extras.append(f"来源 {domain}")
+        # 用域名生成有意义的来源描述
+        domain_desc = {
+            "github.com": "开源项目",
+            "producthunt.com": "Product Hunt 今日产品",
+            "v2ex.com": "V2EX 社区讨论",
+            "techcrunch.com": "TechCrunch 报道",
+            "wallstreetcn.com": "华尔街见闻资讯",
+            "youtube.com": "视频内容",
+            "mp.weixin.qq.com": "微信公众号文章",
+            "apple.com": "Apple 官方",
+        }.get(domain, f"{domain} 内容")
+        extras.append(domain_desc)
     if extras:
         return f"{title_clean} — {' / '.join(extras)}"
-    return title_cn
+    return f"{title_clean} — 今日情报精选"
 
 
 def _fetch_bing_tokens():
