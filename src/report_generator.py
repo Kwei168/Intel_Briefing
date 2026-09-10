@@ -195,18 +195,19 @@ def _is_meaningful_summary(summary, title_cn):
     # 纯 "标题 — 来源 / 热度 / 描述" 模式不是有效摘要
     if " — " in s:
         after_dash = s.split(" — ", 1)[1]
-        # 如果破折号后的内容全是元数据（来源/热度/域名描述），则不是有效摘要
-        parts = [p.strip() for p in after_dash.split("/")]
-        metadata_keywords = {
-            "开源项目", "视频内容", "微信公众号文章", "Apple 官方",
-            "Hacker News 讨论", "TechCrunch 报道", "华尔街见闻资讯",
-            "V2EX 社区讨论", "今日在 Product Hunt 发布", "36氪报道",
-            "Medium 文章", "Substack 专栏", "Twitter 讨论", "X/Twitter 讨论",
-        }
-        # 如果所有部分都是短元数据片段，则不是有效摘要
+        parts = [p.strip() for p in after_dash.split("/") if p.strip()]
+        # 动态检测：如果所有部分都是短元数据片段（< 30 chars），则不是有效摘要
+        # 元数据特征：数字开头、emoji开头、或包含来源/类型关键词
+        meta_hints = [
+            r'^\d', r'^🔥', r'^⭐', r'^📊',
+            r'报道', r'内容', r'讨论', r'项目', r'文章', r'视频',
+            r'资讯', r'官方', r'发布', r'专栏', r'内容',
+            r'points?', r'stars?', r'votes?', r'replies?',
+            r'Featured', r'Top Product',
+        ]
         all_meta = all(
-            len(p) < 30 and (p in metadata_keywords or re.match(r'^\d', p) or re.match(r'^🔥', p))
-            for p in parts if p.strip()
+            len(p) < 30 and any(re.search(hint, p, re.IGNORECASE) for hint in meta_hints)
+            for p in parts
         )
         if all_meta and len(parts) >= 2:
             return False
