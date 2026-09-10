@@ -129,18 +129,9 @@ def _extract_meaningful_summary(item, title_cn):
             if translated and translated != title_clean:
                 return _strip_emoji(translated)
     
-    # 2. 从 author + domain 构造
+    # 2. 最终 fallback: 标题 + 来源上下文 + 域名描述（确保永远不等于纯标题）
     author = (item.get("author") or "").strip()
     domain = _extract_domain(item.get("url", ""))
-    parts = []
-    if domain:
-        parts.append(f"来源 {domain}")
-    if author:
-        parts.append(f"作者 {_tr(author)}")
-    if parts:
-        return "，".join(parts)
-    
-    # 3. 最终 fallback: 标题 + 来源上下文（确保永远不等于纯标题）
     category = (item.get("category") or "").strip()
     heat = (item.get("heat") or "").strip()
     tagline = (item.get("tagline") or "").strip()
@@ -152,7 +143,7 @@ def _extract_meaningful_summary(item, title_cn):
     if tagline and tagline != title_clean and not _is_metadata_text(tagline):
         extras.append(_tr(tagline[:100]))
     if domain:
-        # 用域名生成有意义的来源描述
+        # 用域名生成有意义的来源描述（而非裸域名）
         domain_desc = {
             "github.com": "开源项目",
             "producthunt.com": "Product Hunt 今日产品",
@@ -162,8 +153,17 @@ def _extract_meaningful_summary(item, title_cn):
             "youtube.com": "视频内容",
             "mp.weixin.qq.com": "微信公众号文章",
             "apple.com": "Apple 官方",
+            "hackernews.com": "Hacker News 讨论",
+            "news.ycombinator.com": "Hacker News 讨论",
+            "36kr.com": "36氪报道",
+            "medium.com": "Medium 文章",
+            "substack.com": "Substack 专栏",
+            "twitter.com": "Twitter 讨论",
+            "x.com": "X/Twitter 讨论",
         }.get(domain, f"{domain} 内容")
         extras.append(domain_desc)
+    if author:
+        extras.append(f"作者 {_tr(author)}")
     if extras:
         return f"{title_clean} — {' / '.join(extras)}"
     return f"{title_clean} — 今日情报精选"
