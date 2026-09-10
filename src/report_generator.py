@@ -34,7 +34,7 @@ except (ImportError, Exception):
 
 # --- Jina Reader (Full Content Fetcher) ---
 try:
-    from src.utils.jina_reader import fetch_full_content, fetch_content_with_fallback
+    from src.utils.jina_reader import fetch_full_content, fetch_content_with_fallback, fetch_search_snippet
     JINA_AVAILABLE = True
 except ImportError:
     JINA_AVAILABLE = False
@@ -238,6 +238,21 @@ def _extract_meaningful_summary(item, title_cn):
                 if translated and not _is_metadata_text(translated) and translated != title_clean:
                     return _strip_emoji(translated)
 
+    # 2.5 DDG 搜索摘要降级：当所有字段为空时，通过搜索引擎获取描述
+    url_for_search = item.get("url", "")
+    title_for_search = title_clean or item.get("title", "")
+    if url_for_search and url_for_search.startswith("http") and title_for_search:
+        try:
+            snippet = fetch_search_snippet(title_for_search, url_for_search)
+            if snippet and len(snippet) > 30:
+                snippet_clean = _clean_markdown_html(snippet)
+                if snippet_clean and len(snippet_clean) > 30 and not _is_metadata_text(snippet_clean):
+                    translated = _tr(snippet_clean[:200])
+                    if translated and not _is_metadata_text(translated) and translated != title_clean:
+                        return _strip_emoji(translated)
+        except Exception:
+            pass
+
     # 构造中文上下文描述
     domain_desc = "资讯"
     for d, desc in domain_desc_map.items():
@@ -310,12 +325,9 @@ def _enhance_summary(item, title_cn, initial_summary, category=""):
                         return translated
         return gh_desc or _extract_meaningful_summary(item, title_cn)
 
-    # 跳过 Jina 抓取效果极差的域名（YouTube 返回 UI 文本，不是视频描述）
-    skip_jina_domains = {"youtube.com", "youtu.be"}
-    if domain in skip_jina_domains:
-        return _extract_meaningful_summary(item, title_cn)
-
     # 通过 Jina/DDG 抓取内容（最差也有中文 fallback）
+    # 注意：YouTube 的 Jina 抓取返回 UI 文本，但 DDG 搜索可获取视频描述
+    # fetch_content_with_fallback 已有 junk 检测，会自动降级到 DDG
     title_raw = item.get("title", "")
     fetched = fetch_content_with_fallback(url, title=title_raw)
     if fetched and len(fetched) >= 100:
