@@ -9,8 +9,13 @@ Report Generator - 报告生成模块
 """
 
 import re
+import sys
+import json
 import time
 import logging
+import urllib.parse
+import urllib.request
+import urllib.error
 from collections import Counter, OrderedDict
 from datetime import datetime
 from html import escape as html_escape
@@ -22,8 +27,9 @@ from src.config import GEMINI_RATE_LIMIT_DELAY
 # --- Gemini Translator ---
 try:
     from src.utils.gemini_translator import translate_to_chinese, summarize_blog_article, generate_brief, generate_news_brief
-    GEMINI_AVAILABLE = True
-except ImportError:
+    from src.config import GEMINI_API_KEY
+    GEMINI_AVAILABLE = bool(GEMINI_API_KEY)
+except (ImportError, Exception):
     GEMINI_AVAILABLE = False
 
 # --- Jina Reader (Full Content Fetcher) ---
@@ -34,16 +40,201 @@ except ImportError:
     JINA_AVAILABLE = False
     logger.info("Jina Reader not available, using RSS description only.")
 
+
+# ══════════════════════════════ 免费翻译降级链 ══════════════════════════════
+# 当 Gemini API Key 未配置时，使用四端点免费翻译链：
+# Google gtx → Bing 网页版 → MyMemory → Google dict-chrome
+
+_TRANS_CACHE = {}
+_BING_TOKENS = None
+
+
+def _has_cn(s):
+    """检测文本是否已含中文。"""
+    return bool(re.search(r"[\u4e00-\u9fff]", s or ""))
+
+
+def _fetch_bing_tokens():
+    """访问 bing.com/translator 提取防滥用 token。"""
+    global _BING_TOKENS
+    if _BING_TOKENS:
+        return _BING_TOKENS
+    req = urllib.request.Request(
+        "https://www.bing.com/translator",
+        headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
+    )
+    r = urllib.request.urlopen(req, timeout=15)
+    html = r.read().decode("utf-8")
+    ig = re.search(r'IG:"([^"]+)"', html)
+    iid = re.search(r'data-iid="([^"]+)"', html)
+    tok = re.search(r'params_AbusePreventionHelper\s*=\s*\[(\d+),"([^"]+)"', html)
+    if not all([ig, iid, tok]):
+        raise RuntimeError("Bing token 提取失败")
+    _BING_TOKENS = {"IG": ig.group(1), "IID": iid.group(1), "key": tok.group(1), "token": tok.group(2)}
+    return _BING_TOKENS
+
+
+def _bing_translate(text):
+    """Bing 网页版翻译（免费，无需 API key）。"""
+    try:
+        tokens = _fetch_bing_tokens()
+    except Exception:
+        return None
+    data = urllib.parse.urlencode({
+        "fromLang": "en", "text": text, "to": "zh-Hans",
+        "token": tokens["token"], "key": tokens["key"],
+    }).encode("utf-8")
+    url = ("https://www.bing.com/ttranslatev3?isVertical=1&" +
+           urllib.parse.urlencode({"IG": tokens["IG"], "IID": tokens["IID"]}))
+    try:
+        req = urllib.request.Request(url, data=data, headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Referer": "https://www.bing.com/translator",
+        })
+        with urllib.request.urlopen(req, timeout=10) as r:
+            result = json.loads(r.read().decode("utf-8"))
+        if isinstance(result, list) and result:
+            trans = result[0].get("translations", [{}])
+            if trans:
+                return trans[0].get("text", "") or None
+        if isinstance(result, dict) and "statusCode" in result:
+            global _BING_TOKENS
+            _BING_TOKENS = None
+    except Exception:
+        pass
+    return None
+
+
+def _free_translate(text):
+    """免费四端点翻译链：Google gtx → Bing → MyMemory → Google dict-chrome。
+    全部失败返回 None。"""
+    if not text:
+        return None
+    hit = _TRANS_CACHE.get(text)
+    if hit is not None:
+        return hit or None
+    result = None
+
+    # 端点 1: Google gtx
+    if not result:
+        params = urllib.parse.urlencode({"client": "gtx", "sl": "auto", "tl": "zh-CN", "dt": "t", "q": text})
+        for attempt in range(2):
+            try:
+                req = urllib.request.Request(
+                    "https://translate.googleapis.com/translate_a/single?" + params,
+                    headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"},
+                )
+                with urllib.request.urlopen(req, timeout=10) as r:
+                    data = json.loads(r.read().decode("utf-8"))
+                cand = "".join(seg[0] for seg in data[0] if seg[0]).strip()
+                if cand and _has_cn(cand):
+                    result = cand
+                break
+            except urllib.error.HTTPError as e:
+                if e.code == 429 and attempt == 0:
+                    time.sleep(3)
+                    continue
+                break
+            except Exception:
+                break
+
+    # 端点 2: Bing 网页版
+    if not result:
+        cand = _bing_translate(text)
+        if cand and _has_cn(cand):
+            result = cand
+
+    # 端点 3: MyMemory
+    if not result:
+        for attempt in range(3):
+            try:
+                params = urllib.parse.urlencode({"q": text[:480], "langpair": "en|zh-CN"})
+                req = urllib.request.Request(
+                    "https://api.mymemory.translated.net/get?" + params,
+                    headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"},
+                )
+                with urllib.request.urlopen(req, timeout=10) as r:
+                    data = json.loads(r.read().decode("utf-8"))
+                cand = (data.get("responseData", {}) or {}).get("translatedText", "").strip()
+                if cand and _has_cn(cand) and "MYMEMORY WARNING" not in cand:
+                    result = cand
+                    break
+                if attempt < 2:
+                    time.sleep(2 ** attempt)
+            except Exception:
+                if attempt < 2:
+                    time.sleep(2 ** attempt)
+
+    # 端点 4: Google dict-chrome
+    if not result:
+        try:
+            params = urllib.parse.urlencode({"client": "dict-chrome", "sl": "auto", "tl": "zh-CN", "dt": "t", "q": text})
+            req = urllib.request.Request(
+                "https://translate.googleapis.com/translate_a/single?" + params,
+                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"},
+            )
+            with urllib.request.urlopen(req, timeout=10) as r:
+                data = json.loads(r.read().decode("utf-8"))
+            cand = "".join(seg[0] for seg in data[0] if seg[0]).strip()
+            if cand and _has_cn(cand):
+                result = cand
+        except Exception:
+            pass
+
+    _TRANS_CACHE[text] = result or ""
+    return result
+
+
+def _tr(text):
+    """英文文本 → 中文；已含中文或翻译失败时原样返回。间隔 0.3s 防限流。"""
+    if not text or _has_cn(text):
+        return text
+    time.sleep(0.3)
+    translated = _free_translate(text)
+    return translated or text
+
+
+def _tr_title(text):
+    """翻译标题：保留 arXiv [分类] 前缀。"""
+    if not text or _has_cn(text):
+        return text
+    m = re.match(r"^(\[[^\]]+\]\s*)(.*)$", text)
+    if m:
+        return m.group(1) + _tr(m.group(2))
+    return _tr(text)
+
+
+# --- Gemini fallback: 当 Gemini 不可用时，使用免费翻译链 ---
 if not GEMINI_AVAILABLE:
-    logger.info("Gemini translator not available, using English summaries.")
+    logger.info("Gemini API Key 未配置，使用免费翻译降级链。")
     def translate_to_chinese(text, max_chars=100):
-        return text[:max_chars] + "..." if len(text) > max_chars else text
+        """翻译长文本（论文摘要等），截断到 max_chars。"""
+        if not text:
+            return ""
+        translated = _free_translate(text)
+        result = translated or text
+        if len(result) > max_chars:
+            result = result[:max_chars] + "..."
+        return result
     def summarize_blog_article(content, mode="brief"):
-        return ""
+        """博客文章摘要：截取前 200 字符并翻译。"""
+        if not content:
+            return ""
+        snippet = content[:200].replace("\n", " ")
+        return _tr(snippet)
     def generate_brief(content, category="general"):
-        return ""
+        """短摘要：截取前 120 字符并翻译。"""
+        if not content:
+            return ""
+        snippet = content[:120].replace("\n", " ")
+        return _tr(snippet)
     def generate_news_brief(title, content="", category="tech", _depth=0):
-        return ""
+        """新闻简报：翻译标题+内容前 150 字符。"""
+        if not content:
+            return _tr(title) if title else ""
+        snippet = content[:150].replace("\n", " ")
+        return _tr(snippet)
 
 
 # ══════════════════════════════ HTML 模板 ═════════════════════════════
@@ -324,7 +515,9 @@ def _signal_brief(item, category):
             item["_analysis_stage"] = "gemini_news_brief"
             return brief
     item["_analysis_stage"] = "rss_fallback" if item.get("starhub") else "source_summary"
-    return content[:240] if content else ""
+    if content:
+        return _tr(content[:240])
+    return ""
 
 
 # ══════════════════════════════ HTML 渲染组件 ═════════════════════════════
@@ -423,10 +616,10 @@ def generate_report(intel: dict, date_str: str) -> str:
         brief = _signal_brief(item, "tech")
         items.append({
             "num": f"{i:02d}",
-            "title": _strip_emoji(item.get("title", "Untitled")),
+            "title": _strip_emoji(_tr_title(item.get("title", "Untitled"))),
             "url": item.get("url", "#"),
             "meta": _clean_meta([item.get("category", ""), item.get("heat", ""), item.get("time", "")]),
-            "summary": _strip_emoji(brief) if brief else "",
+            "summary": _strip_emoji(brief) if brief else _tr_title(item.get("title", "Untitled")),
         })
     sections.append({"title": "技术趋势 (Tech Trends)", "src": "Hacker News + GitHub Trending", "items": items})
 
@@ -436,10 +629,10 @@ def generate_report(intel: dict, date_str: str) -> str:
         brief = _signal_brief(item, "capital")
         items.append({
             "num": f"{i:02d}",
-            "title": _strip_emoji(item.get("title", "Untitled")),
+            "title": _strip_emoji(_tr_title(item.get("title", "Untitled"))),
             "url": item.get("url", "#"),
             "meta": _clean_meta([item.get("category", ""), item.get("time", "")]),
-            "summary": _strip_emoji(brief) if brief else "",
+            "summary": _strip_emoji(brief) if brief else _tr_title(item.get("title", "Untitled")),
         })
     sections.append({"title": "资本动向 (Capital Flow)", "src": "36Kr + 华尔街见闻", "items": items})
 
@@ -451,12 +644,14 @@ def generate_report(intel: dict, date_str: str) -> str:
         if GEMINI_AVAILABLE and summary:
             time.sleep(GEMINI_RATE_LIMIT_DELAY)
         detail_cn = translate_to_chinese(summary, max_chars=1200) if summary else ""
+        # 确保有摘要：fallback 到翻译后的原文
+        final_summary = _strip_emoji(brief_cn) if brief_cn else (_strip_emoji(detail_cn[:200]) if detail_cn else _tr_title(item.get("title", "")))
         items.append({
             "num": f"{i:02d}",
-            "title": _strip_emoji(item.get("title", "Untitled")),
+            "title": _strip_emoji(_tr_title(item.get("title", "Untitled"))),
             "url": item.get("url", "#"),
             "meta": _clean_meta([item.get("authors", ""), item.get("time", "")]),
-            "summary": _strip_emoji(brief_cn) if brief_cn else "",
+            "summary": final_summary,
             "detail": _strip_emoji(detail_cn) if detail_cn else "",
         })
     sections.append({"title": "学术前沿 (Research)", "src": "ArXiv AI/ML Papers", "items": items})
@@ -467,10 +662,10 @@ def generate_report(intel: dict, date_str: str) -> str:
         is_grok = "grok-fallback" in (item.get("topics") or [])
         items.append({
             "num": f"{i:02d}",
-            "title": _strip_emoji(item.get("title", "Untitled")),
+            "title": _strip_emoji(_tr_title(item.get("title", "Untitled"))),
             "url": item.get("url", "#") if not is_grok else "",
             "meta": _clean_meta([item.get("heat", "")]),
-            "summary": _strip_emoji(item.get("tagline", "")),
+            "summary": _strip_emoji(_tr(item.get("tagline", ""))) or _tr_title(item.get("title", "")),
         })
     sections.append({"title": "产品精选 (Product Gems)", "src": "Product Hunt Today", "items": items})
 
@@ -483,10 +678,10 @@ def generate_report(intel: dict, date_str: str) -> str:
             else:
                 social_items.append({
                     "num": "",
-                    "title": _strip_emoji(item.get("author", "")),
+                    "title": _strip_emoji(_tr(item.get("author", ""))),
                     "url": item.get("url", "#"),
                     "meta": _clean_meta([item.get("heat", "")]),
-                    "summary": _strip_emoji(item.get("title", "")),
+                    "summary": _strip_emoji(_tr(item.get("title", ""))) or _tr(item.get("author", "")),
                 })
     sections.append({
         "title": "社交热议 (Social)", "src": "X (Twitter) - AI/Tech Discussions",
@@ -498,10 +693,10 @@ def generate_report(intel: dict, date_str: str) -> str:
     for i, item in enumerate(community_items, 1):
         items.append({
             "num": f"{i:02d}",
-            "title": _strip_emoji(item.get("title", "Untitled")),
+            "title": _strip_emoji(_tr_title(item.get("title", "Untitled"))),
             "url": item.get("url", "#"),
             "meta": _clean_meta([item.get("heat", "")]),
-            "summary": _strip_emoji(item.get("analysis_brief", "") or ""),
+            "summary": _strip_emoji(_tr(item.get("analysis_brief", "") or "") or _tr_title(item.get("title", ""))),
         })
     sections.append({"title": "社区热点 (Community)", "src": "V2EX 热门", "items": items})
 
@@ -518,16 +713,19 @@ def generate_report(intel: dict, date_str: str) -> str:
         if not source_text and rss_content:
             source_text = rss_content
         brief_cn = detail_cn = ""
-        if source_text and GEMINI_AVAILABLE:
+        if source_text:
             brief_cn = summarize_blog_article(source_text, mode="brief")
-            time.sleep(GEMINI_RATE_LIMIT_DELAY)
-            detail_cn = summarize_blog_article(source_text, mode="detail")
+            if GEMINI_AVAILABLE:
+                time.sleep(GEMINI_RATE_LIMIT_DELAY)
+                detail_cn = summarize_blog_article(source_text, mode="detail")
+        # 确保有摘要
+        final_summary = _strip_emoji(brief_cn) if brief_cn else _tr(source_text[:150]) if source_text else _tr_title(item.get("title", ""))
         items.append({
             "num": f"{i:02d}",
-            "title": _strip_emoji(item.get("title", "Untitled")),
+            "title": _strip_emoji(_tr_title(item.get("title", "Untitled"))),
             "url": url,
             "meta": _clean_meta([item.get("author", ""), item.get("time", "")]),
-            "summary": _strip_emoji(brief_cn) if brief_cn else "",
+            "summary": final_summary,
             "detail": _strip_emoji(detail_cn) if detail_cn else "",
         })
     sections.append({"title": "深度洞察 (Insights)", "src": "HN Top Blogs + MIT Technology Review", "items": items})
