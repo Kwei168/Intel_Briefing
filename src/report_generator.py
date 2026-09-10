@@ -70,10 +70,21 @@ def _is_metadata_text(text):
         r'^URL\s*(来源|来源)',
         r'^发布时间[：:]',
         r'^警告[：:]',
+        # Hacker News 元数据模式（来自 HN RSS）
+        r'^文章网址[：:]',
+        r'^评论网址[：:]',
+        r'^积分[：:]',
+        r'^#\s*评论[：:]',
+        r'^Points\s*:',
+        r'^Comments\s*:',
     ]
     for pat in metadata_patterns:
         if re.search(pat, stripped, re.IGNORECASE):
             return True
+    # 检测 URL 密集型文本（多个 http/https 链接，无实质内容）
+    urls = re.findall(r'https?://\S+', stripped)
+    if len(urls) >= 2 and len(re.sub(r'https?://\S+', '', stripped).strip()) < 30:
+        return True
     return False
 
 
@@ -815,7 +826,7 @@ def generate_report(intel: dict, date_str: str) -> str:
     for i, item in enumerate(community_items, 1):
         _title = _strip_emoji(_tr_title(item.get("title", "Untitled")))
         _brief = _strip_emoji(_tr(item.get("analysis_brief", "") or ""))
-        _summary = _brief if (_brief and _brief != _title and not _is_source_only(_brief)) else _extract_meaningful_summary(item, _title)
+        _summary = _brief if (_brief and _brief != _title and not _is_source_only(_brief) and not _is_metadata_text(_brief)) else _extract_meaningful_summary(item, _title)
         items.append({
             "num": f"{i:02d}",
             "title": _title,
