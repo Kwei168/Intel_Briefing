@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2026-09-18 情报日报 - Intel Briefing</title>
+<script>try{var _t=localStorage.getItem('wb_starhub_theme_v1')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=_t;}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#faf9f7; --card:#fffdf9; --card-2:#f3efe6; --card-3:#ebe6db;
+  --ink:#1c1917; --muted:#5f594c; --faint:#6e685e;
+  --line:#ddd6c9; --line-strong:#b9b0a2;
+  --brand:#2f5d8a; --brand-strong:#24496e; --brand-line:#b9cde0; --brand-weak:#e7eef4;
+  --display:"Noto Serif SC","Georgia","Times New Roman","Songti SC","SimSun","STSong",serif;
+  --body:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono","SF Mono","Fira Code","Consolas",monospace;
+  --radius:8px;
+  --shadow:0 1px 2px rgba(28,25,23,.05);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.10),0 2px 4px rgba(0,0,0,.06);
+}
+[data-theme="dark"] {
+  --bg:#161412; --card:#1d1a17; --card-2:#262019; --card-3:#2f2820;
+  --ink:#ece7df; --muted:#a59d90; --faint:#a8a090;
+  --line:#37312a; --line-strong:#4a4339;
+  --brand:#8fb3d9; --brand-strong:#b0cbe6; --brand-line:#3d5a78; --brand-weak:#22303f;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.4);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; scroll-padding-top:112px; }
+body { font-family:var(--body); background:var(--bg); color:var(--ink); line-height:1.55; font-size:14px; -webkit-font-smoothing:antialiased; }
+a { color:inherit; text-decoration:none; }
+button { font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+::selection { background:var(--brand-weak); color:var(--ink); }
+button:focus-visible, a:focus-visible { outline:2px solid var(--brand); outline-offset:2px; border-radius:var(--radius); }
+
+header { position:sticky; top:0; z-index:40; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+[data-theme="dark"] header { background:rgba(22,20,18,.94); }
+.hd { max-width:860px; margin:0 auto; padding:9px 20px; display:flex; align-items:center; gap:12px; }
+.hd .logo { display:flex; align-items:center; gap:8px; flex:none; font-family:var(--display); font-weight:900; font-size:16px; }
+.hd .logo .sub { font-size:11px; color:var(--muted); font-weight:400; margin-left:2px; font-family:var(--body); }
+.hd .logo svg { color:var(--brand); }
+.hd .nav-links { display:flex; align-items:center; gap:2px; flex:1; }
+.hd .nav-links a { display:inline-flex; align-items:center; gap:5px; white-space:nowrap; padding:5px 12px; border-radius:999px; font-size:12.5px; font-weight:500; border:1px solid transparent; transition:all .15s; }
+.hd .nav-links a:hover { background:var(--card); border-color:var(--line); }
+.hd .nav-links a.active { background:var(--brand-weak); border-color:var(--brand-line); color:var(--brand-strong); font-weight:600; }
+.theme-btn { width:30px; height:30px; border-radius:999px; background:var(--card); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; flex:none; transition:all .15s; }
+.theme-btn:hover { border-color:var(--brand-line); color:var(--brand-strong); }
+.theme-btn svg { width:14px; height:14px; }
+.icon-moon { display:none; }
+[data-theme="dark"] .icon-sun { display:none; }
+[data-theme="dark"] .icon-moon { display:block; }
+.progress { position:absolute; left:0; bottom:-1px; height:2px; background:var(--brand); width:0%; z-index:41; }
+
+.mast { max-width:860px; margin:0 auto; padding:26px 20px 0; text-align:center; }
+.mast-rule { display:flex; align-items:center; gap:14px; margin:0 0 6px; }
+.mast-rule::before,.mast-rule::after { content:""; flex:1; height:1px; background:var(--line-strong); }
+.mast-rule span { font-family:var(--mono); font-size:11px; letter-spacing:.14em; color:var(--muted); font-weight:500; white-space:nowrap; }
+.mast-title { font-family:var(--display); font-size:clamp(30px,6vw,44px); font-weight:900; letter-spacing:.05em; line-height:1.2; margin:4px 0 10px; }
+.mast-strip { display:flex; flex-wrap:wrap; gap:4px 22px; justify-content:center; align-items:baseline; margin-top:6px; padding:9px 14px; border-top:3px double var(--line-strong); border-bottom:1px solid var(--line-strong); }
+.ms-item { font-size:12px; color:var(--muted); }
+.ms-item b { font-weight:600; color:var(--faint); font-size:10.5px; letter-spacing:.08em; margin-right:6px; }
+.ms-item i { font-family:var(--mono); font-style:normal; color:var(--ink); font-size:11.5px; }
+
+.toc { position:sticky; top:52px; z-index:30; max-width:860px; margin:14px auto 0; padding:8px 20px; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; }
+[data-theme="dark"] .toc { background:rgba(22,20,18,.94); }
+.toc-label { flex:none; font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; color:var(--faint); }
+.toc-chips { display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+.toc-chips::-webkit-scrollbar { display:none; }
+.toc-chip { flex:none; display:inline-flex; align-items:center; gap:5px; padding:3px 11px; border-radius:999px; border:1px solid var(--line); background:var(--card); font-size:12px; color:var(--muted); transition:all .15s; }
+.toc-chip:hover { border-color:var(--brand-line); color:var(--brand-strong); background:var(--brand-weak); }
+.toc-chip .n { font-family:var(--mono); font-size:10px; opacity:.75; }
+
+.paper { max-width:860px; margin:0 auto; padding:0 20px 56px; }
+.article { margin-top:26px; }
+
+.intel-section { margin:34px 0 0; }
+.sec-head { display:flex; align-items:center; gap:12px; padding-bottom:10px; border-bottom:1px solid var(--line); margin-bottom:14px; }
+.sec-head h2 { display:flex; align-items:center; gap:10px; font-family:var(--display); font-size:clamp(19px,2.6vw,24px); font-weight:700; line-height:1.3; margin:0; }
+.sec-head h2::before { content:""; flex:none; width:10px; height:10px; border-radius:2px; background:var(--brand); }
+.sec-count { margin-left:auto; flex:none; font-family:var(--mono); font-size:11px; color:var(--faint); }
+.sec-src { display:flex; align-items:center; gap:8px; margin:-4px 0 14px; font-family:var(--mono); font-size:11.5px; color:var(--muted); }
+.sec-src .src-label { flex:none; font-size:9.5px; font-weight:700; letter-spacing:.1em; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:4px; padding:1px 6px; }
+
+.intel-card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px 12px; margin:0 0 12px; transition:box-shadow .18s, border-color .18s, transform .18s; }
+.intel-card:hover { border-color:var(--brand-line); box-shadow:var(--shadow-lift); transform:translateY(-2px); }
+.ic-head { display:flex; align-items:flex-start; gap:10px; }
+.ic-num { flex:none; font-family:var(--mono); font-size:11px; font-weight:700; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:6px; padding:2px 7px; margin-top:2px; }
+.ic-head h3 { font-family:var(--display); font-size:15.5px; font-weight:700; line-height:1.5; margin:0; }
+.ic-head h3 a { color:var(--ink); transition:color .15s; border-bottom:none; }
+.ic-head h3 a:hover { color:var(--brand-strong); }
+.ic-summary { margin:10px 0 0; padding:9px 14px; background:var(--brand-weak); border-left:3px solid var(--brand); border-radius:0 var(--radius) var(--radius) 0; color:var(--muted); font-size:13px; line-height:1.75; }
+.ic-summary p { margin:0; }
+.ic-detail { margin-top:10px; font-size:13.5px; color:var(--ink); line-height:1.75; }
+.ic-foot { display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:10px; padding-top:9px; border-top:1px solid var(--line); font-size:11.5px; color:var(--muted); }
+.ic-foot a { color:var(--brand-strong); font-weight:600; border-bottom:none; }
+.ic-foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+
+.foot { margin-top:44px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; display:flex; flex-wrap:wrap; gap:6px 18px; justify-content:space-between; }
+.foot a { color:var(--brand-strong); font-weight:500; }
+.foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+.back-top { position:fixed; bottom:24px; right:24px; width:40px; height:40px; border-radius:50%; background:var(--card); border:1px solid var(--line); color:var(--muted); display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; pointer-events:none; transition:all .2s; z-index:90; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+.back-top.show { opacity:1; pointer-events:auto; }
+.back-top:hover { color:var(--brand-strong); border-color:var(--brand-line); background:var(--brand-weak); }
+.back-top svg { width:18px; height:18px; }
+
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { transition-duration:0s!important; animation-duration:0s!important; } }
+
+@media (max-width:700px) {
+  .hd { padding:8px 12px; }
+  .hd .nav-links a { padding:5px 9px; font-size:12px; }
+  .mast { padding:18px 14px 0; }
+  .mast-title { letter-spacing:.02em; }
+  .mast-rule span { font-size:10px; letter-spacing:.1em; }
+  .mast-rule { gap:8px; }
+  .mast-strip { gap:3px 14px; padding:8px 10px; }
+  .toc { top:50px; padding:7px 12px; gap:8px; }
+  .paper { padding:0 14px 48px; }
+  .intel-section { margin:26px 0 0; }
+  .sec-head h2 { font-size:18px; }
+  .intel-card { padding:12px 13px 10px; }
+  .ic-head { gap:8px; }
+  .ic-head h3 { font-size:14.5px; }
+  .ic-summary { font-size:12.5px; }
+  .back-top { bottom:16px; right:16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <a class="logo" href="../index.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="2.2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4"/><path d="M7.8 16.2a6 6 0 0 1 0-8.4"/><path d="M19.1 4.9a10 10 0 0 1 0 14.2"/><path d="M4.9 19.1a10 10 0 0 1 0-14.2"/></svg>
+      <span>Intel Briefing<span class="sub">情报日报</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="../index.html" class="active">日报归档</a>
+      <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub 收藏台</a>
+    </nav>
+    <button class="theme-btn" id="btnTheme" title="切换主题 (T)" aria-label="切换明暗主题">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M18.7 5.3 17 7M7 17l-1.7 1.7"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></svg>
+    </button>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<div class="mast">
+  <div class="mast-rule"><span>2026-09-18</span><span>MORNING INTELLIGENCE BRIEFING</span></div>
+  <h1 class="mast-title">全球情报日报</h1>
+  <div class="mast-strip"><span class="ms-item"><b>生成时间</b><i>01:35</i></span><span class="ms-item"><b>数据源</b><i>HN, GitHub, 36Kr, WallStreetCN, V2EX, PH, ArXiv, X, TechCrunch, MIT TR + StarHub (716 RSS)</i></span><span class="ms-item"><b>条目</b><i>20 条</i></span></div>
+</div>
+
+<nav class="toc" aria-label="章节目录"><span class="toc-label">CONTENTS</span><div class="toc-chips"><a class="toc-chip" href="#sec-1">技术趋势 (Tech Trends)<span class="n">6</span></a><a class="toc-chip" href="#sec-2">资本动向 (Capital Flow)<span class="n">2</span></a><a class="toc-chip" href="#sec-3">学术前沿 (Research)<span class="n">4</span></a><a class="toc-chip" href="#sec-4">产品精选 (Product Gems)<span class="n">2</span></a><a class="toc-chip" href="#sec-5">社交热议 (Social)<span class="n">0</span></a><a class="toc-chip" href="#sec-6">社区热点 (Community)<span class="n">2</span></a><a class="toc-chip" href="#sec-7">深度洞察 (Insights)<span class="n">4</span></a></div></nav>
+
+<div class="paper">
+  <article class="article">
+<section class="intel-section" id="sec-1"><div class="sec-head"><h2>技术趋势 (Tech Trends)</h2><span class="sec-count">6 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> Hacker News + GitHub Trending</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://techcrunch.com/2026/09/17/khosla-backed-mazama-energy-just-raised-135m-to-drill-deeper-into-super-hot-rock-geothermal/" target="_blank" rel="noopener">科斯拉支持的 Mazama Energy 刚刚筹集了 1.35 亿美元，用于更深地钻探超热岩石地热</a></h3></div><blockquote class="ic-summary"><p>韩国芯片初创公司 XCENA 认为，人工智能的真正瓶颈不是计算，而是内存。</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://github.com/alibaba/open-code-review" target="_blank" rel="noopener">alibaba/open-code-review - 快速、高效、经过阿里巴巴规模的实战考验。混合架构代码审查工具：确定性管道+LLM代理，精确的行级注释，内置多语言规则集（NPE，线程安全，XSS，SQL注入），兼容OpenAI和Anthropic。</a></h3></div><blockquote class="ic-summary"><p>GitHub 开源项目：alibaba/open-code-review - 快速、高效、经过阿里巴巴规模的实战考验。混合架构代码审查工具：确定性管道+LLM代理，精确的行级注释，内置多语言规则集（NPE，线程安全，XSS，SQL注入），兼容OpenAI和Anthropic。</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://openai.com/index/astra-for-law/" target="_blank" rel="noopener">法律阿斯特拉</a></h3></div><blockquote class="ic-summary"><p>OpenAI 正式发布 Astra for Law，把 GPT-6 Astra 的前沿能力带进律所与法律科技公司的日常工作流。 新产品内置法律专用工具、可调设置与上下文，强调「支撑律师的专业判断与专家经验」而非替代——定位上更像一套为法律实践量身定制的智能工作台。</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://techcrunch.com/2026/09/17/crusoe-raises-3-9b-to-build-massive-data-centers-and-small-modular-ai-factories/" target="_blank" rel="noopener">Crusoe 筹集了 3.9B 美元用于建设大型数据中心和小型模块化“人工智能工厂”</a></h3></div><blockquote class="ic-summary"><p>Crusoe 筹集了 3.9B 美元用于建设大型数据中心和小型模块化“人工智能工厂”——科技媒体报道详细内容</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">05</span><h3><a href="https://github.com/cloudflare/security-audit-skill" target="_blank" rel="noopener">cloudflare/security-audit-skill - 用于多阶段安全审计的编码代理技能，具有独立验证的机器可读结果</a></h3></div><blockquote class="ic-summary"><p>GitHub 开源项目：cloudflare/security-audit-skill - 用于多阶段安全审计的编码代理技能，具有独立验证的机器可读结果</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">06</span><h3><a href="https://prismml.com/news/bonsai-2-27b" target="_blank" rel="noopener">Bonsai 2 27B：近乎无损压缩，占地面积缩小 9 倍</a></h3></div><blockquote class="ic-summary"><p>Bonsai 2 27B：近乎无损压缩，占地面积缩小 9 倍——prismml.com 资讯详细内容</p></blockquote></div></section><section class="intel-section" id="sec-2"><div class="sec-head"><h2>资本动向 (Capital Flow)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> 36Kr + 华尔街见闻</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://wallstreetcn.com/articles/3782045" target="_blank" rel="noopener">A股三大指数集体高开</a></h3></div><blockquote class="ic-summary"><p>A股三大指数集体高开——华尔街见闻资讯详细内容</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://wallstreetcn.com/member/articles/3781994" target="_blank" rel="noopener">从美债5%到英债6%：全球债市抛售何时结束？</a></h3></div><blockquote class="ic-summary"><p>从美债5%到英债6%：全球债市抛售何时结束？——华尔街见闻资讯详细内容</p></blockquote></div></section><section class="intel-section" id="sec-3"><div class="sec-head"><h2>学术前沿 (Research)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> ArXiv AI/ML Papers</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://arxiv.org/abs/2609.06986" target="_blank" rel="noopener">持续学习机制有助于长期记忆</a></h3></div><blockquote class="ic-summary"><p>语言模型可能需要内化随时间推移到达的信息，并通过许多后续更新保留它</p></blockquote><div class="ic-detail">语言模型可能需要内化随着时间的推移而到达的信息，并通过许多后续更新保留它。为了研究这一挑战，我们引入了长视野记忆，在这种设置中，模型通过持续的监督微调来学习 100 个查询-答案任务，而不保留早期的训练示例或在推理时接收任务标识符。连续的更新会导致灾难性的遗忘，我们评估的任何一种持续学习机制都无法在这个水平上保持强大的记忆力。我们假设，解决互补性遗忘来源的机制在组合起来时会更加有效。我们沿着两个设计维度组织这些组合。数据、函数和权重锚点指定每次更新应保留哪些先验信息，而低秩分配规则则确定保留连续更新的位置。为了系统地检验这一假设，我们构建了三个不同的 100 任务记忆数据集。我们引入任务级连续减半来搜索组合设计空间，并使用阶乘实验来测量个体和交互效应。我们最好的方法将所有三个锚点与合并的 LoRA 结合起来，在所有数据集中排名前 3 名，并将平均最终保留率从朴素顺序微调下的 1.2% 提高到 34.9%，提高了 28 倍。数据锚和合并的 LoRA 提供最大的平均增益，并在所有三个数据集上进行超加性交互。总之，这些结果表明，组合互补机制大大提高了长期记忆能力，超出了任何单独机制所能达到的效果。</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://arxiv.org/abs/2609.19145v1" target="_blank" rel="noopener">目标与搜索：分解什么是好的标记器</a></h3></div><blockquote class="ic-summary"><p>现代语言模型使用两种主要的标记化算法：字节对编码 (BPE) 和 UnigramLM。这些d</p></blockquote><div class="ic-detail">现代语言模型使用两种主要的标记化算法：字节对编码 (BPE) 和 UnigramLM。它们在两个正交轴上有所不同：它们的优化目标（压缩与对数似然）和搜索过程（自下而上合并与自上而下修剪）。现有的比较混淆了这些轴，使得我们不清楚观察到的差异是否源于正在优化的内容与优化方式。我们通过引入两种完成此 2x2 设计空间的新标记化算法来解开这两者：BottomUpLL（一种自下而上的基于似然性的标记化器）和 TopDownComp（一种自上而下的基于压缩的标记化器）。我们使用每种算法生成的标记器来训练语言模型，这些标记器各不相同：模型大小、词汇量大小和领域（仅限英语与多语言）。通过评估每字节位数的模型，我们发现搜索过程（而不是目标）是主导因素：自下而上的分词器在大多数设置中始终实现较低的每字节位数。然而，评估 BLiMP 任务的模型表明设计选择和性能之间没有一致的关系。总的来说，我们的结果阐明了分词器设计选择对语言建模性能的影响，为其更有原则的构建提供了具体指导。</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://arxiv.org/abs/2609.16679" target="_blank" rel="noopener">基础模型时代的游戏人工智能</a></h3></div><blockquote class="ic-summary"><p>基础模型以及学习游戏世界模型的进步正在重塑整个游戏生命周期的人工智能。超越 p</p></blockquote><div class="ic-detail">基础模型以及学习游戏世界模型的进步正在重塑整个游戏生命周期的人工智能。除了玩游戏之外，最近的系统还对玩家和游戏动态进行建模，支持设计和开发，在运行时调整面向玩家的体验，并评估生成的工件。然而，这些方向在很大程度上是独立发展的，模糊了哪些功能可以跨环境转移，哪些功能仍然与特定的游戏、引擎、界面或玩家群体相关。我们根据人工智能输出的直接使用将文献分为六个角色：扮演和表演；为玩家和游戏建模；设计游戏；构建和维护游戏；在运行时生成和调整；以及测试和评估游戏。对于每个角色，我们都会检查游戏或工作流程提供的结构、人工智能学习或生成的内容、跨设置和角色传输的功能和工件以及支持声明的证据。我们确定跨角色联系：轨迹训练世界模型，学习环境为代理提供经验，设计规范驱动可执行的实现，以及播放或测试反馈指南修订。然而，控制方案、规则、引擎接口、状态表示和玩家上下文通常仍然是特定于设置的，因此下游声明需要在目标设置中进行验证。对于有界游戏和选定的学习环境，评估是最标准化的，而学习世界中的持久状态、重复的软件修订、经过验证的玩家建模、持续的运行时适应和代表性的自动化测试仍然不太确定。核心挑战是跨角色重用或转移输出和能力，同时重新建立证据以证明其在特定游戏环境中的有效性。</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://arxiv.org/abs/2609.19144v1" target="_blank" rel="noopener">LLM 偏好调整的零阶范式</a></h3></div><blockquote class="ic-summary"><p>直接偏好对齐方法被广泛用于将大型语言模型 (LLM) 与人类偏好对齐，因为</p></blockquote><div class="ic-detail">直接偏好对齐方法因其计算和内存效率而被广泛用于将大型语言模型 (LLM) 与人类偏好对齐。然而，似然位移激发了从似然裕度较小的偏好对中提取信息的替代方法。在本文中，我们提出并分析了基于比较的偏好优化（ComPO），这是一种基于比较预言的零阶对齐方法。 ComPO 从这些对中提取方向信息，而不直接优化它们的可微偏好损失。我们为其基本离线方案在平滑性、梯度稀疏性以及预言机与潜在目标之间的兼容性方面建立了收敛保证。我们进一步引入在线 ComPO，它保留了离线比较机制，并使用未标记的策略生成相对于参考策略进行反向 KL 控制。遵循偏好微调的覆盖视角，我们在局部覆盖和分布内成对奖励精度下为基本约束方案建立了性能保证。 Mistral、Llama、Gemma-2、Qwen3 和 Gemma-3 模型的实验证明了对现有直接对齐方法的改进，包括长度控制的获胜率，并且配对水平诊断提供了与减轻似然位移一致的证据。</div></div></section><section class="intel-section" id="sec-4"><div class="sec-head"><h2>产品精选 (Product Gems)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> Product Hunt Today</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.producthunt.com/products/modaal-ai-agent-for-ios-android-native" target="_blank" rel="noopener">Android 模态</a></h3></div><blockquote class="ic-summary"><p>使用 Swift + Kotlin 从一个项目向两家商店发货</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://www.producthunt.com/products/novasynth-by-noveum" target="_blank" rel="noopener">Noveum 的 NovaSynth</a></h3></div><blockquote class="ic-summary"><p>在您无法安排的呼叫者上测试您的语音代理。</p></blockquote></div></section><section class="intel-section" id="sec-5"><div class="sec-head"><h2>社交热议 (Social)</h2><span class="sec-count">0 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> X (Twitter) - AI/Tech Discussions</div><p style="color:var(--muted);font-size:13px;">暂无数据 (需要配置 XAI_API_KEY)</p></section><section class="intel-section" id="sec-6"><div class="sec-head"><h2>社区热点 (Community)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> V2EX 热门</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.v2ex.com/t/1242600" target="_blank" rel="noopener">普通女和顶美女选哪个？</a></h3></div><blockquote class="ic-summary"><p>V2EX 社区讨论话题：普通女和顶美女选哪个？</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://www.v2ex.com/t/1242589" target="_blank" rel="noopener">[中转站] 24 小时可用 gptpro，满血高智商，进来领鸡蛋</a></h3></div><blockquote class="ic-summary"><p>V2EX 社区讨论话题：[中转站] 24 小时可用 gptpro，满血高智商，进来领鸡蛋</p></blockquote></div></section><section class="intel-section" id="sec-7"><div class="sec-head"><h2>深度洞察 (Insights)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> HN Top Blogs + MIT Technology Review</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.technologyreview.com/2026/09/17/1144314/the-download-mice-part-human-brains-climate-tech-innovators/" target="_blank" rel="noopener">下载：具有部分人类大脑的老鼠和气候技术创新者</a></h3></div><blockquote class="ic-summary"><p>这是今天的《下载》版本，这是我们的工作日时事通讯，每天提供技术世界中正在发生的事情</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://simonwillison.net/2026/Sep/17/targeted-attacks-on-rustaceans/" target="_blank" rel="noopener">保持警惕：针对著名 Rustaceans 的针对性攻击</a></h3></div><blockquote class="ic-summary"><p>保持警惕：针对著名 Rustaceans 的针对性攻击 Adam Harvey 和 crates 安全团队发出的重要警告：我们认为，有一场针对 rust-lang 成员和所有者的活动正在进行中</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://www.technologyreview.com/2026/09/17/1144251/innovators-shaping-climate-tech/" target="_blank" rel="noopener">认识 35 岁以下塑造气候技术的创新者</a></h3></div><blockquote class="ic-summary"><p>每年，《麻省理工科技评论》的编辑团队都会汇总 35 名 35 岁以下创新者的名单——一群研究人员、发明家和其他值得关注的年轻人</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://simonwillison.net/2026/Sep/17/how-to-write-with-an-llm/" target="_blank" rel="noopener">法学硕士如何写作</a></h3></div><blockquote class="ic-summary"><p>如何与法学硕士一起写作 Thomas Ptacek 关于使用法学硕士作为文字编辑，而不是写作助理：第一条规则：您不得使用法学硕士向您建议的任何单词</p></blockquote></div></section>
+  </article>
+  <footer class="foot">
+    <span>由 <a href="https://github.com/Kwei168/Intel_Briefing" target="_blank" rel="noopener">Intel_Briefing</a> 引擎自动生成</span>
+    <span>2026-09-18 &middot; 内容版权归原作者所有</span>
+    <span><a href="../index.html">返回归档</a> &middot; <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub</a></span>
+  </footer>
+</div>
+
+<button class="back-top" id="backTop" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+
+<script>
+;(function(){
+  var btn=document.getElementById('btnTheme');
+  function setTheme(t){
+    try{ localStorage.setItem('wb_starhub_theme_v1',t); }catch(e){}
+    document.documentElement.dataset.theme=t;
+  }
+  if(btn) btn.onclick=function(){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); };
+  document.addEventListener('keydown',function(e){
+    var t=e.target, tag=(t.tagName||'').toLowerCase();
+    if(tag==='input'||tag==='textarea'||t.isContentEditable) return;
+    if(e.key==='t'||e.key==='T'){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); }
+  });
+  var bar=document.getElementById('progress');
+  var backTop=document.getElementById('backTop');
+  function onScroll(){
+    var st=window.scrollY||document.documentElement.scrollTop||0;
+    var max=document.documentElement.scrollHeight-window.innerHeight;
+    if(bar) bar.style.width=(max>0?Math.min(100,st/max*100):0)+'%';
+    if(backTop) backTop.classList.toggle('show',st>400);
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+  if(backTop) backTop.onclick=function(){ window.scrollTo({top:0,behavior:'smooth'}); };
+})();
+</script>
+</body>
+</html>
