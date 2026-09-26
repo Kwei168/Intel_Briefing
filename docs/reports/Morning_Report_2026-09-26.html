@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2026-09-26 情报日报 - Intel Briefing</title>
+<script>try{var _t=localStorage.getItem('wb_starhub_theme_v1')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=_t;}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#faf9f7; --card:#fffdf9; --card-2:#f3efe6; --card-3:#ebe6db;
+  --ink:#1c1917; --muted:#5f594c; --faint:#6e685e;
+  --line:#ddd6c9; --line-strong:#b9b0a2;
+  --brand:#2f5d8a; --brand-strong:#24496e; --brand-line:#b9cde0; --brand-weak:#e7eef4;
+  --display:"Noto Serif SC","Georgia","Times New Roman","Songti SC","SimSun","STSong",serif;
+  --body:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono","SF Mono","Fira Code","Consolas",monospace;
+  --radius:8px;
+  --shadow:0 1px 2px rgba(28,25,23,.05);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.10),0 2px 4px rgba(0,0,0,.06);
+}
+[data-theme="dark"] {
+  --bg:#161412; --card:#1d1a17; --card-2:#262019; --card-3:#2f2820;
+  --ink:#ece7df; --muted:#a59d90; --faint:#a8a090;
+  --line:#37312a; --line-strong:#4a4339;
+  --brand:#8fb3d9; --brand-strong:#b0cbe6; --brand-line:#3d5a78; --brand-weak:#22303f;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.4);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; scroll-padding-top:112px; }
+body { font-family:var(--body); background:var(--bg); color:var(--ink); line-height:1.55; font-size:14px; -webkit-font-smoothing:antialiased; }
+a { color:inherit; text-decoration:none; }
+button { font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+::selection { background:var(--brand-weak); color:var(--ink); }
+button:focus-visible, a:focus-visible { outline:2px solid var(--brand); outline-offset:2px; border-radius:var(--radius); }
+
+header { position:sticky; top:0; z-index:40; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+[data-theme="dark"] header { background:rgba(22,20,18,.94); }
+.hd { max-width:860px; margin:0 auto; padding:9px 20px; display:flex; align-items:center; gap:12px; }
+.hd .logo { display:flex; align-items:center; gap:8px; flex:none; font-family:var(--display); font-weight:900; font-size:16px; }
+.hd .logo .sub { font-size:11px; color:var(--muted); font-weight:400; margin-left:2px; font-family:var(--body); }
+.hd .logo svg { color:var(--brand); }
+.hd .nav-links { display:flex; align-items:center; gap:2px; flex:1; }
+.hd .nav-links a { display:inline-flex; align-items:center; gap:5px; white-space:nowrap; padding:5px 12px; border-radius:999px; font-size:12.5px; font-weight:500; border:1px solid transparent; transition:all .15s; }
+.hd .nav-links a:hover { background:var(--card); border-color:var(--line); }
+.hd .nav-links a.active { background:var(--brand-weak); border-color:var(--brand-line); color:var(--brand-strong); font-weight:600; }
+.theme-btn { width:30px; height:30px; border-radius:999px; background:var(--card); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; flex:none; transition:all .15s; }
+.theme-btn:hover { border-color:var(--brand-line); color:var(--brand-strong); }
+.theme-btn svg { width:14px; height:14px; }
+.icon-moon { display:none; }
+[data-theme="dark"] .icon-sun { display:none; }
+[data-theme="dark"] .icon-moon { display:block; }
+.progress { position:absolute; left:0; bottom:-1px; height:2px; background:var(--brand); width:0%; z-index:41; }
+
+.mast { max-width:860px; margin:0 auto; padding:26px 20px 0; text-align:center; }
+.mast-rule { display:flex; align-items:center; gap:14px; margin:0 0 6px; }
+.mast-rule::before,.mast-rule::after { content:""; flex:1; height:1px; background:var(--line-strong); }
+.mast-rule span { font-family:var(--mono); font-size:11px; letter-spacing:.14em; color:var(--muted); font-weight:500; white-space:nowrap; }
+.mast-title { font-family:var(--display); font-size:clamp(30px,6vw,44px); font-weight:900; letter-spacing:.05em; line-height:1.2; margin:4px 0 10px; }
+.mast-strip { display:flex; flex-wrap:wrap; gap:4px 22px; justify-content:center; align-items:baseline; margin-top:6px; padding:9px 14px; border-top:3px double var(--line-strong); border-bottom:1px solid var(--line-strong); }
+.ms-item { font-size:12px; color:var(--muted); }
+.ms-item b { font-weight:600; color:var(--faint); font-size:10.5px; letter-spacing:.08em; margin-right:6px; }
+.ms-item i { font-family:var(--mono); font-style:normal; color:var(--ink); font-size:11.5px; }
+
+.toc { position:sticky; top:52px; z-index:30; max-width:860px; margin:14px auto 0; padding:8px 20px; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; }
+[data-theme="dark"] .toc { background:rgba(22,20,18,.94); }
+.toc-label { flex:none; font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; color:var(--faint); }
+.toc-chips { display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+.toc-chips::-webkit-scrollbar { display:none; }
+.toc-chip { flex:none; display:inline-flex; align-items:center; gap:5px; padding:3px 11px; border-radius:999px; border:1px solid var(--line); background:var(--card); font-size:12px; color:var(--muted); transition:all .15s; }
+.toc-chip:hover { border-color:var(--brand-line); color:var(--brand-strong); background:var(--brand-weak); }
+.toc-chip .n { font-family:var(--mono); font-size:10px; opacity:.75; }
+
+.paper { max-width:860px; margin:0 auto; padding:0 20px 56px; }
+.article { margin-top:26px; }
+
+.intel-section { margin:34px 0 0; }
+.sec-head { display:flex; align-items:center; gap:12px; padding-bottom:10px; border-bottom:1px solid var(--line); margin-bottom:14px; }
+.sec-head h2 { display:flex; align-items:center; gap:10px; font-family:var(--display); font-size:clamp(19px,2.6vw,24px); font-weight:700; line-height:1.3; margin:0; }
+.sec-head h2::before { content:""; flex:none; width:10px; height:10px; border-radius:2px; background:var(--brand); }
+.sec-count { margin-left:auto; flex:none; font-family:var(--mono); font-size:11px; color:var(--faint); }
+.sec-src { display:flex; align-items:center; gap:8px; margin:-4px 0 14px; font-family:var(--mono); font-size:11.5px; color:var(--muted); }
+.sec-src .src-label { flex:none; font-size:9.5px; font-weight:700; letter-spacing:.1em; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:4px; padding:1px 6px; }
+
+.intel-card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px 12px; margin:0 0 12px; transition:box-shadow .18s, border-color .18s, transform .18s; }
+.intel-card:hover { border-color:var(--brand-line); box-shadow:var(--shadow-lift); transform:translateY(-2px); }
+.ic-head { display:flex; align-items:flex-start; gap:10px; }
+.ic-num { flex:none; font-family:var(--mono); font-size:11px; font-weight:700; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:6px; padding:2px 7px; margin-top:2px; }
+.ic-head h3 { font-family:var(--display); font-size:15.5px; font-weight:700; line-height:1.5; margin:0; }
+.ic-head h3 a { color:var(--ink); transition:color .15s; border-bottom:none; }
+.ic-head h3 a:hover { color:var(--brand-strong); }
+.ic-summary { margin:10px 0 0; padding:9px 14px; background:var(--brand-weak); border-left:3px solid var(--brand); border-radius:0 var(--radius) var(--radius) 0; color:var(--muted); font-size:13px; line-height:1.75; }
+.ic-summary p { margin:0; }
+.ic-detail { margin-top:10px; font-size:13.5px; color:var(--ink); line-height:1.75; }
+.ic-foot { display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:10px; padding-top:9px; border-top:1px solid var(--line); font-size:11.5px; color:var(--muted); }
+.ic-foot a { color:var(--brand-strong); font-weight:600; border-bottom:none; }
+.ic-foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+
+.foot { margin-top:44px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; display:flex; flex-wrap:wrap; gap:6px 18px; justify-content:space-between; }
+.foot a { color:var(--brand-strong); font-weight:500; }
+.foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+.back-top { position:fixed; bottom:24px; right:24px; width:40px; height:40px; border-radius:50%; background:var(--card); border:1px solid var(--line); color:var(--muted); display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; pointer-events:none; transition:all .2s; z-index:90; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+.back-top.show { opacity:1; pointer-events:auto; }
+.back-top:hover { color:var(--brand-strong); border-color:var(--brand-line); background:var(--brand-weak); }
+.back-top svg { width:18px; height:18px; }
+
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { transition-duration:0s!important; animation-duration:0s!important; } }
+
+@media (max-width:700px) {
+  .hd { padding:8px 12px; }
+  .hd .nav-links a { padding:5px 9px; font-size:12px; }
+  .mast { padding:18px 14px 0; }
+  .mast-title { letter-spacing:.02em; }
+  .mast-rule span { font-size:10px; letter-spacing:.1em; }
+  .mast-rule { gap:8px; }
+  .mast-strip { gap:3px 14px; padding:8px 10px; }
+  .toc { top:50px; padding:7px 12px; gap:8px; }
+  .paper { padding:0 14px 48px; }
+  .intel-section { margin:26px 0 0; }
+  .sec-head h2 { font-size:18px; }
+  .intel-card { padding:12px 13px 10px; }
+  .ic-head { gap:8px; }
+  .ic-head h3 { font-size:14.5px; }
+  .ic-summary { font-size:12.5px; }
+  .back-top { bottom:16px; right:16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <a class="logo" href="../index.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="2.2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4"/><path d="M7.8 16.2a6 6 0 0 1 0-8.4"/><path d="M19.1 4.9a10 10 0 0 1 0 14.2"/><path d="M4.9 19.1a10 10 0 0 1 0-14.2"/></svg>
+      <span>Intel Briefing<span class="sub">情报日报</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="../index.html" class="active">日报归档</a>
+      <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub 收藏台</a>
+    </nav>
+    <button class="theme-btn" id="btnTheme" title="切换主题 (T)" aria-label="切换明暗主题">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M18.7 5.3 17 7M7 17l-1.7 1.7"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></svg>
+    </button>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<div class="mast">
+  <div class="mast-rule"><span>2026-09-26</span><span>MORNING INTELLIGENCE BRIEFING</span></div>
+  <h1 class="mast-title">全球情报日报</h1>
+  <div class="mast-strip"><span class="ms-item"><b>生成时间</b><i>02:03</i></span><span class="ms-item"><b>数据源</b><i>HN, GitHub, 36Kr, WallStreetCN, V2EX, PH, ArXiv, X, TechCrunch, MIT TR + StarHub (716 RSS)</i></span><span class="ms-item"><b>条目</b><i>20 条</i></span></div>
+</div>
+
+<nav class="toc" aria-label="章节目录"><span class="toc-label">CONTENTS</span><div class="toc-chips"><a class="toc-chip" href="#sec-1">技术趋势 (Tech Trends)<span class="n">6</span></a><a class="toc-chip" href="#sec-2">资本动向 (Capital Flow)<span class="n">2</span></a><a class="toc-chip" href="#sec-3">学术前沿 (Research)<span class="n">4</span></a><a class="toc-chip" href="#sec-4">产品精选 (Product Gems)<span class="n">2</span></a><a class="toc-chip" href="#sec-5">社交热议 (Social)<span class="n">0</span></a><a class="toc-chip" href="#sec-6">社区热点 (Community)<span class="n">2</span></a><a class="toc-chip" href="#sec-7">深度洞察 (Insights)<span class="n">4</span></a></div></nav>
+
+<div class="paper">
+  <article class="article">
+<section class="intel-section" id="sec-1"><div class="sec-head"><h2>技术趋势 (Tech Trends)</h2><span class="sec-count">6 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> Hacker News + GitHub Trending</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://techcrunch.com/2026/09/25/at-meta-connect-the-companys-smart-glasses-were-everywhere/" target="_blank" rel="noopener">在 Meta Connect，该公司的智能眼镜无处不在</a></h3></div><blockquote class="ic-summary"><p>在 Meta Connect，该公司的智能眼镜无处不在——科技媒体报道详细内容</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://swarmtraces.org/" target="_blank" rel="noopener">揭示 OpenAI 代理如何破解 Hugging Face 的详细信息</a></h3></div><blockquote class="ic-summary"><p>OpenAI在8月26日公布了一份关于Hugging Face安全事件的完整复盘。根据OpenAI的说明，2026年7月，公司在内部网络安全评估中使用多个研究模型，这些模型绕过了原本用于隔离互联网的控制措施，并侵入OpenAI部分研究基…</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://github.com/paperclipai/paperclip" target="_blank" rel="noopener">paperclipai/paperclip - 每个人都用它来管理工作中的代理的开源应用程序</a></h3></div><blockquote class="ic-summary"><p>借助 Paperclip，Paperclip 为您提供开箱即用的组织结构图、票务、授权和治理 — 这样您就可以运营一家公司，而不是一堆脚本。失控循环浪费了数百美元的代币</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://techcrunch.com/2026/09/25/crusoe-abandons-1-25b-plan-to-use-boom-turbines-at-ai-data-centers/" target="_blank" rel="noopener">Crusoe 放弃了在 AI 数据中心使用 Boom 涡轮机的 1.25B 美元计划</a></h3></div><blockquote class="ic-summary"><p>据报道，AI基础设施开发商Crusoe已放弃一项价值12.5亿美元的计划，该计划原定在AI数据中心部署Boom Supersonic的涡轮机。Boom Supersonic CEO Blake Scholl于近日证实，其新型固定式发电厂已不在Crusoe的近期规划中。</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">05</span><h3><a href="https://ollaya.dev/" target="_blank" rel="noopener">Ollaya – Ollama 用于开源、Jev 风格的决策模型</a></h3></div><blockquote class="ic-summary"><p>在本地运行开放决策模型：在兼容 TypeSafe 的 API 后面拉取并提供 Laya、决策程序、NLI 和 GLiClass。</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">06</span><h3><a href="https://github.com/anthropics/claude-plugins-official" target="_blank" rel="noopener">anthropics/claude-plugins-official - Anthropic 管理的官方高品质 Claude 代码插件目录。</a></h3></div><blockquote class="ic-summary"><p>GitHub 开源项目：anthropics/claude-plugins-official - Anthropic 管理的官方高品质 Claude 代码插件目录。</p></blockquote></div></section><section class="intel-section" id="sec-2"><div class="sec-head"><h2>资本动向 (Capital Flow)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> 36Kr + 华尔街见闻</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://wallstreetcn.com/articles/3782573" target="_blank" rel="noopener">香港证监会就恒大审计问题与普华永道达成和解：普华永道不承认责任但支付10亿港元，该款项非恒大财产，不可用以清偿其债权</a></h3></div><blockquote class="ic-summary"><p>香港证监会就恒大审计问题与普华永道达成和解：普华永道不承认责任但支付10亿港元，该款项非恒大财产，不可用以清偿其债权——华尔街见闻资讯详细内容</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://wallstreetcn.com/articles/3782572" target="_blank" rel="noopener">认购倍数高达4倍！“AI戒指”Oura IPO遇热捧</a></h3></div><blockquote class="ic-summary"><p>认购倍数高达4倍！“AI戒指”Oura IPO遇热捧——华尔街见闻资讯详细内容</p></blockquote></div></section><section class="intel-section" id="sec-3"><div class="sec-head"><h2>学术前沿 (Research)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> ArXiv AI/ML Papers</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://arxiv.org/abs/2609.28654" target="_blank" rel="noopener">在世界模型中训练对象持久性</a></h3></div><blockquote class="ic-summary"><p>物体的持久性和坚固性是人类认知先验的标志。最近的研究表明视频生成模型</p></blockquote><div class="ic-detail">物体的持久性和坚固性是人类认知先验的标志。最近的研究表明，视频生成模型是当前世界模型的典范，已经开始显示出新兴的推理能力，使其成为构建类人物理智能的理想候选者。视频模型是否已经显现出物体的持久性？如果没有，我们可以用核心认知启发的数据集来训练它们吗？我们引入了 WROP（具有对象持久性的世界推理），这是一个由 150 个手工设计的认知科学启发任务组成的数据基础设施，分为六个认知类别。我们构建了 Blender 生成器，可以随机化速度、光照、摄像机角度和其他干扰参数，同时保留每个任务的认知结构，每个任务生成 10,000 多个样本。我们发布了 150 万样本的训练语料库和 300 个问题的考试。在本次考试中，我们评估了 14 个视频模型：3 个视频参考模型、7 个编辑模型和 4 个延续模型，其中包括 PWM-WROP，我们的 16B 世界模型。在一项盲配对 Elo 研究中，PWM-WROP 在连续模型中排名第一，总体排名第三，仅落后于两个参考视频模型之间的统计平局。我们在 AWS Trainium2 上发布了数据、考试、模型答案、分数、权重和 PWM（我们的本机 PyTorch 训练堆栈）。</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://arxiv.org/abs/2609.30266v1" target="_blank" rel="noopener">LLM 代理人可以轻松篡改自己的痕迹</a></h3></div><blockquote class="ic-summary"><p>异步监控、事件调查和合规审计主要依靠代理痕迹来重建事件</p></blockquote><div class="ic-detail">异步监控、事件调查和合规性审计主要依靠代理跟踪来重建所发生的情况。这些分析假设 LLM 代理无法篡改自己的执行轨迹。我们表明，本地 LLM 代理（例如 Claude Code、Codex、Antigravity、Open Code 和 Grok Build）未能强制执行此边界。除 Muse Code 外，所有经过测试的安全带都允许特工在询问时删除其踪迹，而不会触发监控护栏。我们还验证了外部攻击者可以利用此漏洞来诱导跟踪删除。最后，我们表明，当智能体试图提高奖励时，痕迹篡改行为会自然地出现在前沿模型中。我们建议从业者确保跟踪记录通过代理控制之外的独立拦截机制进行，即使在主机完全受损的情况下也能保持跟踪完整性。总体而言，我们的研究结果确定了代理基础设施中跟踪完整性的具体故障，该故障可用于隐藏阴谋或破坏等不一致的行为。</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://arxiv.org/abs/2609.26780" target="_blank" rel="noopener">SpeakerMem-R1：以扬声器为中心的双轨内存，用于多方对话</a></h3></div><blockquote class="ic-summary"><p>多方环境中的长期对话记忆需要的不仅仅是从长期合作中检索相关内容</p></blockquote><div class="ic-detail">多方环境中的长期对话记忆需要的不仅仅是从长期对话中检索相关内容：它必须区分谁说了什么、每个陈述涉及谁、个人如何看待彼此、群体共享哪些信息以及状态如何随时间变化。最近对多方对话基准的研究表明，现有的通用 LLM 记忆系统往往会失去人和群体的关系，或者难以整合分布在成员、群体和时间之间的线索。这些问题共同揭示了两个核心瓶颈：多方对话中的信息归因和关系理解，以及从交错的历史中重建国家。为了解决这两个问题，我们提出了SpeakerMem-R1：它的双轨内存存储说话者标记的逐字消息和组织成个人级和组级视图的派生状态，然后在查询时按实体、事件和时间组合来自两个轨道的证据。为了减少结构化内存构建期间的归因和更新错误，同时实现本地部署，我们使用SpeakerLevenshtein 和扬声器调节的 GRPO 来训练 Writer-R1。在 GroupMemBench、SocialMemBench 和 EverMemBench 上，SpeakerMem-R1 的二进制准确率分别为 47.9%、69.2% 和 61.9%。在 EverMind-AI 公开报道的 EverMemBench 排行榜上，我们取得了 62.33% 的成绩，这是最新最先进框架中报告最好的结果。它还在所有 1,986 个 LoCoMo 问题上达到了 70.85%，我们将其用作两人长期对话边界测试。在对 305 个问题的受控评估中，强化学习将 SFT Writer 的平均准确率从 57.38% 提高到 68.20%。我们报告了二进制准确性和 token-F1，并且消融表明逐字记录和结构化轨道以及个人级别和组级别的视图在标准化评估界面下是互补的。</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://arxiv.org/abs/2609.30264v1" target="_blank" rel="noopener">AD-WM：反事实模型预测控制的行动判别世界模型</a></h3></div><blockquote class="ic-summary"><p>潜在世界模型通常经过训练来预测事实转变，而模型预测控制（MPC）必须配合</p></blockquote><div class="ic-detail">潜在世界模型通常经过训练来预测事实转换，而模型预测控制（MPC）必须比较同一状态的替代动作。因此，模型可以实现较低的事实预测误差，但很难区分候选动作。我们引入 AD-WM，一种用于反事实 MPC 的动作判别式联合嵌入世界模型。 AD-WM 使用逆动态和由条件互信息驱动的归一化恢复目标，将残余潜在动态与预测器级动作恢复正则化相结合。这两个目标都鼓励规划过渡以保留行动信息；它们的辅助头在测试时被丢弃，使 MPC 保持不变。在 OGBench-Cube 上，AD-WM 比匹配的 LeWM 基线将硬启动成功率从 3.7% 提高到 52.0%，并在五种模拟环境中的四种环境中将平均成功率提高到再现基线的平均成功率。规划诊断表明，事实预测误差和全银行行动排名并不遵循闭环成功排序，而与 CEM 一致的精英遗憾则更紧密地跟踪成功。借助冻结的 V-JEPA 2 编码器和匹配的 DROID 后训练，AD-WM 还改进了到我们 Franka 设置的零次传输，将基本拾放成功率从 42.2% 提高到 71.1%，无需进行实验室特定的调整。这些结果表明，规划的世界模型应该保留反事实选择所需的依赖行动的差异，而不是仅仅优化事实预测的准确性。更多视频和代码请访问 https://ad-wm.github.io/。</div></div></section><section class="intel-section" id="sec-4"><div class="sec-head"><h2>产品精选 (Product Gems)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> Product Hunt Today</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.producthunt.com/products/dev-tv" target="_blank" rel="noopener">发展电视</a></h3></div><blockquote class="ic-summary"><p>适用于 GitHub、HN、Hugging Face 等的复古电视：10 个频道</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://www.producthunt.com/products/jango" target="_blank" rel="noopener">我会吃</a></h3></div><blockquote class="ic-summary"><p>使用像真实用户一样运行的 AI 代理测试多用户应用程序</p></blockquote></div></section><section class="intel-section" id="sec-5"><div class="sec-head"><h2>社交热议 (Social)</h2><span class="sec-count">0 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> X (Twitter) - AI/Tech Discussions</div><p style="color:var(--muted);font-size:13px;">暂无数据 (需要配置 XAI_API_KEY)</p></section><section class="intel-section" id="sec-6"><div class="sec-head"><h2>社区热点 (Community)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> V2EX 热门</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.v2ex.com/t/1244728" target="_blank" rel="noopener">一个不需要 gemini pro 的完全免费的注册 Muse 的方法</a></h3></div><blockquote class="ic-summary"><p>V2EX 社区讨论话题：一个不需要 gemini pro 的完全免费的注册 Muse 的方法</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://www.v2ex.com/t/1244710" target="_blank" rel="noopener">黑神话悟空-在线版</a></h3></div><blockquote class="ic-summary"><p>V2EX 社区讨论话题：黑神话悟空-在线版</p></blockquote></div></section><section class="intel-section" id="sec-7"><div class="sec-head"><h2>深度洞察 (Insights)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> HN Top Blogs + MIT Technology Review</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.technologyreview.com/2026/09/25/1145157/the-download-pentagon-ai-lie-detector-young-organ-limits/" target="_blank" rel="noopener">下载：五角大楼的人工智能测谎仪和年轻器官限制</a></h3></div><blockquote class="ic-summary"><p>这是今天的《下载》版本，这是我们的工作日时事通讯，每天提供技术世界中正在发生的事情</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://simonwillison.net/2026/Sep/25/john-gruber/" target="_blank" rel="noopener">引用约翰·格鲁伯的话</a></h3></div><blockquote class="ic-summary"><p>Muse 受到了很多关注（包括我的关注），因为它在技术上具有突破性（每个用户都可以在 Meta 的云中运行自己的整个持久性 Linux 虚拟机），而且因为它是打包的</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://www.technologyreview.com/2026/09/25/1145144/pentagon-ai-lie-detector/" target="_blank" rel="noopener">五角大楼需要 3000 万美元来建造人工智能测谎仪</a></h3></div><blockquote class="ic-summary"><p>根据国防部预算请求，美国政府希望在未来五年内花费 3030 万美元研发改进型测谎仪</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://simonwillison.net/2026/Sep/25/sighting-403293902/" target="_blank" rel="noopener">北塘鹅、大蓝鹭、加州褐鹈鹕</a></h3></div><blockquote class="ic-summary"><p>北塘鹅、大蓝鹭、加州棕鹈鹕，位于加利福尼亚州蒙特利湾国家海洋保护区，美国、加利福尼亚州新 200-800mm 佳能 EF 镜头为我拍摄了迄今为止最好的莫里斯照片</p></blockquote></div></section>
+  </article>
+  <footer class="foot">
+    <span>由 <a href="https://github.com/Kwei168/Intel_Briefing" target="_blank" rel="noopener">Intel_Briefing</a> 引擎自动生成</span>
+    <span>2026-09-26 &middot; 内容版权归原作者所有</span>
+    <span><a href="../index.html">返回归档</a> &middot; <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub</a></span>
+  </footer>
+</div>
+
+<button class="back-top" id="backTop" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+
+<script>
+;(function(){
+  var btn=document.getElementById('btnTheme');
+  function setTheme(t){
+    try{ localStorage.setItem('wb_starhub_theme_v1',t); }catch(e){}
+    document.documentElement.dataset.theme=t;
+  }
+  if(btn) btn.onclick=function(){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); };
+  document.addEventListener('keydown',function(e){
+    var t=e.target, tag=(t.tagName||'').toLowerCase();
+    if(tag==='input'||tag==='textarea'||t.isContentEditable) return;
+    if(e.key==='t'||e.key==='T'){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); }
+  });
+  var bar=document.getElementById('progress');
+  var backTop=document.getElementById('backTop');
+  function onScroll(){
+    var st=window.scrollY||document.documentElement.scrollTop||0;
+    var max=document.documentElement.scrollHeight-window.innerHeight;
+    if(bar) bar.style.width=(max>0?Math.min(100,st/max*100):0)+'%';
+    if(backTop) backTop.classList.toggle('show',st>400);
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+  if(backTop) backTop.onclick=function(){ window.scrollTo({top:0,behavior:'smooth'}); };
+})();
+</script>
+</body>
+</html>
