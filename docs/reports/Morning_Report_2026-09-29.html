@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2026-09-29 情报日报 - Intel Briefing</title>
+<script>try{var _t=localStorage.getItem('wb_starhub_theme_v1')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=_t;}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#faf9f7; --card:#fffdf9; --card-2:#f3efe6; --card-3:#ebe6db;
+  --ink:#1c1917; --muted:#5f594c; --faint:#6e685e;
+  --line:#ddd6c9; --line-strong:#b9b0a2;
+  --brand:#2f5d8a; --brand-strong:#24496e; --brand-line:#b9cde0; --brand-weak:#e7eef4;
+  --display:"Noto Serif SC","Georgia","Times New Roman","Songti SC","SimSun","STSong",serif;
+  --body:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono","SF Mono","Fira Code","Consolas",monospace;
+  --radius:8px;
+  --shadow:0 1px 2px rgba(28,25,23,.05);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.10),0 2px 4px rgba(0,0,0,.06);
+}
+[data-theme="dark"] {
+  --bg:#161412; --card:#1d1a17; --card-2:#262019; --card-3:#2f2820;
+  --ink:#ece7df; --muted:#a59d90; --faint:#a8a090;
+  --line:#37312a; --line-strong:#4a4339;
+  --brand:#8fb3d9; --brand-strong:#b0cbe6; --brand-line:#3d5a78; --brand-weak:#22303f;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.4);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; scroll-padding-top:112px; }
+body { font-family:var(--body); background:var(--bg); color:var(--ink); line-height:1.55; font-size:14px; -webkit-font-smoothing:antialiased; }
+a { color:inherit; text-decoration:none; }
+button { font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+::selection { background:var(--brand-weak); color:var(--ink); }
+button:focus-visible, a:focus-visible { outline:2px solid var(--brand); outline-offset:2px; border-radius:var(--radius); }
+
+header { position:sticky; top:0; z-index:40; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+[data-theme="dark"] header { background:rgba(22,20,18,.94); }
+.hd { max-width:860px; margin:0 auto; padding:9px 20px; display:flex; align-items:center; gap:12px; }
+.hd .logo { display:flex; align-items:center; gap:8px; flex:none; font-family:var(--display); font-weight:900; font-size:16px; }
+.hd .logo .sub { font-size:11px; color:var(--muted); font-weight:400; margin-left:2px; font-family:var(--body); }
+.hd .logo svg { color:var(--brand); }
+.hd .nav-links { display:flex; align-items:center; gap:2px; flex:1; }
+.hd .nav-links a { display:inline-flex; align-items:center; gap:5px; white-space:nowrap; padding:5px 12px; border-radius:999px; font-size:12.5px; font-weight:500; border:1px solid transparent; transition:all .15s; }
+.hd .nav-links a:hover { background:var(--card); border-color:var(--line); }
+.hd .nav-links a.active { background:var(--brand-weak); border-color:var(--brand-line); color:var(--brand-strong); font-weight:600; }
+.theme-btn { width:30px; height:30px; border-radius:999px; background:var(--card); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; flex:none; transition:all .15s; }
+.theme-btn:hover { border-color:var(--brand-line); color:var(--brand-strong); }
+.theme-btn svg { width:14px; height:14px; }
+.icon-moon { display:none; }
+[data-theme="dark"] .icon-sun { display:none; }
+[data-theme="dark"] .icon-moon { display:block; }
+.progress { position:absolute; left:0; bottom:-1px; height:2px; background:var(--brand); width:0%; z-index:41; }
+
+.mast { max-width:860px; margin:0 auto; padding:26px 20px 0; text-align:center; }
+.mast-rule { display:flex; align-items:center; gap:14px; margin:0 0 6px; }
+.mast-rule::before,.mast-rule::after { content:""; flex:1; height:1px; background:var(--line-strong); }
+.mast-rule span { font-family:var(--mono); font-size:11px; letter-spacing:.14em; color:var(--muted); font-weight:500; white-space:nowrap; }
+.mast-title { font-family:var(--display); font-size:clamp(30px,6vw,44px); font-weight:900; letter-spacing:.05em; line-height:1.2; margin:4px 0 10px; }
+.mast-strip { display:flex; flex-wrap:wrap; gap:4px 22px; justify-content:center; align-items:baseline; margin-top:6px; padding:9px 14px; border-top:3px double var(--line-strong); border-bottom:1px solid var(--line-strong); }
+.ms-item { font-size:12px; color:var(--muted); }
+.ms-item b { font-weight:600; color:var(--faint); font-size:10.5px; letter-spacing:.08em; margin-right:6px; }
+.ms-item i { font-family:var(--mono); font-style:normal; color:var(--ink); font-size:11.5px; }
+
+.toc { position:sticky; top:52px; z-index:30; max-width:860px; margin:14px auto 0; padding:8px 20px; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; }
+[data-theme="dark"] .toc { background:rgba(22,20,18,.94); }
+.toc-label { flex:none; font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; color:var(--faint); }
+.toc-chips { display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+.toc-chips::-webkit-scrollbar { display:none; }
+.toc-chip { flex:none; display:inline-flex; align-items:center; gap:5px; padding:3px 11px; border-radius:999px; border:1px solid var(--line); background:var(--card); font-size:12px; color:var(--muted); transition:all .15s; }
+.toc-chip:hover { border-color:var(--brand-line); color:var(--brand-strong); background:var(--brand-weak); }
+.toc-chip .n { font-family:var(--mono); font-size:10px; opacity:.75; }
+
+.paper { max-width:860px; margin:0 auto; padding:0 20px 56px; }
+.article { margin-top:26px; }
+
+.intel-section { margin:34px 0 0; }
+.sec-head { display:flex; align-items:center; gap:12px; padding-bottom:10px; border-bottom:1px solid var(--line); margin-bottom:14px; }
+.sec-head h2 { display:flex; align-items:center; gap:10px; font-family:var(--display); font-size:clamp(19px,2.6vw,24px); font-weight:700; line-height:1.3; margin:0; }
+.sec-head h2::before { content:""; flex:none; width:10px; height:10px; border-radius:2px; background:var(--brand); }
+.sec-count { margin-left:auto; flex:none; font-family:var(--mono); font-size:11px; color:var(--faint); }
+.sec-src { display:flex; align-items:center; gap:8px; margin:-4px 0 14px; font-family:var(--mono); font-size:11.5px; color:var(--muted); }
+.sec-src .src-label { flex:none; font-size:9.5px; font-weight:700; letter-spacing:.1em; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:4px; padding:1px 6px; }
+
+.intel-card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px 12px; margin:0 0 12px; transition:box-shadow .18s, border-color .18s, transform .18s; }
+.intel-card:hover { border-color:var(--brand-line); box-shadow:var(--shadow-lift); transform:translateY(-2px); }
+.ic-head { display:flex; align-items:flex-start; gap:10px; }
+.ic-num { flex:none; font-family:var(--mono); font-size:11px; font-weight:700; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:6px; padding:2px 7px; margin-top:2px; }
+.ic-head h3 { font-family:var(--display); font-size:15.5px; font-weight:700; line-height:1.5; margin:0; }
+.ic-head h3 a { color:var(--ink); transition:color .15s; border-bottom:none; }
+.ic-head h3 a:hover { color:var(--brand-strong); }
+.ic-summary { margin:10px 0 0; padding:9px 14px; background:var(--brand-weak); border-left:3px solid var(--brand); border-radius:0 var(--radius) var(--radius) 0; color:var(--muted); font-size:13px; line-height:1.75; }
+.ic-summary p { margin:0; }
+.ic-detail { margin-top:10px; font-size:13.5px; color:var(--ink); line-height:1.75; }
+.ic-foot { display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:10px; padding-top:9px; border-top:1px solid var(--line); font-size:11.5px; color:var(--muted); }
+.ic-foot a { color:var(--brand-strong); font-weight:600; border-bottom:none; }
+.ic-foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+
+.foot { margin-top:44px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; display:flex; flex-wrap:wrap; gap:6px 18px; justify-content:space-between; }
+.foot a { color:var(--brand-strong); font-weight:500; }
+.foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+.back-top { position:fixed; bottom:24px; right:24px; width:40px; height:40px; border-radius:50%; background:var(--card); border:1px solid var(--line); color:var(--muted); display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; pointer-events:none; transition:all .2s; z-index:90; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+.back-top.show { opacity:1; pointer-events:auto; }
+.back-top:hover { color:var(--brand-strong); border-color:var(--brand-line); background:var(--brand-weak); }
+.back-top svg { width:18px; height:18px; }
+
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { transition-duration:0s!important; animation-duration:0s!important; } }
+
+@media (max-width:700px) {
+  .hd { padding:8px 12px; }
+  .hd .nav-links a { padding:5px 9px; font-size:12px; }
+  .mast { padding:18px 14px 0; }
+  .mast-title { letter-spacing:.02em; }
+  .mast-rule span { font-size:10px; letter-spacing:.1em; }
+  .mast-rule { gap:8px; }
+  .mast-strip { gap:3px 14px; padding:8px 10px; }
+  .toc { top:50px; padding:7px 12px; gap:8px; }
+  .paper { padding:0 14px 48px; }
+  .intel-section { margin:26px 0 0; }
+  .sec-head h2 { font-size:18px; }
+  .intel-card { padding:12px 13px 10px; }
+  .ic-head { gap:8px; }
+  .ic-head h3 { font-size:14.5px; }
+  .ic-summary { font-size:12.5px; }
+  .back-top { bottom:16px; right:16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <a class="logo" href="../index.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="2.2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4"/><path d="M7.8 16.2a6 6 0 0 1 0-8.4"/><path d="M19.1 4.9a10 10 0 0 1 0 14.2"/><path d="M4.9 19.1a10 10 0 0 1 0-14.2"/></svg>
+      <span>Intel Briefing<span class="sub">情报日报</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="../index.html" class="active">日报归档</a>
+      <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub 收藏台</a>
+    </nav>
+    <button class="theme-btn" id="btnTheme" title="切换主题 (T)" aria-label="切换明暗主题">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M18.7 5.3 17 7M7 17l-1.7 1.7"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></svg>
+    </button>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<div class="mast">
+  <div class="mast-rule"><span>2026-09-29</span><span>MORNING INTELLIGENCE BRIEFING</span></div>
+  <h1 class="mast-title">全球情报日报</h1>
+  <div class="mast-strip"><span class="ms-item"><b>生成时间</b><i>02:47</i></span><span class="ms-item"><b>数据源</b><i>HN, GitHub, 36Kr, WallStreetCN, V2EX, PH, ArXiv, X, TechCrunch, MIT TR + StarHub (716 RSS)</i></span><span class="ms-item"><b>条目</b><i>20 条</i></span></div>
+</div>
+
+<nav class="toc" aria-label="章节目录"><span class="toc-label">CONTENTS</span><div class="toc-chips"><a class="toc-chip" href="#sec-1">技术趋势 (Tech Trends)<span class="n">6</span></a><a class="toc-chip" href="#sec-2">资本动向 (Capital Flow)<span class="n">2</span></a><a class="toc-chip" href="#sec-3">学术前沿 (Research)<span class="n">4</span></a><a class="toc-chip" href="#sec-4">产品精选 (Product Gems)<span class="n">2</span></a><a class="toc-chip" href="#sec-5">社交热议 (Social)<span class="n">0</span></a><a class="toc-chip" href="#sec-6">社区热点 (Community)<span class="n">2</span></a><a class="toc-chip" href="#sec-7">深度洞察 (Insights)<span class="n">4</span></a></div></nav>
+
+<div class="paper">
+  <article class="article">
+<section class="intel-section" id="sec-1"><div class="sec-head"><h2>技术趋势 (Tech Trends)</h2><span class="sec-count">6 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> Hacker News + GitHub Trending</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://techcrunch.com/2026/09/28/peak-xv-goes-bigger-at-seed-with-new-surge-cohort-as-series-a-bar-rises/" target="_blank" rel="noopener">Peak XV 将 Surge 种子投资上限提高至 500 万美元，推出 18 家初创公司</a></h3></div><blockquote class="ic-summary"><p>Peak XV 将 Surge 种子投资上限提高至 500 万美元，推出 18 家初创公司——科技媒体报道详细内容</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://github.com/firelex/jeff" target="_blank" rel="noopener">Jeff – Jev 兼容的 0.8B 决策模型，在家训练，约 30 毫秒</a></h3></div><blockquote class="ic-summary"><p>GitHub 开源项目：Jeff – Jev 兼容的 0.8B 决策模型，在家训练，约 30 毫秒</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://github.com/debpalash/VoiceStudio" target="_blank" rel="noopener">debpalash/VoiceStudio - VoiceStudio 是开源、完全本地化的 ElevenLabs 替代品 - 语音克隆、语音设计、视频配音、听写、转录和有声读物创作，支持 646 种语言。</a></h3></div><blockquote class="ic-summary"><p>GitHub 开源项目：debpalash/VoiceStudio - VoiceStudio 是开源、完全本地化的 ElevenLabs 替代品 - 语音克隆、语音设计、视频配音、听写、转录和有声读物创作，支持 646 种语言。</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://techcrunch.com/2026/09/28/openai-reportedly-ditches-model-over-safety-concerns/" target="_blank" rel="noopener">据报道 OpenAI 出于安全考虑放弃了模型</a></h3></div><blockquote class="ic-summary"><p>据报道 OpenAI 出于安全考虑放弃了模型——科技媒体报道详细内容</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">05</span><h3><a href="https://mubi.com/en/notebook/posts/pirating-the-pirates" target="_blank" rel="noopener">盗版海盗</a></h3></div><blockquote class="ic-summary"><p>盗版海盗（外文名：Plagiarizarrr）是 暴雪娱乐 旗下卡牌游戏《炉石传说》中潜行者与牧师双职业的随从卡牌，出自&amp;quot; 传奇音乐节 &amp;quot;扩展包，拥有3点生命值。该卡牌法力值消耗为3，攻击力为4，战吼效果可复制对手牌库顶的一张牌，可通过开启&amp;quot;传奇音乐节&amp;quot;卡包、购买&amp;quot; 音乐之劫 &amp;quot;普通系列/金色 ...</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">06</span><h3><a href="https://github.com/paperclipai/paperclip" target="_blank" rel="noopener">paperclipai/paperclip - 每个人都用它来管理工作中的代理的开源应用程序</a></h3></div><blockquote class="ic-summary"><p>GitHub 开源项目：paperclipai/paperclip - 每个人都用它来管理工作中的代理的开源应用程序</p></blockquote></div></section><section class="intel-section" id="sec-2"><div class="sec-head"><h2>资本动向 (Capital Flow)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> 36Kr + 华尔街见闻</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://wallstreetcn.com/articles/3782705" target="_blank" rel="noopener">Jev创始人：“造产品、不造神”，追求“极致可靠性”，Jev将逆转“软件灭绝论”</a></h3></div><blockquote class="ic-summary"><p>Jev创始人：“造产品、不造神”，追求“极致可靠性”，Jev将逆转“软件灭绝论”——华尔街见闻资讯详细内容</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://wallstreetcn.com/articles/3782701" target="_blank" rel="noopener">FAA叫停波音737 MAX 10认证，股价跌近7%</a></h3></div><blockquote class="ic-summary"><p>FAA叫停波音737 MAX 10认证，股价跌近7%——华尔街见闻资讯详细内容</p></blockquote></div></section><section class="intel-section" id="sec-3"><div class="sec-head"><h2>学术前沿 (Research)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> ArXiv AI/ML Papers</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://arxiv.org/abs/2609.32849v1" target="_blank" rel="noopener">动态文本属性图边缘分类的迁移学习</a></h3></div><blockquote class="ic-summary"><p>学习动态文本属性图（DyTAG）的可转移表示需要模型来捕获底层</p></blockquote><div class="ic-detail">学习动态文本属性图 (DyTAG) 的可转移表示需要模型来捕获跨域持续存在的底层交互动态。然而，现有的方法往往过度适应特定领域的结构、时间和语义模式，限制了分布变化下的边缘分类性能。为了揭示和解决这个问题，我们正式建立了一种用于 DyTAG 边缘分类的留一域（LODO）转移学习协议。根据该协议，我们证明了最先进的动态图学习自监督方法在转移到看不见的领域时表现不佳。引人注目的是，现有方法的性能较差，我们引入了结构和时间上无意识的事件包（BoE）模型，该模型仅输入节点和边缘文本特征的无序序列。从 BoE 出发，我们提出了时空语义对齐（STSA），它集成了一个时空编码器，将时间增量和节点出现频率的表示融合到一个统一的流形中。 STSA 采用对比语义预测目标进行训练，该目标将边缘表示锚定到由预训练语言模型初始化的多域文本潜在空间，提供了优于 BoE 和我们评估的所有现有方法的稳健先验。</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://arxiv.org/abs/2609.31620" target="_blank" rel="noopener">FuseReg：正则化层融合可缓解表示自动编码器中的重建生成差距</a></h3></div><blockquote class="ic-summary"><p>表示自动编码器 (RAE) 重用来自预训练视觉编码器的特征作为重建和扩散延迟</p></blockquote><div class="ic-detail">表示自动编码器 (RAE) 重用预训练视觉编码器的特征作为重建和扩散潜伏，将强大的视觉表示集成到图像生成中。然而，RAE 仍然需要决定哪些编码器层形成生成器和像素解码器的共享潜在空间。这种选择涉及到权衡。较浅的层往往能更好地保留精细的像素细节，而较深的层往往会产生更好的生成指标。因此，固定启发式层融合将受益于不同信息的两个阶段耦合起来。我们引入了 FuseReg，它通过对编码器层的随机子集进行训练来取代启发式特征选择。我们从理论上分析了潜在的机制：子集采样明确地惩罚了对跨层分歧的敏感性。在具有 DINOv3-L 的 ImageNet-256 上，单个 FuseReg 解码器无需重新训练即可从完整、稀疏和单层融合中进行重建，从而实现比专门用于固定融合的解码器更高的 PSNR。这种灵活性也有利于生成：使用未更改的 RAEv2 DiT-XL 生成器，仅更换解码器即可将非引导 gFID 减少 27%。同样的正则化原理也适用于扩散训练，两个阶段的联合正则化在 DiT-Base 上将无引导 gFID 减少了 29%。这些结果表明，训练下游模型以实现层融合鲁棒性可以缩小重建生成间隙，而无需修改预训练的编码器。</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://arxiv.org/abs/2609.32837v1" target="_blank" rel="noopener">边想象边扫描：机器人超声导航的场景图世界模型</a></h3></div><blockquote class="ic-summary"><p>超声（美国）采集取决于操作员解释解剖结构和预测视图将如何变化的能力</p></blockquote><div class="ic-detail">超声（US）采集取决于操作员解释解剖结构和预测视图如何随探头运动变化的能力。许多机器人美国导航方法在没有明确预测这些解剖变化的情况下选择动作。我们提出了 SonoGraph-WM，一种用于预期探测导航的行动和目标条件世界模型。该模型将解剖结构表示为场景图 (SG)，捕获可见结构、其几何形状和空间关系，而无需合成 US 图像。给定 SG 和探测姿势的历史，统一的 Transformer 联合预测未来的 SG 和姿势。后退视野规划器递归地想象候选轨迹，选择到达目标图的最短预测路径，并在根据新观察重新规划之前在较短的执行范围内遵循它。为了减少对跟踪和解剖注释的 US 序列的依赖，我们从沿着表面约束探针轨迹的计算机断层扫描 (CT) 标签图生成对齐的 SG-姿势训练数据。在四个保留的 CT 病例中，空间关系 F1 在 20 个预测步骤中保持在 93% 以上，并且使用注释衍生的 SG，闭环导航对胆囊和胰腺分别实现了 77.50% 和 75.00% 的成功。在使用标签图派生 SG 的机器人幻影导航实验中，规划器在 73.7% 的试验中达到了目标视图。这些发现支持用于探针规划的 CT 监督解剖世界建模，并强调了频繁观察更新对于可靠导航的重要性。项目页面：https://noseefood.github.io/us-sonograph-wm/</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://arxiv.org/abs/2609.29845" target="_blank" rel="noopener">你的变压器可以同时容纳两个想法：法学硕士线性叠加的证据</a></h3></div><blockquote class="ic-summary"><p>虽然大型语言模型 (LLM) 依赖于高度非线性组件，但在这项工作中，我们证明它们表现出 f</p></blockquote><div class="ic-detail">虽然大型语言模型 (LLM) 依赖于高度非线性的组件，但在这项工作中，我们证明它们表现出基本的线性：当来自不同文本流的输入线性组合时，模型输出各个下一个令牌分布的叠加。我们将其称为叠加线性假设。我们提供的证据表明，叠加是 Transformer 架构的固有属性，而不是训练的自然结果；事实上，我们观察到随着预训练的进行，它往往会减少。然而，我们证明，通过轻量级微调可以基本上恢复线性，从而显着减少预测的下一个令牌分布与单个下一个令牌分布的平均值之间的差异。最后，我们引入了一种引导解码过程，可以解开叠加的输出，从而能够从单个前向传递同时生成两个相干的延续。</div></div></section><section class="intel-section" id="sec-4"><div class="sec-head"><h2>产品精选 (Product Gems)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> Product Hunt Today</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.producthunt.com/products/lattice-11" target="_blank" rel="noopener">格子</a></h3></div><blockquote class="ic-summary"><p>这是一则来自Product Hunt 产品的内容</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://www.producthunt.com/products/vantage-ai-2" target="_blank" rel="noopener">优势.ai</a></h3></div><blockquote class="ic-summary"><p>这是一则来自Product Hunt 产品的内容</p></blockquote></div></section><section class="intel-section" id="sec-5"><div class="sec-head"><h2>社交热议 (Social)</h2><span class="sec-count">0 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> X (Twitter) - AI/Tech Discussions</div><p style="color:var(--muted);font-size:13px;">暂无数据 (需要配置 XAI_API_KEY)</p></section><section class="intel-section" id="sec-6"><div class="sec-head"><h2>社区热点 (Community)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> V2EX 热门</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.v2ex.com/t/1245409" target="_blank" rel="noopener">兄弟们，我分手了，好难受</a></h3></div><blockquote class="ic-summary"><p>V2EX 社区讨论话题：兄弟们，我分手了，好难受</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://www.v2ex.com/t/1245193" target="_blank" rel="noopener">戴假发已经三年了，分享给脱发的兄弟一些经验~</a></h3></div><blockquote class="ic-summary"><p>V2EX 社区讨论话题：戴假发已经三年了，分享给脱发的兄弟一些经验~</p></blockquote></div></section><section class="intel-section" id="sec-7"><div class="sec-head"><h2>深度洞察 (Insights)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> HN Top Blogs + MIT Technology Review</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.technologyreview.com/2026/09/28/1144890/roundtables-the-deadly-failures-of-the-virtual-border-wall/" target="_blank" rel="noopener">圆桌会议：虚拟边界墙的致命失败</a></h3></div><blockquote class="ic-summary"><p>过去 25 年里，美国花费数十亿美元沿其南部边境修建了监视塔“虚拟墙”，并承诺它们将帮助检测和利用</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://bastardica.mitpit.com/" target="_blank" rel="noopener">混蛋</a></h3></div><blockquote class="ic-summary"><p>“一家混蛋网络字体的铸造厂。”默认是 Times New Roman 的一个版本，但每第 7 个字形都会替换为 Arial 字形，但您可以拨打任何您想要的混种化</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://www.technologyreview.com/2026/09/28/1145230/when-can-we-say-ai-made-a-scientific-discovery/" target="_blank" rel="noopener">我们什么时候可以说人工智能做出了科学发现？</a></h3></div><blockquote class="ic-summary"><p>上周三，Anthropic 宣布今年早些时候启动了一个分子生物学实验室，克劳德特工在这里阅读和猜想硬生物学问题，人类科学家则进行实验</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://sancho.bearblog.dev/google-weird/" target="_blank" rel="noopener">“谷歌什么时候变得这么奇怪了？”</a></h3></div><blockquote class="ic-summary"><p>桑乔·潘萨（Sancho Panza）：我最近在进行简单的谷歌搜索时有过一次经历，它非常奇怪，以至于让我停下了脚步</p></blockquote></div></section>
+  </article>
+  <footer class="foot">
+    <span>由 <a href="https://github.com/Kwei168/Intel_Briefing" target="_blank" rel="noopener">Intel_Briefing</a> 引擎自动生成</span>
+    <span>2026-09-29 &middot; 内容版权归原作者所有</span>
+    <span><a href="../index.html">返回归档</a> &middot; <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub</a></span>
+  </footer>
+</div>
+
+<button class="back-top" id="backTop" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+
+<script>
+;(function(){
+  var btn=document.getElementById('btnTheme');
+  function setTheme(t){
+    try{ localStorage.setItem('wb_starhub_theme_v1',t); }catch(e){}
+    document.documentElement.dataset.theme=t;
+  }
+  if(btn) btn.onclick=function(){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); };
+  document.addEventListener('keydown',function(e){
+    var t=e.target, tag=(t.tagName||'').toLowerCase();
+    if(tag==='input'||tag==='textarea'||t.isContentEditable) return;
+    if(e.key==='t'||e.key==='T'){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); }
+  });
+  var bar=document.getElementById('progress');
+  var backTop=document.getElementById('backTop');
+  function onScroll(){
+    var st=window.scrollY||document.documentElement.scrollTop||0;
+    var max=document.documentElement.scrollHeight-window.innerHeight;
+    if(bar) bar.style.width=(max>0?Math.min(100,st/max*100):0)+'%';
+    if(backTop) backTop.classList.toggle('show',st>400);
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+  if(backTop) backTop.onclick=function(){ window.scrollTo({top:0,behavior:'smooth'}); };
+})();
+</script>
+</body>
+</html>
