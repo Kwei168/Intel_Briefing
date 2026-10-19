@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2026-10-19 情报日报 - Intel Briefing</title>
+<script>try{var _t=localStorage.getItem('wb_starhub_theme_v1')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=_t;}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#faf9f7; --card:#fffdf9; --card-2:#f3efe6; --card-3:#ebe6db;
+  --ink:#1c1917; --muted:#5f594c; --faint:#6e685e;
+  --line:#ddd6c9; --line-strong:#b9b0a2;
+  --brand:#2f5d8a; --brand-strong:#24496e; --brand-line:#b9cde0; --brand-weak:#e7eef4;
+  --display:"Noto Serif SC","Georgia","Times New Roman","Songti SC","SimSun","STSong",serif;
+  --body:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono","SF Mono","Fira Code","Consolas",monospace;
+  --radius:8px;
+  --shadow:0 1px 2px rgba(28,25,23,.05);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.10),0 2px 4px rgba(0,0,0,.06);
+}
+[data-theme="dark"] {
+  --bg:#161412; --card:#1d1a17; --card-2:#262019; --card-3:#2f2820;
+  --ink:#ece7df; --muted:#a59d90; --faint:#a8a090;
+  --line:#37312a; --line-strong:#4a4339;
+  --brand:#8fb3d9; --brand-strong:#b0cbe6; --brand-line:#3d5a78; --brand-weak:#22303f;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.4);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; scroll-padding-top:112px; }
+body { font-family:var(--body); background:var(--bg); color:var(--ink); line-height:1.55; font-size:14px; -webkit-font-smoothing:antialiased; }
+a { color:inherit; text-decoration:none; }
+button { font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+::selection { background:var(--brand-weak); color:var(--ink); }
+button:focus-visible, a:focus-visible { outline:2px solid var(--brand); outline-offset:2px; border-radius:var(--radius); }
+
+header { position:sticky; top:0; z-index:40; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+[data-theme="dark"] header { background:rgba(22,20,18,.94); }
+.hd { max-width:860px; margin:0 auto; padding:9px 20px; display:flex; align-items:center; gap:12px; }
+.hd .logo { display:flex; align-items:center; gap:8px; flex:none; font-family:var(--display); font-weight:900; font-size:16px; }
+.hd .logo .sub { font-size:11px; color:var(--muted); font-weight:400; margin-left:2px; font-family:var(--body); }
+.hd .logo svg { color:var(--brand); }
+.hd .nav-links { display:flex; align-items:center; gap:2px; flex:1; }
+.hd .nav-links a { display:inline-flex; align-items:center; gap:5px; white-space:nowrap; padding:5px 12px; border-radius:999px; font-size:12.5px; font-weight:500; border:1px solid transparent; transition:all .15s; }
+.hd .nav-links a:hover { background:var(--card); border-color:var(--line); }
+.hd .nav-links a.active { background:var(--brand-weak); border-color:var(--brand-line); color:var(--brand-strong); font-weight:600; }
+.theme-btn { width:30px; height:30px; border-radius:999px; background:var(--card); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; flex:none; transition:all .15s; }
+.theme-btn:hover { border-color:var(--brand-line); color:var(--brand-strong); }
+.theme-btn svg { width:14px; height:14px; }
+.icon-moon { display:none; }
+[data-theme="dark"] .icon-sun { display:none; }
+[data-theme="dark"] .icon-moon { display:block; }
+.progress { position:absolute; left:0; bottom:-1px; height:2px; background:var(--brand); width:0%; z-index:41; }
+
+.mast { max-width:860px; margin:0 auto; padding:26px 20px 0; text-align:center; }
+.mast-rule { display:flex; align-items:center; gap:14px; margin:0 0 6px; }
+.mast-rule::before,.mast-rule::after { content:""; flex:1; height:1px; background:var(--line-strong); }
+.mast-rule span { font-family:var(--mono); font-size:11px; letter-spacing:.14em; color:var(--muted); font-weight:500; white-space:nowrap; }
+.mast-title { font-family:var(--display); font-size:clamp(30px,6vw,44px); font-weight:900; letter-spacing:.05em; line-height:1.2; margin:4px 0 10px; }
+.mast-strip { display:flex; flex-wrap:wrap; gap:4px 22px; justify-content:center; align-items:baseline; margin-top:6px; padding:9px 14px; border-top:3px double var(--line-strong); border-bottom:1px solid var(--line-strong); }
+.ms-item { font-size:12px; color:var(--muted); }
+.ms-item b { font-weight:600; color:var(--faint); font-size:10.5px; letter-spacing:.08em; margin-right:6px; }
+.ms-item i { font-family:var(--mono); font-style:normal; color:var(--ink); font-size:11.5px; }
+
+.toc { position:sticky; top:52px; z-index:30; max-width:860px; margin:14px auto 0; padding:8px 20px; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; }
+[data-theme="dark"] .toc { background:rgba(22,20,18,.94); }
+.toc-label { flex:none; font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; color:var(--faint); }
+.toc-chips { display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+.toc-chips::-webkit-scrollbar { display:none; }
+.toc-chip { flex:none; display:inline-flex; align-items:center; gap:5px; padding:3px 11px; border-radius:999px; border:1px solid var(--line); background:var(--card); font-size:12px; color:var(--muted); transition:all .15s; }
+.toc-chip:hover { border-color:var(--brand-line); color:var(--brand-strong); background:var(--brand-weak); }
+.toc-chip .n { font-family:var(--mono); font-size:10px; opacity:.75; }
+
+.paper { max-width:860px; margin:0 auto; padding:0 20px 56px; }
+.article { margin-top:26px; }
+
+.intel-section { margin:34px 0 0; }
+.sec-head { display:flex; align-items:center; gap:12px; padding-bottom:10px; border-bottom:1px solid var(--line); margin-bottom:14px; }
+.sec-head h2 { display:flex; align-items:center; gap:10px; font-family:var(--display); font-size:clamp(19px,2.6vw,24px); font-weight:700; line-height:1.3; margin:0; }
+.sec-head h2::before { content:""; flex:none; width:10px; height:10px; border-radius:2px; background:var(--brand); }
+.sec-count { margin-left:auto; flex:none; font-family:var(--mono); font-size:11px; color:var(--faint); }
+.sec-src { display:flex; align-items:center; gap:8px; margin:-4px 0 14px; font-family:var(--mono); font-size:11.5px; color:var(--muted); }
+.sec-src .src-label { flex:none; font-size:9.5px; font-weight:700; letter-spacing:.1em; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:4px; padding:1px 6px; }
+
+.intel-card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px 12px; margin:0 0 12px; transition:box-shadow .18s, border-color .18s, transform .18s; }
+.intel-card:hover { border-color:var(--brand-line); box-shadow:var(--shadow-lift); transform:translateY(-2px); }
+.ic-head { display:flex; align-items:flex-start; gap:10px; }
+.ic-num { flex:none; font-family:var(--mono); font-size:11px; font-weight:700; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:6px; padding:2px 7px; margin-top:2px; }
+.ic-head h3 { font-family:var(--display); font-size:15.5px; font-weight:700; line-height:1.5; margin:0; }
+.ic-head h3 a { color:var(--ink); transition:color .15s; border-bottom:none; }
+.ic-head h3 a:hover { color:var(--brand-strong); }
+.ic-summary { margin:10px 0 0; padding:9px 14px; background:var(--brand-weak); border-left:3px solid var(--brand); border-radius:0 var(--radius) var(--radius) 0; color:var(--muted); font-size:13px; line-height:1.75; }
+.ic-summary p { margin:0; }
+.ic-detail { margin-top:10px; font-size:13.5px; color:var(--ink); line-height:1.75; }
+.ic-foot { display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:10px; padding-top:9px; border-top:1px solid var(--line); font-size:11.5px; color:var(--muted); }
+.ic-foot a { color:var(--brand-strong); font-weight:600; border-bottom:none; }
+.ic-foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+
+.foot { margin-top:44px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; display:flex; flex-wrap:wrap; gap:6px 18px; justify-content:space-between; }
+.foot a { color:var(--brand-strong); font-weight:500; }
+.foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+.back-top { position:fixed; bottom:24px; right:24px; width:40px; height:40px; border-radius:50%; background:var(--card); border:1px solid var(--line); color:var(--muted); display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; pointer-events:none; transition:all .2s; z-index:90; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+.back-top.show { opacity:1; pointer-events:auto; }
+.back-top:hover { color:var(--brand-strong); border-color:var(--brand-line); background:var(--brand-weak); }
+.back-top svg { width:18px; height:18px; }
+
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { transition-duration:0s!important; animation-duration:0s!important; } }
+
+@media (max-width:700px) {
+  .hd { padding:8px 12px; }
+  .hd .nav-links a { padding:5px 9px; font-size:12px; }
+  .mast { padding:18px 14px 0; }
+  .mast-title { letter-spacing:.02em; }
+  .mast-rule span { font-size:10px; letter-spacing:.1em; }
+  .mast-rule { gap:8px; }
+  .mast-strip { gap:3px 14px; padding:8px 10px; }
+  .toc { top:50px; padding:7px 12px; gap:8px; }
+  .paper { padding:0 14px 48px; }
+  .intel-section { margin:26px 0 0; }
+  .sec-head h2 { font-size:18px; }
+  .intel-card { padding:12px 13px 10px; }
+  .ic-head { gap:8px; }
+  .ic-head h3 { font-size:14.5px; }
+  .ic-summary { font-size:12.5px; }
+  .back-top { bottom:16px; right:16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <a class="logo" href="../index.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="2.2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4"/><path d="M7.8 16.2a6 6 0 0 1 0-8.4"/><path d="M19.1 4.9a10 10 0 0 1 0 14.2"/><path d="M4.9 19.1a10 10 0 0 1 0-14.2"/></svg>
+      <span>Intel Briefing<span class="sub">情报日报</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="../index.html" class="active">日报归档</a>
+      <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub 收藏台</a>
+    </nav>
+    <button class="theme-btn" id="btnTheme" title="切换主题 (T)" aria-label="切换明暗主题">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M18.7 5.3 17 7M7 17l-1.7 1.7"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></svg>
+    </button>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<div class="mast">
+  <div class="mast-rule"><span>2026-10-19</span><span>MORNING INTELLIGENCE BRIEFING</span></div>
+  <h1 class="mast-title">全球情报日报</h1>
+  <div class="mast-strip"><span class="ms-item"><b>生成时间</b><i>01:50</i></span><span class="ms-item"><b>数据源</b><i>HN, GitHub, 36Kr, WallStreetCN, V2EX, PH, ArXiv, X, TechCrunch, MIT TR + StarHub (716 RSS)</i></span><span class="ms-item"><b>条目</b><i>18 条</i></span></div>
+</div>
+
+<nav class="toc" aria-label="章节目录"><span class="toc-label">CONTENTS</span><div class="toc-chips"><a class="toc-chip" href="#sec-1">技术趋势 (Tech Trends)<span class="n">4</span></a><a class="toc-chip" href="#sec-2">资本动向 (Capital Flow)<span class="n">2</span></a><a class="toc-chip" href="#sec-3">学术前沿 (Research)<span class="n">4</span></a><a class="toc-chip" href="#sec-4">产品精选 (Product Gems)<span class="n">2</span></a><a class="toc-chip" href="#sec-5">社交热议 (Social)<span class="n">0</span></a><a class="toc-chip" href="#sec-6">社区热点 (Community)<span class="n">2</span></a><a class="toc-chip" href="#sec-7">深度洞察 (Insights)<span class="n">4</span></a></div></nav>
+
+<div class="paper">
+  <article class="article">
+<section class="intel-section" id="sec-1"><div class="sec-head"><h2>技术趋势 (Tech Trends)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> Hacker News + GitHub Trending</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://techcrunch.com/2026/10/18/no-agenda-no-rush-no-leaving-san-francisco-benchmarks-partners-on-investing-in-a-frenzied-market/" target="_blank" rel="noopener">没有议程，不着急，不离开旧金山： Benchmark的合作伙伴投资于疯狂的市场</a></h3></div><blockquote class="ic-summary"><p>没有议程，不着急，不离开旧金山： Benchmark的合作伙伴投资于疯狂的市场——科技媒体报道详细内容</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://github.com/MadsLorentzen/ai-job-search" target="_blank" rel="noopener">MadsLorentzen/ai-job-search -在您的机器上运行的职位搜索。基于Claude Code构建的人工智能求职框架：评估帖子、定制简历、撰写求职信、准备面试。分叉并拥有它。</a></h3></div><blockquote class="ic-summary"><p>GitHub 开源项目：MadsLorentzen/ai-job-search -在您的机器上运行的职位搜索。基于Claude Code构建的人工智能求职框架：评估帖子、定制简历、撰写求职信、准备面试。分叉并拥有它。</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://techcrunch.com/2026/10/18/anthropic-says-its-committing-5-of-its-shares-to-a-public-benefit-fund/" target="_blank" rel="noopener">Anthropic表示，它将把5%的股份投入“公益基金”</a></h3></div><blockquote class="ic-summary"><p>在TechCrunch上阅读有关人工智能初创公司Anthropic的最新消息和分析，该公司是一家公益公司。</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://github.com/anthropics/claude-plugins-official" target="_blank" rel="noopener">anthropics/claude-plugins-official -由Anthropic管理的高质量Claude Code插件的官方目录。</a></h3></div><blockquote class="ic-summary"><p>GitHub 开源项目：anthropics/claude-plugins-official -由Anthropic管理的高质量Claude Code插件的官方目录。</p></blockquote></div></section><section class="intel-section" id="sec-2"><div class="sec-head"><h2>资本动向 (Capital Flow)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> 36Kr + 华尔街见闻</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://wallstreetcn.com/articles/3783886" target="_blank" rel="noopener">9月70城房价：一线城市商品住宅销售价格环比继续上涨，二三线城市环比降幅总体收窄</a></h3></div><blockquote class="ic-summary"><p>2026年9月份，70个大中城市中，一线城市商品住宅销售价格环比继续上涨，二三线城市环比降幅总体收窄，一二三线城市同比降幅均收窄，环比上涨城市个数比上月增加。</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://wallstreetcn.com/articles/3783885" target="_blank" rel="noopener">韩股转涨、此前一度跌超3%，纳指期货涨1%</a></h3></div><blockquote class="ic-summary"><p>2026-09-30 18:09:04 韩国KOSPI指数转涨，此前一度跌1%。</p></blockquote></div></section><section class="intel-section" id="sec-3"><div class="sec-head"><h2>学术前沿 (Research)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> ArXiv AI/ML Papers</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://arxiv.org/abs/2610.22372v1" target="_blank" rel="noopener">LIBERO-PeRM ：个性化机器人操作基准测试</a></h3></div><blockquote class="ic-summary"><p>个性化对于通用机器人过渡到家庭环境并实现真正的实践至关重要</p></blockquote><div class="ic-detail">个性化对于通用机器人过渡到家庭环境并实现真正的实用性至关重要。虽然一般的机器人操作已被广泛研究，但个性化机器人操作（ PeRM ）缺乏将任务完成与偏好满意度分开的受控基准。我们引入了LIBERO-PeRM ，这是嵌入式座席偏好学习的基准。LIBERO-PeRM研究五个问题： 1 ）政策如何遵循</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://arxiv.org/abs/2610.21601" target="_blank" rel="noopener">Waypoint-OPD ：通过门控按策略蒸馏转移RL引起的政策转变</a></h3></div><blockquote class="ic-summary"><p>政策转变蒸馏再利用教师在强化LEA之前和之后的日志概率之间的差异</p></blockquote><div class="ic-detail">政策转变蒸馏将强化学习（ RL ）之前和之后教师对数概率之间的差异重新用作对学生生成轨迹的监督。然而，这种端点政策转变不能揭示当地行动偏好在教师培训期间是否持续演变。相同的终点偏移可能是由于早班和晚班相互强化或部分抵消造成的。我们调查早期和晚期教学之间的协议是否</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://arxiv.org/abs/2610.22367v1" target="_blank" rel="noopener">使用大型语言模型探索最先进的量子电路</a></h3></div><blockquote class="ic-summary"><p>目前正在实施大规模量子信息处理器方面做出重大努力</p></blockquote><div class="ic-detail">目前正在实施大规模量子信息处理器方面做出重大努力，但实现有用的量子优势还需要开发高效的量子算法。虽然对于许多实际问题，占主导地位的资源成本与一小部分计算原语相关，但在量子环境中优化它们带来了独特的挑战，包括普通经典中缺少的可逆性约束</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://arxiv.org/abs/2610.22276" target="_blank" rel="noopener">MJev-Spatial ：通过原生注意力匹配实现的System One空间智能</a></h3></div><blockquote class="ic-summary"><p>空间智能让智能体在物理世界中感知和行动，其许多判断必须在</p></blockquote><div class="ic-detail">空间智能让智能体在物理世界中感知和行动，其许多判断必须以交互速率进行：哪种空间关系保持，物体有多远，或者将物体放置在哪里。视觉语言模型（ VLM ）通过自由形式的文本生成产生这些答案，即使输出空间紧凑，也要为自回归解码和答案解析付费：几个选项之一，标量或2D点。有鉴于此，我们引入了MJev-Spatial ，</div></div></section><section class="intel-section" id="sec-4"><div class="sec-head"><h2>产品精选 (Product Gems)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> Product Hunt Today</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.producthunt.com/products/gravity-notes-for-mac" target="_blank" rel="noopener">重力笔记</a></h3></div><blockquote class="ic-summary"><p>一份笔记列表，供您和您的人工智能代理使用</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://www.producthunt.com/products/openbroca" target="_blank" rel="noopener">奥彭布罗卡</a></h3></div><blockquote class="ic-summary"><p>适用于Mac的轻量级AI听写，听起来像您</p></blockquote></div></section><section class="intel-section" id="sec-5"><div class="sec-head"><h2>社交热议 (Social)</h2><span class="sec-count">0 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> X (Twitter) - AI/Tech Discussions</div><p style="color:var(--muted);font-size:13px;">暂无数据 (需要配置 XAI_API_KEY)</p></section><section class="intel-section" id="sec-6"><div class="sec-head"><h2>社区热点 (Community)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> V2EX 热门</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.v2ex.com/t/1249800" target="_blank" rel="noopener">今天开车被迫窝囊了一次</a></h3></div><blockquote class="ic-summary"><p>生活 - @wdv2ly - 开车等红灯，还剩三四十秒时，前车往前跑了一段，空了大概十几米距离。我没动，准备快变灯时再起步过去。这时候后面车开始滴滴滴打喇叭，我想着反正红灯又走不了，就没理他。随后他一个猛拐，从左车道饶过我</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://www.v2ex.com/t/1249724" target="_blank" rel="noopener">发明这个闲鱼暗语中枢的人真是个天才</a></h3></div><blockquote class="ic-summary"><p>随想 - @domainsun - 闲鱼号称是国内的最大的暗网平台，但是风控也越来越严重，封禁的词也越来越多。这个网站把最新的可用的交易的暗语都整理和更新出来了。如果是买家的话，就可以直接用这里的暗语去找到自己想交易的东西。如果是卖家的</p></blockquote></div></section><section class="intel-section" id="sec-7"><div class="sec-head"><h2>深度洞察 (Insights)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> HN Top Blogs + MIT Technology Review</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.technologyreview.com/2026/10/16/1146224/roundtables-a-conversation-with-the-creator-of-ai-designed-viruses/" target="_blank" rel="noopener">圆桌会议：与人工智能设计病毒的创造者对话</a></h3></div><blockquote class="ic-summary"><p>收听下面的会话或观看人工智能可以设计新的生命形式吗？ 2025年，斯坦福大学博士生塞缪尔·金（ Samuel King ）在使用生成式人工智能模型提出</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://simonwillison.net/2026/Oct/18/llm-tools-datasette/" target="_blank" rel="noopener">llm-工具-数据集 0.1.1</a></h3></div><blockquote class="ic-summary"><p>版本： llm-tools-datasette 0.1.1当我在LLM 0.33中将LLM切换到httpx2时，我忘记了这会破坏任何使用httpx的插件，而不会直接依赖它</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://www.technologyreview.com/2026/10/16/1146864/the-download-failed-social-media-bans-and-extending-pets-lives/" target="_blank" rel="noopener">下载：社交媒体禁令失败，延长宠物寿命</a></h3></div><blockquote class="ic-summary"><p>这是今天的The Download版本，我们的工作日时事通讯，提供有关技术世界每日发生的事情的信息。孩子们正在超越社交媒体禁令。这不是</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://simonwillison.net/2026/Oct/18/llm-echo/" target="_blank" rel="noopener">llm-echo 0.5</a></h3></div><blockquote class="ic-summary"><p>Release: llm-echo 0.5我正在努力开发一个新的LLM版本，测试PR使我重新访问了llm-echo调试插件</p></blockquote></div></section>
+  </article>
+  <footer class="foot">
+    <span>由 <a href="https://github.com/Kwei168/Intel_Briefing" target="_blank" rel="noopener">Intel_Briefing</a> 引擎自动生成</span>
+    <span>2026-10-19 &middot; 内容版权归原作者所有</span>
+    <span><a href="../index.html">返回归档</a> &middot; <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub</a></span>
+  </footer>
+</div>
+
+<button class="back-top" id="backTop" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+
+<script>
+;(function(){
+  var btn=document.getElementById('btnTheme');
+  function setTheme(t){
+    try{ localStorage.setItem('wb_starhub_theme_v1',t); }catch(e){}
+    document.documentElement.dataset.theme=t;
+  }
+  if(btn) btn.onclick=function(){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); };
+  document.addEventListener('keydown',function(e){
+    var t=e.target, tag=(t.tagName||'').toLowerCase();
+    if(tag==='input'||tag==='textarea'||t.isContentEditable) return;
+    if(e.key==='t'||e.key==='T'){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); }
+  });
+  var bar=document.getElementById('progress');
+  var backTop=document.getElementById('backTop');
+  function onScroll(){
+    var st=window.scrollY||document.documentElement.scrollTop||0;
+    var max=document.documentElement.scrollHeight-window.innerHeight;
+    if(bar) bar.style.width=(max>0?Math.min(100,st/max*100):0)+'%';
+    if(backTop) backTop.classList.toggle('show',st>400);
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+  if(backTop) backTop.onclick=function(){ window.scrollTo({top:0,behavior:'smooth'}); };
+})();
+</script>
+</body>
+</html>
