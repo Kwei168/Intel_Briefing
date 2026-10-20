@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2026-10-20 情报日报 - Intel Briefing</title>
+<script>try{var _t=localStorage.getItem('wb_starhub_theme_v1')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=_t;}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#faf9f7; --card:#fffdf9; --card-2:#f3efe6; --card-3:#ebe6db;
+  --ink:#1c1917; --muted:#5f594c; --faint:#6e685e;
+  --line:#ddd6c9; --line-strong:#b9b0a2;
+  --brand:#2f5d8a; --brand-strong:#24496e; --brand-line:#b9cde0; --brand-weak:#e7eef4;
+  --display:"Noto Serif SC","Georgia","Times New Roman","Songti SC","SimSun","STSong",serif;
+  --body:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono","SF Mono","Fira Code","Consolas",monospace;
+  --radius:8px;
+  --shadow:0 1px 2px rgba(28,25,23,.05);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.10),0 2px 4px rgba(0,0,0,.06);
+}
+[data-theme="dark"] {
+  --bg:#161412; --card:#1d1a17; --card-2:#262019; --card-3:#2f2820;
+  --ink:#ece7df; --muted:#a59d90; --faint:#a8a090;
+  --line:#37312a; --line-strong:#4a4339;
+  --brand:#8fb3d9; --brand-strong:#b0cbe6; --brand-line:#3d5a78; --brand-weak:#22303f;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.4);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; scroll-padding-top:112px; }
+body { font-family:var(--body); background:var(--bg); color:var(--ink); line-height:1.55; font-size:14px; -webkit-font-smoothing:antialiased; }
+a { color:inherit; text-decoration:none; }
+button { font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+::selection { background:var(--brand-weak); color:var(--ink); }
+button:focus-visible, a:focus-visible { outline:2px solid var(--brand); outline-offset:2px; border-radius:var(--radius); }
+
+header { position:sticky; top:0; z-index:40; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+[data-theme="dark"] header { background:rgba(22,20,18,.94); }
+.hd { max-width:860px; margin:0 auto; padding:9px 20px; display:flex; align-items:center; gap:12px; }
+.hd .logo { display:flex; align-items:center; gap:8px; flex:none; font-family:var(--display); font-weight:900; font-size:16px; }
+.hd .logo .sub { font-size:11px; color:var(--muted); font-weight:400; margin-left:2px; font-family:var(--body); }
+.hd .logo svg { color:var(--brand); }
+.hd .nav-links { display:flex; align-items:center; gap:2px; flex:1; }
+.hd .nav-links a { display:inline-flex; align-items:center; gap:5px; white-space:nowrap; padding:5px 12px; border-radius:999px; font-size:12.5px; font-weight:500; border:1px solid transparent; transition:all .15s; }
+.hd .nav-links a:hover { background:var(--card); border-color:var(--line); }
+.hd .nav-links a.active { background:var(--brand-weak); border-color:var(--brand-line); color:var(--brand-strong); font-weight:600; }
+.theme-btn { width:30px; height:30px; border-radius:999px; background:var(--card); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; flex:none; transition:all .15s; }
+.theme-btn:hover { border-color:var(--brand-line); color:var(--brand-strong); }
+.theme-btn svg { width:14px; height:14px; }
+.icon-moon { display:none; }
+[data-theme="dark"] .icon-sun { display:none; }
+[data-theme="dark"] .icon-moon { display:block; }
+.progress { position:absolute; left:0; bottom:-1px; height:2px; background:var(--brand); width:0%; z-index:41; }
+
+.mast { max-width:860px; margin:0 auto; padding:26px 20px 0; text-align:center; }
+.mast-rule { display:flex; align-items:center; gap:14px; margin:0 0 6px; }
+.mast-rule::before,.mast-rule::after { content:""; flex:1; height:1px; background:var(--line-strong); }
+.mast-rule span { font-family:var(--mono); font-size:11px; letter-spacing:.14em; color:var(--muted); font-weight:500; white-space:nowrap; }
+.mast-title { font-family:var(--display); font-size:clamp(30px,6vw,44px); font-weight:900; letter-spacing:.05em; line-height:1.2; margin:4px 0 10px; }
+.mast-strip { display:flex; flex-wrap:wrap; gap:4px 22px; justify-content:center; align-items:baseline; margin-top:6px; padding:9px 14px; border-top:3px double var(--line-strong); border-bottom:1px solid var(--line-strong); }
+.ms-item { font-size:12px; color:var(--muted); }
+.ms-item b { font-weight:600; color:var(--faint); font-size:10.5px; letter-spacing:.08em; margin-right:6px; }
+.ms-item i { font-family:var(--mono); font-style:normal; color:var(--ink); font-size:11.5px; }
+
+.toc { position:sticky; top:52px; z-index:30; max-width:860px; margin:14px auto 0; padding:8px 20px; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; }
+[data-theme="dark"] .toc { background:rgba(22,20,18,.94); }
+.toc-label { flex:none; font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; color:var(--faint); }
+.toc-chips { display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+.toc-chips::-webkit-scrollbar { display:none; }
+.toc-chip { flex:none; display:inline-flex; align-items:center; gap:5px; padding:3px 11px; border-radius:999px; border:1px solid var(--line); background:var(--card); font-size:12px; color:var(--muted); transition:all .15s; }
+.toc-chip:hover { border-color:var(--brand-line); color:var(--brand-strong); background:var(--brand-weak); }
+.toc-chip .n { font-family:var(--mono); font-size:10px; opacity:.75; }
+
+.paper { max-width:860px; margin:0 auto; padding:0 20px 56px; }
+.article { margin-top:26px; }
+
+.intel-section { margin:34px 0 0; }
+.sec-head { display:flex; align-items:center; gap:12px; padding-bottom:10px; border-bottom:1px solid var(--line); margin-bottom:14px; }
+.sec-head h2 { display:flex; align-items:center; gap:10px; font-family:var(--display); font-size:clamp(19px,2.6vw,24px); font-weight:700; line-height:1.3; margin:0; }
+.sec-head h2::before { content:""; flex:none; width:10px; height:10px; border-radius:2px; background:var(--brand); }
+.sec-count { margin-left:auto; flex:none; font-family:var(--mono); font-size:11px; color:var(--faint); }
+.sec-src { display:flex; align-items:center; gap:8px; margin:-4px 0 14px; font-family:var(--mono); font-size:11.5px; color:var(--muted); }
+.sec-src .src-label { flex:none; font-size:9.5px; font-weight:700; letter-spacing:.1em; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:4px; padding:1px 6px; }
+
+.intel-card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px 12px; margin:0 0 12px; transition:box-shadow .18s, border-color .18s, transform .18s; }
+.intel-card:hover { border-color:var(--brand-line); box-shadow:var(--shadow-lift); transform:translateY(-2px); }
+.ic-head { display:flex; align-items:flex-start; gap:10px; }
+.ic-num { flex:none; font-family:var(--mono); font-size:11px; font-weight:700; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:6px; padding:2px 7px; margin-top:2px; }
+.ic-head h3 { font-family:var(--display); font-size:15.5px; font-weight:700; line-height:1.5; margin:0; }
+.ic-head h3 a { color:var(--ink); transition:color .15s; border-bottom:none; }
+.ic-head h3 a:hover { color:var(--brand-strong); }
+.ic-summary { margin:10px 0 0; padding:9px 14px; background:var(--brand-weak); border-left:3px solid var(--brand); border-radius:0 var(--radius) var(--radius) 0; color:var(--muted); font-size:13px; line-height:1.75; }
+.ic-summary p { margin:0; }
+.ic-detail { margin-top:10px; font-size:13.5px; color:var(--ink); line-height:1.75; }
+.ic-foot { display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:10px; padding-top:9px; border-top:1px solid var(--line); font-size:11.5px; color:var(--muted); }
+.ic-foot a { color:var(--brand-strong); font-weight:600; border-bottom:none; }
+.ic-foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+
+.foot { margin-top:44px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; display:flex; flex-wrap:wrap; gap:6px 18px; justify-content:space-between; }
+.foot a { color:var(--brand-strong); font-weight:500; }
+.foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+.back-top { position:fixed; bottom:24px; right:24px; width:40px; height:40px; border-radius:50%; background:var(--card); border:1px solid var(--line); color:var(--muted); display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; pointer-events:none; transition:all .2s; z-index:90; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+.back-top.show { opacity:1; pointer-events:auto; }
+.back-top:hover { color:var(--brand-strong); border-color:var(--brand-line); background:var(--brand-weak); }
+.back-top svg { width:18px; height:18px; }
+
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { transition-duration:0s!important; animation-duration:0s!important; } }
+
+@media (max-width:700px) {
+  .hd { padding:8px 12px; }
+  .hd .nav-links a { padding:5px 9px; font-size:12px; }
+  .mast { padding:18px 14px 0; }
+  .mast-title { letter-spacing:.02em; }
+  .mast-rule span { font-size:10px; letter-spacing:.1em; }
+  .mast-rule { gap:8px; }
+  .mast-strip { gap:3px 14px; padding:8px 10px; }
+  .toc { top:50px; padding:7px 12px; gap:8px; }
+  .paper { padding:0 14px 48px; }
+  .intel-section { margin:26px 0 0; }
+  .sec-head h2 { font-size:18px; }
+  .intel-card { padding:12px 13px 10px; }
+  .ic-head { gap:8px; }
+  .ic-head h3 { font-size:14.5px; }
+  .ic-summary { font-size:12.5px; }
+  .back-top { bottom:16px; right:16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <a class="logo" href="../index.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="2.2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4"/><path d="M7.8 16.2a6 6 0 0 1 0-8.4"/><path d="M19.1 4.9a10 10 0 0 1 0 14.2"/><path d="M4.9 19.1a10 10 0 0 1 0-14.2"/></svg>
+      <span>Intel Briefing<span class="sub">情报日报</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="../index.html" class="active">日报归档</a>
+      <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub 收藏台</a>
+    </nav>
+    <button class="theme-btn" id="btnTheme" title="切换主题 (T)" aria-label="切换明暗主题">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M18.7 5.3 17 7M7 17l-1.7 1.7"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></svg>
+    </button>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<div class="mast">
+  <div class="mast-rule"><span>2026-10-20</span><span>MORNING INTELLIGENCE BRIEFING</span></div>
+  <h1 class="mast-title">全球情报日报</h1>
+  <div class="mast-strip"><span class="ms-item"><b>生成时间</b><i>02:09</i></span><span class="ms-item"><b>数据源</b><i>HN, GitHub, 36Kr, WallStreetCN, V2EX, PH, ArXiv, X, TechCrunch, MIT TR + StarHub (716 RSS)</i></span><span class="ms-item"><b>条目</b><i>18 条</i></span></div>
+</div>
+
+<nav class="toc" aria-label="章节目录"><span class="toc-label">CONTENTS</span><div class="toc-chips"><a class="toc-chip" href="#sec-1">技术趋势 (Tech Trends)<span class="n">4</span></a><a class="toc-chip" href="#sec-2">资本动向 (Capital Flow)<span class="n">2</span></a><a class="toc-chip" href="#sec-3">学术前沿 (Research)<span class="n">4</span></a><a class="toc-chip" href="#sec-4">产品精选 (Product Gems)<span class="n">2</span></a><a class="toc-chip" href="#sec-5">社交热议 (Social)<span class="n">0</span></a><a class="toc-chip" href="#sec-6">社区热点 (Community)<span class="n">2</span></a><a class="toc-chip" href="#sec-7">深度洞察 (Insights)<span class="n">4</span></a></div></nav>
+
+<div class="paper">
+  <article class="article">
+<section class="intel-section" id="sec-1"><div class="sec-head"><h2>技术趋势 (Tech Trends)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> Hacker News + GitHub Trending</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://techcrunch.com/2026/10/19/walmarts-flipkart-is-quietly-building-a-food-delivery-challenger-in-india/" target="_blank" rel="noopener">沃尔玛旗下 Flipkart 正在印度悄然打造食品配送挑战者</a></h3></div><blockquote class="ic-summary"><p>印度初创公司花了数年时间培养消费者在几分钟内收到杂货和日常商品的习惯。如今，沃尔玛旗下的</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://github.com/MadsLorentzen/ai-job-search" target="_blank" rel="noopener">MadsLorentzen/ai-job-search - 在您的计算机上运行的职位搜索。基于 Claude Code 构建的人工智能职位申请框架：评估职位、定制简历、撰写求职信、准备面试。分叉并拥有它。</a></h3></div><blockquote class="ic-summary"><p>GitHub 开源项目：MadsLorentzen/ai-job-search - 在您的计算机上运行的职位搜索。基于 Claude Code 构建的人工智能职位申请框架：评估职位、定制简历、撰写求职信、准备面试。分叉并拥有它。</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://techcrunch.com/2026/10/19/mamdani-says-feds-have-abdicated-on-ai-urges-new-yorkers-to-push-back/" target="_blank" rel="noopener">马姆达尼表示联邦政府已经放弃人工智能，敦促纽约人抵制</a></h3></div><blockquote class="ic-summary"><p>市长佐兰·马姆达尼 (Zohran Mamdani) 周一晚上表示，纽约人必须抵制人工智能接管不可避免的说法，并要求制定保护公众并将权力重新交到他们手中的法规。</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://github.com/anomalyco/opencode" target="_blank" rel="noopener">anomalyco/opencode - 开源编码代理。</a></h3></div><blockquote class="ic-summary"><p>GitHub 开源项目：anomalyco/opencode - 开源编码代理。</p></blockquote></div></section><section class="intel-section" id="sec-2"><div class="sec-head"><h2>资本动向 (Capital Flow)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> 36Kr + 华尔街见闻</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://wallstreetcn.com/charts/41960057" target="_blank" rel="noopener">法国街头都烧冒烟了！法国人：别吵，我这杯还没喝完</a></h3></div><blockquote class="ic-summary"><p>烧掉市政厅的是蒙面人，但点燃这场火的是法国积压已久的财政与民生火药桶。10月17日，全法约55万人为抗议物价飞涨、公共服务恶化走上街头，游行迅速演变为近年来最严重暴力骚乱：利摩日一座挺过两次世界大战的143年市政 ...</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://wallstreetcn.com/articles/3783987" target="_blank" rel="noopener">A股双创指数盘初跌超1%之后翻红，AI硬件股反弹，北证50暴涨5%，宁德时代AH股同步下滑，恒指、恒科指齐跌1%</a></h3></div><blockquote class="ic-summary"><p>A股双创指数盘初跌超1%之后翻红，AI硬件股反弹，北证50暴涨5%，宁德时代AH股同步下滑，恒指、恒科指齐跌1%——华尔街见闻资讯详细内容</p></blockquote></div></section><section class="intel-section" id="sec-3"><div class="sec-head"><h2>学术前沿 (Research)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> ArXiv AI/ML Papers</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://arxiv.org/abs/2610.21783" target="_blank" rel="noopener">学习在 3D 世界中思考和探索</a></h3></div><blockquote class="ic-summary"><p>我们研究视觉语言模型 (VLM) 如何在 3D 空间中学习思考和积极探索。而不是提供 mul</p></blockquote><div class="ic-detail">我们研究视觉语言模型 (VLM) 如何在 3D 空间中学习思考和积极探索。我们没有向模型提供多视图图像、视频或 3D 表示，而是保留 VLM 的本机视觉编码，即一次一个图像，就像人类一样，并将 3D 表示仅视为模型可以通过动作（例如向左移动）和观察（渲染图像）进行交互的环境。每次推出都从最初的第一人称视图和视觉问题开始。然后，模型可以迭代地推理、导航和重新调整其观点，然后再得出最终答案。在最初的轨迹监督微调之后，我们应用强化学习（RL），其奖励主要由最终答案的正确性驱动。至关重要的是，强化学习并没有直接监督模型应该访问哪些视点或应该采取哪些探索行动。相反，模型必须仅根据其交互提高性能的程度来学习有效的探索策略。在六个 3D 基准测试中，我们的模型 ACT3D 的平均准确度达到 53.2%，将其基础 Qwen 模型提高了 22.0%，并超越了专有的 Gemini 3.6 Flash。 ACT3D 的性能还优于现有的开源 3D 方法，同时使用的输入帧数减少了 50-70%，并且可以推广到看不见的领域，与监督初始化相比平均提高了 5.9%。进一步的分析揭示了适应性的、以问题为条件的探索。与基本模型相比，性能提升从初始视图可回答问题的 0.6% 增加到需要广泛探索的问题的 16.3%。 ACT3D 搜索被遮挡的目标，避免不必要的探索，并获取空间比较的互补视点。这些发现表明，基于结果的强化学习不仅使 VLM 能够对视觉证据进行推理，而且还能了解何时以及如何获取视觉证据。</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://arxiv.org/abs/2610.24875v1" target="_blank" rel="noopener">RAFT：用于时态图神经网络训练的冗余感知输入过滤</a></h3></div><blockquote class="ic-summary"><p>时态图神经网络（TGNN）通过不断更新在动态图学习任务上表现出了强大的性能</p></blockquote><div class="ic-detail">时态图神经网络（TGNN）通过不断更新来自不断演变的交互（即事件）的节点记忆并利用这些记忆进行下游预测，在动态图学习任务上表现出了强大的性能。随着现代应用中图的快速增长，训练需要处理越来越多的事件；同时，每个事件都可以更新后续事件使用的节点内存，从而创建限制并行执行并限制额外计算资源的好处的依赖关系。这些成本引发了一个上游问题：所有事件及其引入的依赖关系都是学习所必需的吗？我们通过时间事件的两个角色来研究这个问题：预测目标和作为输入采样的历史事件。我们观察到，涉及稳定节点记忆的目标往往表现出较低的预测损失，而过滤与稳定记忆相关的历史事件可以在几个评估的设置中保留类似的训练损失轨迹。总之，这些观察结果表明有机会通过节点内存的变化来识别输入冗余。在此机会的基础上，我们提出了 RAFT，一种用于 TGNN 训练的冗余感知输入过滤框架。 RAFT 跟踪训练期间的内存变化，并使用它们来指导两个过滤器：根事件过滤器在训练前删除选定的预测目标，支持事件过滤器在采样期间排除选定的历史上下文。在下游准备和处理之前过滤输入可以减少它们触发的工作。在三个 TGNN 模型和五个数据集上，RAFT 平均将训练输入减少 35.23%，最高可达 97.11%，同时将记录的训练时间减少高达 52.56\%，而模型精度的变化可以忽略不计。</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://arxiv.org/abs/2610.09872" target="_blank" rel="noopener">LiveMACE：不断变化的市场中 LLM 代理能力的流程感知评估</a></h3></div><blockquote class="ic-summary"><p>仅根据结果来评估代理人可能会掩盖产生结果的能力。这个问题尤为突出</p></blockquote><div class="ic-detail">仅根据结果来评估代理人可能会掩盖产生结果的能力。这个问题在不断变化的环境中尤其明显，其中结果反映了代理行为与不断变化的外部条件之间的闭环相互作用。我们推出了 LiveMACEBench，这是一种流程感知基准，它使用实时金融市场作为持久 LLM 代理的自然发展测试平台。五个前沿法学硕士在匹配的工具使用、持久内存、规则遵循和多代理协作配置下沿着连续的轨迹运行。我们通过已实现的结果和来自完整决策轨迹的特定机制诊断来评估它们。在 30 天的实时评估中，我们发现了明显的结果与能力差距：实现的回报通常与特定能力的测量结果不同，并且明显不同的机制使用模式可能会产生类似的结果。跟踪级诊断进一步暴露了跨功能的明显瓶颈，证明机制访问、有效机制使用和下游性能不是代理能力的可互换衡量标准。 LiveMACEBench 使这种区别变得可衡量，将实时市场从绩效排行榜转变为代理能力的诊断环境</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://arxiv.org/abs/2610.24873v1" target="_blank" rel="noopener">推理的一像素：一个真实的关系就足以误导LLM代理人</a></h3></div><blockquote class="ic-summary"><p>一句话能否通过针对将证据与结论联系起来的单一隐含保证来操纵代理人的信念？我</p></blockquote><div class="ic-detail">一句话能否通过针对将证据与结论联系起来的单一隐含保证来操纵代理人的信念？在本文中，我们介绍了单关系攻击（ORA），这是一种针对这种推理关系的新颖的认知攻击。 ORA 定位一个关键的隐含保证，并使用单个基于源的句子来执行单关系干预，该句子限定该保证并引导代理走向不正确的信念。在生物医学推理和漏洞检测的 18 个模型中，best-of-$10 攻击推翻最初正确答案的平均概率为 54.9%（专有模型）和 80.0%（开放权重模型）。攻击也会在没有受害者反馈的情况下转移，配对控制支持目标定位和资格认证的作用。此外，成功的句子可以通过源支持检查并逃避识别，并且在我们的平衡压力测试中，多智能体辩论将团队错误从 50.0% 提高到 59.5%。这些发现确立了隐含的授权作为操纵代理人信念的认知攻击面。</div></div></section><section class="intel-section" id="sec-4"><div class="sec-head"><h2>产品精选 (Product Gems)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> Product Hunt Today</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.producthunt.com/products/lookout-for-slack" target="_blank" rel="noopener">Lookout（用于 Slack）</a></h3></div><blockquote class="ic-summary"><p>紧急 Slack 消息，立即处理。由杰夫提供动力。</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://www.producthunt.com/products/walkai-talkai" target="_blank" rel="noopener">边走边说</a></h3></div><blockquote class="ic-summary"><p>这是一则来自Product Hunt 产品的内容</p></blockquote></div></section><section class="intel-section" id="sec-5"><div class="sec-head"><h2>社交热议 (Social)</h2><span class="sec-count">0 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> X (Twitter) - AI/Tech Discussions</div><p style="color:var(--muted);font-size:13px;">暂无数据 (需要配置 XAI_API_KEY)</p></section><section class="intel-section" id="sec-6"><div class="sec-head"><h2>社区热点 (Community)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> V2EX 热门</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.v2ex.com/t/1250023" target="_blank" rel="noopener">备孕 2 年，最后试管生下健康女儿，分享一下经历，顺带吐槽一下深圳市妇幼。</a></h3></div><blockquote class="ic-summary"><p>不知不觉写了一大堆，只是记录、分享一下个人的经历。吐槽和体验都只是我个人的感受，不能代表所有人。如果说有什么建议的话，就是建议有条件的话就早点生吧，有问题该干预还是得干预，因为时间、精力也都是成本。 (注意建议的前提，某些人不要瞎喷谢谢) 无广，市妇幼不会因为我吐槽就 ...</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://www.v2ex.com/t/1249936" target="_blank" rel="noopener">房贷还有 14w 多，存款有差不多 19w，要不要提前还掉房贷</a></h3></div><blockquote class="ic-summary"><p>生活 - @510908220 - 15 年买房贷款了 51 万，好像是等息方式。 我看还了 10 多年了。剩余贷款还有 41W 多。 有提前还款的朋友吗，看要不要提前还一些？</p></blockquote></div></section><section class="intel-section" id="sec-7"><div class="sec-head"><h2>深度洞察 (Insights)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> HN Top Blogs + MIT Technology Review</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.technologyreview.com/2026/10/19/1147186/making-the-internet-better-for-ai-agents-might-make-it-worse-for-everyone-else/" target="_blank" rel="noopener">为人工智能代理提供更好的互联网可能会让其他人的情况变得更糟</a></h3></div><blockquote class="ic-summary"><p>网站长期以来一直允许机器人执行自动化任务，例如捕获网页内容，但规则&amp;8230;</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://x.com/BarackObama/status/2111819687524774170" target="_blank" rel="noopener">巴拉克·奥巴马谈特朗普政府对国会女议员伊尔汗·奥马尔的恐吓活动</a></h3></div><blockquote class="ic-summary"><p>巴拉克·奥巴马(Barack Obama)在一篇430字的文章中表示：美国民主的一项基本原则是，政府不能仅仅因为个人的政治信仰或言论而选择性地针对他们。布</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://www.technologyreview.com/2026/10/19/1147149/we-were-looking-at-it-wrong-the-explosive-claim-thats-upended-the-ai-world/" target="_blank" rel="noopener">“我们的看法是错误的”：颠覆人工智能世界的爆炸性主张</a></h3></div><blockquote class="ic-summary"><p>“我想我有关于神经网络本质的好消息。”人工智能初创公司 Goodfire 的研究员尼克·卡马拉塔 (Nick Cammarata) 发表了这些简单的乐观言论，开始了一篇 26,000 字的博客文章，</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://simonwillison.net/2026/Oct/19/my-obituary-for-programming/" target="_blank" rel="noopener">我的编程讣告</a></h3></div><blockquote class="ic-summary"><p>我的编程杰里米·谢夫 (Jeremy Scheff) 的讣告尖锐地捕捉到了编码代理给那些喜欢开发代码的职业程序员带来的关键损失：编程变成了</p></blockquote></div></section>
+  </article>
+  <footer class="foot">
+    <span>由 <a href="https://github.com/Kwei168/Intel_Briefing" target="_blank" rel="noopener">Intel_Briefing</a> 引擎自动生成</span>
+    <span>2026-10-20 &middot; 内容版权归原作者所有</span>
+    <span><a href="../index.html">返回归档</a> &middot; <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub</a></span>
+  </footer>
+</div>
+
+<button class="back-top" id="backTop" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+
+<script>
+;(function(){
+  var btn=document.getElementById('btnTheme');
+  function setTheme(t){
+    try{ localStorage.setItem('wb_starhub_theme_v1',t); }catch(e){}
+    document.documentElement.dataset.theme=t;
+  }
+  if(btn) btn.onclick=function(){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); };
+  document.addEventListener('keydown',function(e){
+    var t=e.target, tag=(t.tagName||'').toLowerCase();
+    if(tag==='input'||tag==='textarea'||t.isContentEditable) return;
+    if(e.key==='t'||e.key==='T'){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); }
+  });
+  var bar=document.getElementById('progress');
+  var backTop=document.getElementById('backTop');
+  function onScroll(){
+    var st=window.scrollY||document.documentElement.scrollTop||0;
+    var max=document.documentElement.scrollHeight-window.innerHeight;
+    if(bar) bar.style.width=(max>0?Math.min(100,st/max*100):0)+'%';
+    if(backTop) backTop.classList.toggle('show',st>400);
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+  if(backTop) backTop.onclick=function(){ window.scrollTo({top:0,behavior:'smooth'}); };
+})();
+</script>
+</body>
+</html>
