@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2026-11-09 情报日报 - Intel Briefing</title>
+<script>try{var _t=localStorage.getItem('wb_starhub_theme_v1')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=_t;}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#faf9f7; --card:#fffdf9; --card-2:#f3efe6; --card-3:#ebe6db;
+  --ink:#1c1917; --muted:#5f594c; --faint:#6e685e;
+  --line:#ddd6c9; --line-strong:#b9b0a2;
+  --brand:#2f5d8a; --brand-strong:#24496e; --brand-line:#b9cde0; --brand-weak:#e7eef4;
+  --display:"Noto Serif SC","Georgia","Times New Roman","Songti SC","SimSun","STSong",serif;
+  --body:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono","SF Mono","Fira Code","Consolas",monospace;
+  --radius:8px;
+  --shadow:0 1px 2px rgba(28,25,23,.05);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.10),0 2px 4px rgba(0,0,0,.06);
+}
+[data-theme="dark"] {
+  --bg:#161412; --card:#1d1a17; --card-2:#262019; --card-3:#2f2820;
+  --ink:#ece7df; --muted:#a59d90; --faint:#a8a090;
+  --line:#37312a; --line-strong:#4a4339;
+  --brand:#8fb3d9; --brand-strong:#b0cbe6; --brand-line:#3d5a78; --brand-weak:#22303f;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.4);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; scroll-padding-top:112px; }
+body { font-family:var(--body); background:var(--bg); color:var(--ink); line-height:1.55; font-size:14px; -webkit-font-smoothing:antialiased; }
+a { color:inherit; text-decoration:none; }
+button { font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+::selection { background:var(--brand-weak); color:var(--ink); }
+button:focus-visible, a:focus-visible { outline:2px solid var(--brand); outline-offset:2px; border-radius:var(--radius); }
+
+header { position:sticky; top:0; z-index:40; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+[data-theme="dark"] header { background:rgba(22,20,18,.94); }
+.hd { max-width:860px; margin:0 auto; padding:9px 20px; display:flex; align-items:center; gap:12px; }
+.hd .logo { display:flex; align-items:center; gap:8px; flex:none; font-family:var(--display); font-weight:900; font-size:16px; }
+.hd .logo .sub { font-size:11px; color:var(--muted); font-weight:400; margin-left:2px; font-family:var(--body); }
+.hd .logo svg { color:var(--brand); }
+.hd .nav-links { display:flex; align-items:center; gap:2px; flex:1; }
+.hd .nav-links a { display:inline-flex; align-items:center; gap:5px; white-space:nowrap; padding:5px 12px; border-radius:999px; font-size:12.5px; font-weight:500; border:1px solid transparent; transition:all .15s; }
+.hd .nav-links a:hover { background:var(--card); border-color:var(--line); }
+.hd .nav-links a.active { background:var(--brand-weak); border-color:var(--brand-line); color:var(--brand-strong); font-weight:600; }
+.theme-btn { width:30px; height:30px; border-radius:999px; background:var(--card); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; flex:none; transition:all .15s; }
+.theme-btn:hover { border-color:var(--brand-line); color:var(--brand-strong); }
+.theme-btn svg { width:14px; height:14px; }
+.icon-moon { display:none; }
+[data-theme="dark"] .icon-sun { display:none; }
+[data-theme="dark"] .icon-moon { display:block; }
+.progress { position:absolute; left:0; bottom:-1px; height:2px; background:var(--brand); width:0%; z-index:41; }
+
+.mast { max-width:860px; margin:0 auto; padding:26px 20px 0; text-align:center; }
+.mast-rule { display:flex; align-items:center; gap:14px; margin:0 0 6px; }
+.mast-rule::before,.mast-rule::after { content:""; flex:1; height:1px; background:var(--line-strong); }
+.mast-rule span { font-family:var(--mono); font-size:11px; letter-spacing:.14em; color:var(--muted); font-weight:500; white-space:nowrap; }
+.mast-title { font-family:var(--display); font-size:clamp(30px,6vw,44px); font-weight:900; letter-spacing:.05em; line-height:1.2; margin:4px 0 10px; }
+.mast-strip { display:flex; flex-wrap:wrap; gap:4px 22px; justify-content:center; align-items:baseline; margin-top:6px; padding:9px 14px; border-top:3px double var(--line-strong); border-bottom:1px solid var(--line-strong); }
+.ms-item { font-size:12px; color:var(--muted); }
+.ms-item b { font-weight:600; color:var(--faint); font-size:10.5px; letter-spacing:.08em; margin-right:6px; }
+.ms-item i { font-family:var(--mono); font-style:normal; color:var(--ink); font-size:11.5px; }
+
+.toc { position:sticky; top:52px; z-index:30; max-width:860px; margin:14px auto 0; padding:8px 20px; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; }
+[data-theme="dark"] .toc { background:rgba(22,20,18,.94); }
+.toc-label { flex:none; font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; color:var(--faint); }
+.toc-chips { display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+.toc-chips::-webkit-scrollbar { display:none; }
+.toc-chip { flex:none; display:inline-flex; align-items:center; gap:5px; padding:3px 11px; border-radius:999px; border:1px solid var(--line); background:var(--card); font-size:12px; color:var(--muted); transition:all .15s; }
+.toc-chip:hover { border-color:var(--brand-line); color:var(--brand-strong); background:var(--brand-weak); }
+.toc-chip .n { font-family:var(--mono); font-size:10px; opacity:.75; }
+
+.paper { max-width:860px; margin:0 auto; padding:0 20px 56px; }
+.article { margin-top:26px; }
+
+.intel-section { margin:34px 0 0; }
+.sec-head { display:flex; align-items:center; gap:12px; padding-bottom:10px; border-bottom:1px solid var(--line); margin-bottom:14px; }
+.sec-head h2 { display:flex; align-items:center; gap:10px; font-family:var(--display); font-size:clamp(19px,2.6vw,24px); font-weight:700; line-height:1.3; margin:0; }
+.sec-head h2::before { content:""; flex:none; width:10px; height:10px; border-radius:2px; background:var(--brand); }
+.sec-count { margin-left:auto; flex:none; font-family:var(--mono); font-size:11px; color:var(--faint); }
+.sec-src { display:flex; align-items:center; gap:8px; margin:-4px 0 14px; font-family:var(--mono); font-size:11.5px; color:var(--muted); }
+.sec-src .src-label { flex:none; font-size:9.5px; font-weight:700; letter-spacing:.1em; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:4px; padding:1px 6px; }
+
+.intel-card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px 12px; margin:0 0 12px; transition:box-shadow .18s, border-color .18s, transform .18s; }
+.intel-card:hover { border-color:var(--brand-line); box-shadow:var(--shadow-lift); transform:translateY(-2px); }
+.ic-head { display:flex; align-items:flex-start; gap:10px; }
+.ic-num { flex:none; font-family:var(--mono); font-size:11px; font-weight:700; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:6px; padding:2px 7px; margin-top:2px; }
+.ic-head h3 { font-family:var(--display); font-size:15.5px; font-weight:700; line-height:1.5; margin:0; }
+.ic-head h3 a { color:var(--ink); transition:color .15s; border-bottom:none; }
+.ic-head h3 a:hover { color:var(--brand-strong); }
+.ic-summary { margin:10px 0 0; padding:9px 14px; background:var(--brand-weak); border-left:3px solid var(--brand); border-radius:0 var(--radius) var(--radius) 0; color:var(--muted); font-size:13px; line-height:1.75; }
+.ic-summary p { margin:0; }
+.ic-detail { margin-top:10px; font-size:13.5px; color:var(--ink); line-height:1.75; }
+.ic-foot { display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:10px; padding-top:9px; border-top:1px solid var(--line); font-size:11.5px; color:var(--muted); }
+.ic-foot a { color:var(--brand-strong); font-weight:600; border-bottom:none; }
+.ic-foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+
+.foot { margin-top:44px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; display:flex; flex-wrap:wrap; gap:6px 18px; justify-content:space-between; }
+.foot a { color:var(--brand-strong); font-weight:500; }
+.foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+.back-top { position:fixed; bottom:24px; right:24px; width:40px; height:40px; border-radius:50%; background:var(--card); border:1px solid var(--line); color:var(--muted); display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; pointer-events:none; transition:all .2s; z-index:90; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+.back-top.show { opacity:1; pointer-events:auto; }
+.back-top:hover { color:var(--brand-strong); border-color:var(--brand-line); background:var(--brand-weak); }
+.back-top svg { width:18px; height:18px; }
+
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { transition-duration:0s!important; animation-duration:0s!important; } }
+
+@media (max-width:700px) {
+  .hd { padding:8px 12px; }
+  .hd .nav-links a { padding:5px 9px; font-size:12px; }
+  .mast { padding:18px 14px 0; }
+  .mast-title { letter-spacing:.02em; }
+  .mast-rule span { font-size:10px; letter-spacing:.1em; }
+  .mast-rule { gap:8px; }
+  .mast-strip { gap:3px 14px; padding:8px 10px; }
+  .toc { top:50px; padding:7px 12px; gap:8px; }
+  .paper { padding:0 14px 48px; }
+  .intel-section { margin:26px 0 0; }
+  .sec-head h2 { font-size:18px; }
+  .intel-card { padding:12px 13px 10px; }
+  .ic-head { gap:8px; }
+  .ic-head h3 { font-size:14.5px; }
+  .ic-summary { font-size:12.5px; }
+  .back-top { bottom:16px; right:16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <a class="logo" href="../index.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="2.2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4"/><path d="M7.8 16.2a6 6 0 0 1 0-8.4"/><path d="M19.1 4.9a10 10 0 0 1 0 14.2"/><path d="M4.9 19.1a10 10 0 0 1 0-14.2"/></svg>
+      <span>Intel Briefing<span class="sub">情报日报</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="../index.html" class="active">日报归档</a>
+      <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub 收藏台</a>
+    </nav>
+    <button class="theme-btn" id="btnTheme" title="切换主题 (T)" aria-label="切换明暗主题">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M18.7 5.3 17 7M7 17l-1.7 1.7"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></svg>
+    </button>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<div class="mast">
+  <div class="mast-rule"><span>2026-11-09</span><span>MORNING INTELLIGENCE BRIEFING</span></div>
+  <h1 class="mast-title">全球情报日报</h1>
+  <div class="mast-strip"><span class="ms-item"><b>生成时间</b><i>03:02</i></span><span class="ms-item"><b>数据源</b><i>HN, GitHub, 36Kr, WallStreetCN, V2EX, PH, ArXiv, X, TechCrunch, MIT TR + StarHub (716 RSS)</i></span><span class="ms-item"><b>条目</b><i>16 条</i></span></div>
+</div>
+
+<nav class="toc" aria-label="章节目录"><span class="toc-label">CONTENTS</span><div class="toc-chips"><a class="toc-chip" href="#sec-1">技术趋势 (Tech Trends)<span class="n">4</span></a><a class="toc-chip" href="#sec-2">资本动向 (Capital Flow)<span class="n">2</span></a><a class="toc-chip" href="#sec-3">学术前沿 (Research)<span class="n">4</span></a><a class="toc-chip" href="#sec-4">产品精选 (Product Gems)<span class="n">2</span></a><a class="toc-chip" href="#sec-5">社交热议 (Social)<span class="n">0</span></a><a class="toc-chip" href="#sec-6">社区热点 (Community)<span class="n">0</span></a><a class="toc-chip" href="#sec-7">深度洞察 (Insights)<span class="n">4</span></a></div></nav>
+
+<div class="paper">
+  <article class="article">
+<section class="intel-section" id="sec-1"><div class="sec-head"><h2>技术趋势 (Tech Trends)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> Hacker News + GitHub Trending</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://techcrunch.com/2026/11/08/apps-to-distract-you-from-the-endless-cycle-of-doomscrolling/" target="_blank" rel="noopener">应用程序可以分散您对末日滚动的无尽循环的注意力</a></h3></div><blockquote class="ic-summary"><p>打破末日滚动的循环很难，但有很多应用程序可以帮助您将更多时间花在有吸引力和高效的内容上。</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://github.com/sherlock-project/sherlock" target="_blank" rel="noopener">sherlock-project/sherlock - 通过社交网络上的用户名搜索社交媒体帐户</a></h3></div><blockquote class="ic-summary"><p>GitHub 开源项目：sherlock-project/sherlock - 通过社交网络上的用户名搜索社交媒体帐户</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://techcrunch.com/2026/11/08/nvidia-says-its-investigating-ceo-jensen-huangs-relationship-with-possible-chinese-spy/" target="_blank" rel="noopener">英伟达将调查首席执行官黄仁勋与可能的中国间谍的关系</a></h3></div><blockquote class="ic-summary"><p>Demetrius Freeman for The New York Times 英伟达周日表示，已对公司首席执行官兼联合创始人黄仁勋展开调查。 此前，黄仁勋向公司董事会承认，他曾与一名企业高管发生亲密关系，而美国情报部门认定，该女子是 中国间谍。 这名女子名叫黄乐 (音，其英文名为Alice Huang)。</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://github.com/dsx-ai-factory/nvke" target="_blank" rel="noopener">dsx-ai-factory/nvke - NVIDIA Kubernetes 引擎 (NVKE)。裸机上 GPU Kubernetes 的管理平面。</a></h3></div><blockquote class="ic-summary"><p>GitHub 开源项目：dsx-ai-factory/nvke - NVIDIA Kubernetes 引擎 (NVKE)。裸机上 GPU Kubernetes 的管理平面。</p></blockquote></div></section><section class="intel-section" id="sec-2"><div class="sec-head"><h2>资本动向 (Capital Flow)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> 36Kr + 华尔街见闻</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://wallstreetcn.com/charts/41960149" target="_blank" rel="noopener">AI多头别对得州新州长太乐观！数据中心建到一半，也可能被迫停工</a></h3></div><blockquote class="ic-summary"><p>不止得州：佐治亚、俄亥俄等州也选出主张收紧审批的州长；全美至少38个地区投票通过限制数据中心措施，现行禁令总数已突破500项。 产业链已起反应：道指大涨同日，英伟达跌约3%、CoreWeave跌超9%、存储链跌约7%，市场在重新定价AI硬件订单节奏。</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://wallstreetcn.com/livenews/3196621" target="_blank" rel="noopener">国务院关税税则委员会：在2个月内继续暂停实施24%的对美加征关税税率，保留10%的对美加征关税税率</a></h3></div><blockquote class="ic-summary"><p>但双方在技术标准制定权（如6G、量子计算）和产业链主导权（如电动汽车、AI芯片）的争夺不会停歇。 正如商务部研究院研究员梅新育所言：&amp;quot;暂停24%关税如同按下暂停键，但中美经贸关系的齿轮仍在反向转动。</p></blockquote></div></section><section class="intel-section" id="sec-3"><div class="sec-head"><h2>学术前沿 (Research)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> ArXiv AI/ML Papers</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://arxiv.org/abs/2611.05376" target="_blank" rel="noopener">从自主代理到认知共生体：迈向人工智能增强人类智能</a></h3></div><blockquote class="ic-summary"><p>十年来，人工智能的进步一直是通过机器本身能做多少事情来衡量的。大量发现</p></blockquote><div class="ic-detail">十年来，人工智能的进步一直是通过机器本身能做多少事情来衡量的。大型基础模型现在编写代码并运行多步骤任务，个人代理代表个人行事。然而，人们仍然会忘记他们曾经知道的事情，怀念他们没有看到的事情，找不到合适的词语，并在没有从自己的历史中受益的情况下面临艰难的选择，因为可以提供帮助的机器站在情境之外。随着人工智能进入物理世界，人们的注意力集中在一种智能个体上，即具身机器人。我们认为，物理人工智能时代拥有第二种同等重要的东西，即人工智能增强的人。除了人工智能（询问机器的智能程度）之外，还有人工智能增强人类智能（AHI），它询问机器可以为特定的人提供多少智能。认识到这一点需要一种新的系统，一种认知共生体：一个终身的、嵌入式的、实时的、私密的、低摩擦的、主动的伴侣，它通过外部设备感知人们的感受，多年来保持他们的背景，模拟他们的处境和思想，在正确的时刻参与他们的思考，根据他们的背景执行日常任务，并随着两者的变化不断学习人。我们为该范式提供了一个概念核心，即一个人可以带入某种情况的东西与他们可以在工作记忆中保存的东西之间的认知差距，并将其设计空间组织为一个感知、保持、理解、与人一起生活、为人行动和思考的共生循环，并在个人运行时间和信任的包围下成长。因为共生体改变了一个人在他人面前可以做的事情，所以它也带来了一种新的风险，从考试中的秘密协助到迫使每个人采用它的压力，我们将他们的治理视为范式的一部分。</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://arxiv.org/abs/2611.08971v1" target="_blank" rel="noopener">幻影共识：衡量多智能体 LLM 决策中的社会推理</a></h3></div><blockquote class="ic-summary"><p>多智能体 LLM 系统越来越多地聚合跨模型实例的判断，但推理其他智能体可以</p></blockquote><div class="ic-detail">多智能体 LLM 系统越来越多地聚合跨模型实例的判断，但对其他智能体的推理本身可能会导致失败。我们研究了一种环境，其中法学硕士在观察到模糊的社会信号后改变了他们的公共决策，同时报告了对其他代理人私下判断的不准确估计，即使该团体记录的私人判断不支持明显的共识。我们将这种失败称为“幻影共识”，并将其作为受控法学硕士集体中的多元无知模式进行研究。为了衡量这种现象，我们引入了PHANTOM-Bench，这是一个基准，它将孤立的私人判断、模糊的社会信号后的公共决策分开，引出对团体私人判断的估计、基于透明度的恢复以及对中立公共文本和明确投票跟踪的控制。在九个封闭权重和开放权重模型中，模糊的公共信号持续降低决策质量，并可能将正确的私人群体判断转变为不正确的公共集体结果。在最易受影响的环境中，公众准确率下降了 47.8 个百分点，集体理性失败率达到 47.3%。我们观察到报告的团体私人信念以及公共阶段的失败存在重大错误，而控制条件揭示了对模糊和明确的同伴信号的敏感性的模型依赖性差异。公开特工记录的私人决策可以修复许多故障，而无需透露黄金标签，尽管恢复情况因模型而异。我们的结果表明，评估多主体法学硕士系统不仅需要衡量最终协议，还要衡量该协议是否反映了独立衡量的私人判断或明显的共识。</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://arxiv.org/abs/2611.08449" target="_blank" rel="noopener">VFlash：通过 Flash 基元解码快速、准确的视觉规划</a></h3></div><blockquote class="ic-summary"><p>机器人和自动驾驶等物理人工智能任务的模型不需要仅用语言进行推理。他们可以使用</p></blockquote><div class="ic-detail">机器人和自动驾驶等物理人工智能任务的模型不需要仅用语言进行推理。他们可以使用视觉计划——点、边界框和轨迹——来表示空间目标并预测运动。然而，自回归视觉语言模型一次生成一个坐标标记，从而使更丰富的预测成本越来越高。我们介绍 VFlash，这是一种通过 Flash 基元解码进行快速、准确的视觉规划的方法。 VFlash 利用视觉图元的已知结构来联合预测它们的坐标，使用轻量级绘图器在一次前向传递中生成整个图元。布局适应图元的类型、维度和长度，支持紧凑的盒子和长的、可变长度的轨迹。至关重要的是，空间准确性不需要再现自回归模型的精确标记序列。因此，VFlash 在带注释的基元上进行训练，并直接接受结构上有效的预测，而无需目标令牌协议。在评估的 2D 和 3D 机器人轨迹任务中，VFlash 始终减少了相对于自回归解码的预测误差。初步的单次推出测量表明 3D 点运动预测的生成速度提高了大约 25 倍。以 VFlash 计划为条件的世界行动模型在四个 MolmoSpaces 任务套件中取得了 70.2% 的平均成功率，而基线的成功率为 62.6%。</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://arxiv.org/abs/2611.08969v1" target="_blank" rel="noopener">PhysioWave-T：生物信号的代币高效小波基础模型</a></h3></div><blockquote class="ic-summary"><p>我们推出了 PhysioWave-T，这是一种用于 EEG、ECG 和 sEMG 的代币高效小波基础模型系列。动态缩放折叠</p></blockquote><div class="ic-detail">我们推出了 PhysioWave-T，这是一种用于 EEG、ECG 和 sEMG 的代币高效小波基础模型系列。动态尺度折叠在标记化之前重新组合 J+1 小波子带，将序列长度从 (J+1)CS 压缩为 J 个级别、C 个通道和 S 个时间补丁的 CS 标记。特定于路线的前端和学习的通道名称嵌入允许每种模式使用一个 Transformer 来处理不同的蒙太奇和采样率，而看不见的设置通过轻量级适配器重用主干。我们在超过 15M 窗口（19--128 通道）上预训练 30M 参数 EEG 模型，以及 ECG (30M) 和 sEMG (12M) 编码器。在四个 EEG 路线中，规模折叠将 Transformer 延迟减少了 4.0--7.2 倍，峰值内存比规模扩展减少了 6.8--12.7 倍，而没有损失准确性。我们的 EEG 编码器在 9 个指标中的 8 个指标领先于 BENDR、BIOT、LaBraM 和 EEGPT，并且在可穿戴癫痫检测方面以更少的参数超越了 LUNA-L。可靠性感知潜在融合（RALF）通过样本自适应权重进一步集成来自独立预训练编码器的摘要标记。在 SeizeIT2 上，RALF 将每小时 11 个误报的事件灵敏度从 61.4% 提高到 74.4%，并将窗口 AUPRC 从 0.321 提高到 0.399（超过最佳单峰基线），优于所有变体的加权 logit 和串联融合。 PhysioWave-T 还在 PTB-XL Super 和 Chapman-Shaoxing 上实现了最先进的 SEMG 精度和顶级宏观 F1。代码和模型：https://github.com/ForeverBlue816/PhysioWave。</div></div></section><section class="intel-section" id="sec-4"><div class="sec-head"><h2>产品精选 (Product Gems)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> Product Hunt Today</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.producthunt.com/products/axl-2" target="_blank" rel="noopener">AXL</a></h3></div><blockquote class="ic-summary"><p>AI 产品创始人的 GTM 副驾驶：通过 MCP 执行 1,200 多项操作</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://www.producthunt.com/products/hacker-noon" target="_blank" rel="noopener">重复数据删除</a></h3></div><blockquote class="ic-summary"><p>备受好评的支付处理器分为三个清晰的路径：像 Stripe 这样的开发者优先堆栈，用于可定制的全球支付、订阅、市场和欺诈控制；记录商人</p></blockquote></div></section><section class="intel-section" id="sec-5"><div class="sec-head"><h2>社交热议 (Social)</h2><span class="sec-count">0 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> X (Twitter) - AI/Tech Discussions</div><p style="color:var(--muted);font-size:13px;">暂无数据 (需要配置 XAI_API_KEY)</p></section><section class="intel-section" id="sec-6"><div class="sec-head"><h2>社区热点 (Community)</h2><span class="sec-count">0 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> V2EX 热门</div></section><section class="intel-section" id="sec-7"><div class="sec-head"><h2>深度洞察 (Insights)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> HN Top Blogs + MIT Technology Review</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.technologyreview.com/2026/11/06/1148154/the-download-humanoid-robot-cleaner-samsung-ai-chip-boom/" target="_blank" rel="noopener">下载：人形机器人打扫房屋，三星为人工智能热潮而打造</a></h3></div><blockquote class="ic-summary"><p>这是今天的《下载》版本，这是我们的工作日时事通讯，每天提供技术世界中正在发生的事情</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://simonwillison.net/2026/Nov/8/sqlite-parse-number-c-vs-rust/" target="_blank" rel="noopener">parse_number() 作为 SQLite 扩展：C 与 Rust</a></h3></div><blockquote class="ic-summary"><p>研究：parsenumber() 作为 SQLite 扩展：C 与 Rust 当我出去遛狗时，我很好奇编写一个添加了 parsenumber() 函数的 SQLite C 扩展有多容易/困难</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://www.technologyreview.com/2026/11/06/1148090/i-watched-a-humanoid-robot-clean-my-apartment-it-felt-like-a-taste-of-the-future/" target="_blank" rel="noopener">我看到一个人形机器人打扫我的公寓。感觉就像是未来的味道。</a></h3></div><blockquote class="ic-summary"><p>我太节俭了，我有点喜欢放播客，然后带着魔法橡皮擦在浴缸上进城</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://www.nytimes.com/2026/11/06/us/politics/chinese-spy-agency-nvidia-jensen-huang.html?unlocked_article_code=1.O1E.DRyO.9mNcxhaxhtlI" target="_blank" rel="noopener">黄仁勋背叛了英伟达，不仅仅是他的家人</a></h3></div><blockquote class="ic-summary"><p>巴恩斯、特里普·米克尔、保罗·莫祖尔和玛吉·哈伯曼周五为《纽约时报》报道：英伟达发言人约翰·里佐 (John Rizzo) 表示，该公司不会与其分享机密信息</p></blockquote></div></section>
+  </article>
+  <footer class="foot">
+    <span>由 <a href="https://github.com/Kwei168/Intel_Briefing" target="_blank" rel="noopener">Intel_Briefing</a> 引擎自动生成</span>
+    <span>2026-11-09 &middot; 内容版权归原作者所有</span>
+    <span><a href="../index.html">返回归档</a> &middot; <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub</a></span>
+  </footer>
+</div>
+
+<button class="back-top" id="backTop" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+
+<script>
+;(function(){
+  var btn=document.getElementById('btnTheme');
+  function setTheme(t){
+    try{ localStorage.setItem('wb_starhub_theme_v1',t); }catch(e){}
+    document.documentElement.dataset.theme=t;
+  }
+  if(btn) btn.onclick=function(){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); };
+  document.addEventListener('keydown',function(e){
+    var t=e.target, tag=(t.tagName||'').toLowerCase();
+    if(tag==='input'||tag==='textarea'||t.isContentEditable) return;
+    if(e.key==='t'||e.key==='T'){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); }
+  });
+  var bar=document.getElementById('progress');
+  var backTop=document.getElementById('backTop');
+  function onScroll(){
+    var st=window.scrollY||document.documentElement.scrollTop||0;
+    var max=document.documentElement.scrollHeight-window.innerHeight;
+    if(bar) bar.style.width=(max>0?Math.min(100,st/max*100):0)+'%';
+    if(backTop) backTop.classList.toggle('show',st>400);
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+  if(backTop) backTop.onclick=function(){ window.scrollTo({top:0,behavior:'smooth'}); };
+})();
+</script>
+</body>
+</html>
