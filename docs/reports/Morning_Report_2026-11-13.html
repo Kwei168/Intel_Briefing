@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2026-11-13 情报日报 - Intel Briefing</title>
+<script>try{var _t=localStorage.getItem('wb_starhub_theme_v1')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=_t;}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#faf9f7; --card:#fffdf9; --card-2:#f3efe6; --card-3:#ebe6db;
+  --ink:#1c1917; --muted:#5f594c; --faint:#6e685e;
+  --line:#ddd6c9; --line-strong:#b9b0a2;
+  --brand:#2f5d8a; --brand-strong:#24496e; --brand-line:#b9cde0; --brand-weak:#e7eef4;
+  --display:"Noto Serif SC","Georgia","Times New Roman","Songti SC","SimSun","STSong",serif;
+  --body:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono","SF Mono","Fira Code","Consolas",monospace;
+  --radius:8px;
+  --shadow:0 1px 2px rgba(28,25,23,.05);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.10),0 2px 4px rgba(0,0,0,.06);
+}
+[data-theme="dark"] {
+  --bg:#161412; --card:#1d1a17; --card-2:#262019; --card-3:#2f2820;
+  --ink:#ece7df; --muted:#a59d90; --faint:#a8a090;
+  --line:#37312a; --line-strong:#4a4339;
+  --brand:#8fb3d9; --brand-strong:#b0cbe6; --brand-line:#3d5a78; --brand-weak:#22303f;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+  --shadow-lift:0 10px 26px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.4);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; scroll-padding-top:112px; }
+body { font-family:var(--body); background:var(--bg); color:var(--ink); line-height:1.55; font-size:14px; -webkit-font-smoothing:antialiased; }
+a { color:inherit; text-decoration:none; }
+button { font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+::selection { background:var(--brand-weak); color:var(--ink); }
+button:focus-visible, a:focus-visible { outline:2px solid var(--brand); outline-offset:2px; border-radius:var(--radius); }
+
+header { position:sticky; top:0; z-index:40; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+[data-theme="dark"] header { background:rgba(22,20,18,.94); }
+.hd { max-width:860px; margin:0 auto; padding:9px 20px; display:flex; align-items:center; gap:12px; }
+.hd .logo { display:flex; align-items:center; gap:8px; flex:none; font-family:var(--display); font-weight:900; font-size:16px; }
+.hd .logo .sub { font-size:11px; color:var(--muted); font-weight:400; margin-left:2px; font-family:var(--body); }
+.hd .logo svg { color:var(--brand); }
+.hd .nav-links { display:flex; align-items:center; gap:2px; flex:1; }
+.hd .nav-links a { display:inline-flex; align-items:center; gap:5px; white-space:nowrap; padding:5px 12px; border-radius:999px; font-size:12.5px; font-weight:500; border:1px solid transparent; transition:all .15s; }
+.hd .nav-links a:hover { background:var(--card); border-color:var(--line); }
+.hd .nav-links a.active { background:var(--brand-weak); border-color:var(--brand-line); color:var(--brand-strong); font-weight:600; }
+.theme-btn { width:30px; height:30px; border-radius:999px; background:var(--card); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; flex:none; transition:all .15s; }
+.theme-btn:hover { border-color:var(--brand-line); color:var(--brand-strong); }
+.theme-btn svg { width:14px; height:14px; }
+.icon-moon { display:none; }
+[data-theme="dark"] .icon-sun { display:none; }
+[data-theme="dark"] .icon-moon { display:block; }
+.progress { position:absolute; left:0; bottom:-1px; height:2px; background:var(--brand); width:0%; z-index:41; }
+
+.mast { max-width:860px; margin:0 auto; padding:26px 20px 0; text-align:center; }
+.mast-rule { display:flex; align-items:center; gap:14px; margin:0 0 6px; }
+.mast-rule::before,.mast-rule::after { content:""; flex:1; height:1px; background:var(--line-strong); }
+.mast-rule span { font-family:var(--mono); font-size:11px; letter-spacing:.14em; color:var(--muted); font-weight:500; white-space:nowrap; }
+.mast-title { font-family:var(--display); font-size:clamp(30px,6vw,44px); font-weight:900; letter-spacing:.05em; line-height:1.2; margin:4px 0 10px; }
+.mast-strip { display:flex; flex-wrap:wrap; gap:4px 22px; justify-content:center; align-items:baseline; margin-top:6px; padding:9px 14px; border-top:3px double var(--line-strong); border-bottom:1px solid var(--line-strong); }
+.ms-item { font-size:12px; color:var(--muted); }
+.ms-item b { font-weight:600; color:var(--faint); font-size:10.5px; letter-spacing:.08em; margin-right:6px; }
+.ms-item i { font-family:var(--mono); font-style:normal; color:var(--ink); font-size:11.5px; }
+
+.toc { position:sticky; top:52px; z-index:30; max-width:860px; margin:14px auto 0; padding:8px 20px; background:rgba(250,249,247,.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; }
+[data-theme="dark"] .toc { background:rgba(22,20,18,.94); }
+.toc-label { flex:none; font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; color:var(--faint); }
+.toc-chips { display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+.toc-chips::-webkit-scrollbar { display:none; }
+.toc-chip { flex:none; display:inline-flex; align-items:center; gap:5px; padding:3px 11px; border-radius:999px; border:1px solid var(--line); background:var(--card); font-size:12px; color:var(--muted); transition:all .15s; }
+.toc-chip:hover { border-color:var(--brand-line); color:var(--brand-strong); background:var(--brand-weak); }
+.toc-chip .n { font-family:var(--mono); font-size:10px; opacity:.75; }
+
+.paper { max-width:860px; margin:0 auto; padding:0 20px 56px; }
+.article { margin-top:26px; }
+
+.intel-section { margin:34px 0 0; }
+.sec-head { display:flex; align-items:center; gap:12px; padding-bottom:10px; border-bottom:1px solid var(--line); margin-bottom:14px; }
+.sec-head h2 { display:flex; align-items:center; gap:10px; font-family:var(--display); font-size:clamp(19px,2.6vw,24px); font-weight:700; line-height:1.3; margin:0; }
+.sec-head h2::before { content:""; flex:none; width:10px; height:10px; border-radius:2px; background:var(--brand); }
+.sec-count { margin-left:auto; flex:none; font-family:var(--mono); font-size:11px; color:var(--faint); }
+.sec-src { display:flex; align-items:center; gap:8px; margin:-4px 0 14px; font-family:var(--mono); font-size:11.5px; color:var(--muted); }
+.sec-src .src-label { flex:none; font-size:9.5px; font-weight:700; letter-spacing:.1em; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:4px; padding:1px 6px; }
+
+.intel-card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px 12px; margin:0 0 12px; transition:box-shadow .18s, border-color .18s, transform .18s; }
+.intel-card:hover { border-color:var(--brand-line); box-shadow:var(--shadow-lift); transform:translateY(-2px); }
+.ic-head { display:flex; align-items:flex-start; gap:10px; }
+.ic-num { flex:none; font-family:var(--mono); font-size:11px; font-weight:700; color:var(--brand-strong); background:var(--brand-weak); border:1px solid var(--brand-line); border-radius:6px; padding:2px 7px; margin-top:2px; }
+.ic-head h3 { font-family:var(--display); font-size:15.5px; font-weight:700; line-height:1.5; margin:0; }
+.ic-head h3 a { color:var(--ink); transition:color .15s; border-bottom:none; }
+.ic-head h3 a:hover { color:var(--brand-strong); }
+.ic-summary { margin:10px 0 0; padding:9px 14px; background:var(--brand-weak); border-left:3px solid var(--brand); border-radius:0 var(--radius) var(--radius) 0; color:var(--muted); font-size:13px; line-height:1.75; }
+.ic-summary p { margin:0; }
+.ic-detail { margin-top:10px; font-size:13.5px; color:var(--ink); line-height:1.75; }
+.ic-foot { display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:10px; padding-top:9px; border-top:1px solid var(--line); font-size:11.5px; color:var(--muted); }
+.ic-foot a { color:var(--brand-strong); font-weight:600; border-bottom:none; }
+.ic-foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+
+.foot { margin-top:44px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; display:flex; flex-wrap:wrap; gap:6px 18px; justify-content:space-between; }
+.foot a { color:var(--brand-strong); font-weight:500; }
+.foot a:hover { text-decoration:underline; text-underline-offset:2px; }
+.back-top { position:fixed; bottom:24px; right:24px; width:40px; height:40px; border-radius:50%; background:var(--card); border:1px solid var(--line); color:var(--muted); display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; pointer-events:none; transition:all .2s; z-index:90; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+.back-top.show { opacity:1; pointer-events:auto; }
+.back-top:hover { color:var(--brand-strong); border-color:var(--brand-line); background:var(--brand-weak); }
+.back-top svg { width:18px; height:18px; }
+
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { transition-duration:0s!important; animation-duration:0s!important; } }
+
+@media (max-width:700px) {
+  .hd { padding:8px 12px; }
+  .hd .nav-links a { padding:5px 9px; font-size:12px; }
+  .mast { padding:18px 14px 0; }
+  .mast-title { letter-spacing:.02em; }
+  .mast-rule span { font-size:10px; letter-spacing:.1em; }
+  .mast-rule { gap:8px; }
+  .mast-strip { gap:3px 14px; padding:8px 10px; }
+  .toc { top:50px; padding:7px 12px; gap:8px; }
+  .paper { padding:0 14px 48px; }
+  .intel-section { margin:26px 0 0; }
+  .sec-head h2 { font-size:18px; }
+  .intel-card { padding:12px 13px 10px; }
+  .ic-head { gap:8px; }
+  .ic-head h3 { font-size:14.5px; }
+  .ic-summary { font-size:12.5px; }
+  .back-top { bottom:16px; right:16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <a class="logo" href="../index.html">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="2.2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4"/><path d="M7.8 16.2a6 6 0 0 1 0-8.4"/><path d="M19.1 4.9a10 10 0 0 1 0 14.2"/><path d="M4.9 19.1a10 10 0 0 1 0-14.2"/></svg>
+      <span>Intel Briefing<span class="sub">情报日报</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="../index.html" class="active">日报归档</a>
+      <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub 收藏台</a>
+    </nav>
+    <button class="theme-btn" id="btnTheme" title="切换主题 (T)" aria-label="切换明暗主题">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M18.7 5.3 17 7M7 17l-1.7 1.7"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></svg>
+    </button>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<div class="mast">
+  <div class="mast-rule"><span>2026-11-13</span><span>MORNING INTELLIGENCE BRIEFING</span></div>
+  <h1 class="mast-title">全球情报日报</h1>
+  <div class="mast-strip"><span class="ms-item"><b>生成时间</b><i>03:38</i></span><span class="ms-item"><b>数据源</b><i>HN, GitHub, 36Kr, WallStreetCN, V2EX, PH, ArXiv, X, TechCrunch, MIT TR + StarHub (716 RSS)</i></span><span class="ms-item"><b>条目</b><i>18 条</i></span></div>
+</div>
+
+<nav class="toc" aria-label="章节目录"><span class="toc-label">CONTENTS</span><div class="toc-chips"><a class="toc-chip" href="#sec-1">技术趋势 (Tech Trends)<span class="n">4</span></a><a class="toc-chip" href="#sec-2">资本动向 (Capital Flow)<span class="n">2</span></a><a class="toc-chip" href="#sec-3">学术前沿 (Research)<span class="n">4</span></a><a class="toc-chip" href="#sec-4">产品精选 (Product Gems)<span class="n">2</span></a><a class="toc-chip" href="#sec-5">社交热议 (Social)<span class="n">0</span></a><a class="toc-chip" href="#sec-6">社区热点 (Community)<span class="n">2</span></a><a class="toc-chip" href="#sec-7">深度洞察 (Insights)<span class="n">4</span></a></div></nav>
+
+<div class="paper">
+  <article class="article">
+<section class="intel-section" id="sec-1"><div class="sec-head"><h2>技术趋势 (Tech Trends)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> Hacker News + GitHub Trending</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://techcrunch.com/2026/11/12/democrats-launch-nvidia-investigation-write-scathing-letter-on-huangs-scheme-with-trump/" target="_blank" rel="noopener">民主党发起英伟达调查，针对黄仁勋与特朗普的“计划”写了一封措辞严厉的信</a></h3></div><blockquote class="ic-summary"><p>黄仁勋涉嫌与一名中国间谍嫌疑人有染，这可能会使英伟达放宽美国芯片出口限制并保持进入中国利润丰厚的市场的游说努力变得复杂化</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://github.com/GoogleChrome/modern-web-guidance-src" target="_blank" rel="noopener">GoogleChrome/modern-web-guidance-src - 让您的编码代理了解最新的网络最佳实践</a></h3></div><blockquote class="ic-summary"><p>GitHub 开源项目：GoogleChrome/modern-web-guidance-src - 让您的编码代理了解最新的网络最佳实践</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://techcrunch.com/2026/11/12/muse-can-now-place-calls-to-u-s-businesses-if-you-pay/" target="_blank" rel="noopener">Muse 现在可以给美国企业打电话——如果你付费的话</a></h3></div><blockquote class="ic-summary"><p>在 9 月份初步测试该功能后，Meta 的消费者 AI 代理</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://github.com/openai/codex-security" target="_blank" rel="noopener">openai/codex-security - OpenAI 的 Codex Security CLI 和 TypeScript SDK，用于查找、验证和修复安全漏洞。 npm：https://www.npmjs.com/package/@openai/codex-security</a></h3></div><blockquote class="ic-summary"><p>GitHub 开源项目：openai/codex-security - OpenAI 的 Codex Security CLI 和 TypeScript SDK，用于查找、验证和修复安全漏洞。 npm：https://www.npmjs.com/package/@openai/codex-security</p></blockquote></div></section><section class="intel-section" id="sec-2"><div class="sec-head"><h2>资本动向 (Capital Flow)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> 36Kr + 华尔街见闻</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://wallstreetcn.com/articles/3785857" target="_blank" rel="noopener">黄仁勋下台，AI新玩家的“最大金主”也没了</a></h3></div><blockquote class="ic-summary"><p>黄仁勋下台，AI新玩家的“最大金主”也没了——华尔街见闻资讯详细内容</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://wallstreetcn.com/member/articles/3785795" target="_blank" rel="noopener">国内生猪价下探8元/公斤！传统旺季反弹还是反转？</a></h3></div><blockquote class="ic-summary"><p>三、短期行情：四季度以震荡磨底为主，反弹高度有限 展望12月，猪价很难迎来明显趋势性反弹，行情仍以低位震荡调整为主。 腌腊、元旦及春节备货的需求带动下，价格重心存在小幅上移机会，但仅属于温和修复，大幅上涨缺乏基础。</p></blockquote></div></section><section class="intel-section" id="sec-3"><div class="sec-head"><h2>学术前沿 (Research)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> ArXiv AI/ML Papers</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://arxiv.org/abs/2611.15044v1" target="_blank" rel="noopener">评估图像创造力</a></h3></div><blockquote class="ic-summary"><p>是什么让图像具有创意？尽管这似乎是一个非常主观的决定，但心理学研究表明</p></blockquote><div class="ic-detail">是什么让图像具有创意？尽管这似乎是一个高度主观的决定，但心理学研究表明，创造力可能基于一组基本的创造力维度，例如新颖性、惊喜和唤醒。对图像创造力的更深入理解有利于研究和实际应用。探索人类观看者如何使用创造力维度来评估图像创造力可能使我们能够自动预测目标图像的人类评价创造力。我们提出了一个新颖的框架来估计图像的感知创造力：（1）预测图像的新颖性、惊喜性和唤醒创造力维度的优势，以及（2）结合创造力维度的优势来估计图像创造力得分。在 Amazon Mechanical Turk 上进行受控人体实验，收集数据来训练监督机器学习模型，以估计图像在三个创造力维度上的优势。最终的机器学习模型将预测的尺寸强度作为输入来生成估计的图像创造力得分。结果表明，我们估计的创造力得分在统计上与人类对我们测试的图像的创造力评分相当。我们研究的新颖贡献是：（1）识别和验证用于估计图像创造力的三个心理创造力维度； （2）监督机器学习模型自动估计输入图像的新颖性、惊喜性和唤醒强度； （3）一个监督机器学习模型，用于根据输入图像的新颖性、惊喜性和唤醒强度来预测创造力得分，以及（4）实验方法来确认我们方法的准确性、优点和局限性。</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://arxiv.org/abs/2611.14320" target="_blank" rel="noopener">不要只相信你的记忆：与证据相关的记忆可以减少法学硕士代理中记忆引起的退化</a></h3></div><blockquote class="ic-summary"><p>外部记忆使 LLM 代理能够通过将过去任务的轨迹提炼成简洁的内容来从经验中进行改进</p></blockquote><div class="ic-detail">外部记忆使 LLM 代理能够通过将过去任务的轨迹提炼成新任务的简洁教训来从经验中进行改进。然而，记忆也可能导致记忆引起的退化，即代理在没有记忆的情况下无法完成其可以解决的任务，通常是因为它遵循了不正确的教训，或者误用或误读了有效的教训。这是因为经验教训是从仅标记任务成功或失败的轨迹中推断出来的，但通常没有提供它们来自的轨迹，使代理无法检查它们。为了解决这个问题，我们引入了 WikiTrace，这是一种与证据相关的记忆系统，旨在让代理根据其原始轨迹检查每节课程。具体来说，由于发现轨迹通常仍然包含捕捉错误教训所需的证据，WikiTrace 将每个教训存储为简洁的见解，与轨迹成功或失败原因的摘要以及原始轨迹本身相关联。然后，在一项新任务中，代理从所有洞察开始，每当一个缺乏行动所需的细节、与另一个人发生冲突或来自失败的任务时，代理就会通过其与终端工具的链接下降，以填充缺失的细节或在行动之前纠正洞察。我们在五个代理基准上验证了 WikiTrace，结果表明它始终优于现有的内存方法和单独给出相同见解的基线，同时还减少了内存引起的退化。我们的代码可在 https://github.com/yukyeongleee/wikitrace 获取</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://arxiv.org/abs/2611.15040v1" target="_blank" rel="noopener">超越 DRW 模型：使用生成模型学习类星体变异性</a></h3></div><blockquote class="ic-summary"><p>类星体的光学连续变化通常用阻尼随机游走（DRW）模型来描述，具有特征</p></blockquote><div class="ic-detail">类星体的光学连续变化通常用阻尼随机游走（DRW）模型来描述，其特征阻尼时间尺度 $τ_{\rm DRW}$ 为数百天，振幅 $σ_{\rm DRW}$ 为 $\mathcal{O}(0.1)$ 星等。该模型已被广泛用作零假设，以评估类星体光变曲线中周期性信号在搜索超大质量黑洞双星中的重要性、潮汐破坏事件 (TDE) 和变化外观 (CL) 类星体等极端类星体变化的重要性，或对混响映射中的时间滞后进行建模。然而，众所周知，DRW 模型是不完整的，不正确的零假设可能会导致显着性估计有偏差。我们研究了这种零假设错误指定对合成类星体光变曲线中周期信号检测的影响，并引入了生成模型 Nullasar，它能够直接从时间序列数据中学习类星体的变化。我们证明，经过流匹配训练的 Nullasar 可以学习随机光曲线变化的微妙统计特性，而无需明确假设任何噪声模型。我们进一步证明，Nullasar 可以学习噪声参数的相关分布，并根据高斯 DRW 噪声模型的一系列偏差生成新的光曲线实现，近似随机过程的参数描述。当用作检测合成光变曲线中的周期信号的原假设时，Nullasar 的表现与将正确的 DRW 模型拟合到每条光变曲线相当，并且当变化遵循更灵活的 AR(2) 模型时，其性能优于参数拟合。最后，我们确定了实际的局限性，包括对非空信号对训练集污染的敏感性，并表明将模型的条件向量投影到其主要主成分上可以在很大程度上减轻它。</div></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://arxiv.org/abs/2611.14210" target="_blank" rel="noopener">Tree-Ising：通过位级 Ising 编辑修复语言模型</a></h3></div><blockquote class="ic-summary"><p>Takehi 等人在最近的 MIT 工作中引入了权重空间编程，使前沿 LLM 代理能够读取网络</p></blockquote><div class="ic-detail">Takehi 等人在最近的 MIT 工作中引入了权重空间编程，它使前沿 LLM 代理能够读取网络的权重并编写修复。他们的 GPT-6 Astra 代理使用 158 次代理轮次、8970 万个令牌和 50 个前向传递请求，纠正了 Qwen3.5-0.8B 的无梯度推理循环。我们的方法 Tree-Ising 将此修复视为模型自身 BF16 权重的稀疏离散优化问题。前向统计定义了一个目标，该目标削弱循环方向，加强结论方向，并保留该层在生产性代币上的输出。在状态树表示中，无损 BF16 存储作为特例，可接受的编辑是符号翻转和指数移位，保留所有共享组指数和尾数。我们将这个目标精确地分解为独立的 QUBO (Ising) 问题，每个输出行一个，我们使用模拟退火或量子启发的模拟分叉在 GPU 上解决该问题。在代理的两层上，Tree-Ising 在 MATH-500 上取得了 54.6% 的成绩，优于相同评估协议下代理的编辑 (51.7%)，而基础模型的得分为 7.9%。模拟分叉求解器的修复率在统计上无法区分，为 55.1%。两个求解器在所有五个数学基准测试中的表现均优于代理编辑，在校正多重比较后，MATH-500 和 GSM8K 上的统计显着改进。我们的方法将权重减少了 13% 到 17%，并将 BF16 位翻转减少了 2.2 到 2.3 倍。它只需要四个前向传递请求和零个 LLM 令牌，退火配方花费的 GPU 时间约为 0.90 美元。在 Qwen3.5-2B 上，仅使用基本模型选择层和剂量，相同的方法将贪婪的 GSM8K 准确率从 21.6% 提高到 69.4%。作为概念验证，我们在 IBM Heron 处理器上使用 QAOA 执行八变量修复子问题。</div></div></section><section class="intel-section" id="sec-4"><div class="sec-head"><h2>产品精选 (Product Gems)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> Product Hunt Today</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.producthunt.com/products/youart" target="_blank" rel="noopener">YouArt 桌面应用程序</a></h3></div><blockquote class="ic-summary"><p>Product Hunt 新品：YouArt 桌面应用程序</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://www.producthunt.com/products/hoy-for-mac" target="_blank" rel="noopener">Mac 版霍伊</a></h3></div><blockquote class="ic-summary"><p>Product Hunt 新品：Mac 版霍伊</p></blockquote></div></section><section class="intel-section" id="sec-5"><div class="sec-head"><h2>社交热议 (Social)</h2><span class="sec-count">0 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> X (Twitter) - AI/Tech Discussions</div><p style="color:var(--muted);font-size:13px;">暂无数据 (需要配置 XAI_API_KEY)</p></section><section class="intel-section" id="sec-6"><div class="sec-head"><h2>社区热点 (Community)</h2><span class="sec-count">2 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> V2EX 热门</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.v2ex.com/t/1256525" target="_blank" rel="noopener">被领导叫去涨薪了</a></h3></div><blockquote class="ic-summary"><p>不仅如此，在老板和HR的眼里，员工离职可不是你走人就完事，部门离职率、空缺岗位能否找到替代人选、重新招人的培训和磨合成本、以及组织 ...</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://www.v2ex.com/t/1256560" target="_blank" rel="noopener">[KeyVia 满血中转站] 原生 Claude Fable5.2、GPT-6 Astra 免费用</a></h3></div><blockquote class="ic-summary"><p>V2EX 社区讨论话题：[KeyVia 满血中转站] 原生 Claude Fable5.2、GPT-6 Astra 免费用</p></blockquote></div></section><section class="intel-section" id="sec-7"><div class="sec-head"><h2>深度洞察 (Insights)</h2><span class="sec-count">4 条</span></div><div class="sec-src"><span class="src-label">SOURCES</span> HN Top Blogs + MIT Technology Review</div><div class="intel-card"><div class="ic-head"><span class="ic-num">01</span><h3><a href="https://www.technologyreview.com/2026/11/12/1148483/nvidia-chip-tracking/" target="_blank" rel="noopener">英伟达私下证实，它可以追踪芯片以打击走私，尽管业界公开质疑其可行性</a></h3></div><blockquote class="ic-summary"><p>福斯特告诉麻省理工学院，英伟达的代表告诉伊利诺伊州代表比尔·福斯特，实施《芯片安全法》中要求的反走私措施在技术上是可行的</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">02</span><h3><a href="https://simonwillison.net/2026/Nov/12/llm-gemini/" target="_blank" rel="noopener">LLM-双子座 0.37</a></h3></div><blockquote class="ic-summary"><p>发布：llm-gemini 0.37 Google 今天推出 Gemini 4 Hydrogen - Gemini 4 家族中成本最低的成员</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">03</span><h3><a href="https://www.technologyreview.com/2026/11/12/1148444/the-download-cop31-climate-talks-cognitive-immortality/" target="_blank" rel="noopener">下载：COP31 的气候挑战和对永生的追求</a></h3></div><blockquote class="ic-summary"><p>这是今天的《下载》版本，这是我们的工作日时事通讯，每天提供技术世界中正在发生的事情</p></blockquote></div><div class="intel-card"><div class="ic-head"><span class="ic-num">04</span><h3><a href="https://techcrunch.com/2026/11/12/jensen-huang-agrees-to-testify-before-congress/" target="_blank" rel="noopener">黄仁勋同意在国会作证，但尚未公开</a></h3></div><blockquote class="ic-summary"><p>艾莎·马利克 (Aisha Malik)，TechCrunch：据彭博社和彭博社报道，众议院外交事务委员会主席布莱恩·马斯特 (Brian Mast) 周四表示，前英伟达首席执行官黄仁勋 (Jensen Huang) 已同意在国会作证。</p></blockquote></div></section>
+  </article>
+  <footer class="foot">
+    <span>由 <a href="https://github.com/Kwei168/Intel_Briefing" target="_blank" rel="noopener">Intel_Briefing</a> 引擎自动生成</span>
+    <span>2026-11-13 &middot; 内容版权归原作者所有</span>
+    <span><a href="../index.html">返回归档</a> &middot; <a href="https://kwei168.github.io/StarHub/" target="_blank" rel="noopener">StarHub</a></span>
+  </footer>
+</div>
+
+<button class="back-top" id="backTop" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+
+<script>
+;(function(){
+  var btn=document.getElementById('btnTheme');
+  function setTheme(t){
+    try{ localStorage.setItem('wb_starhub_theme_v1',t); }catch(e){}
+    document.documentElement.dataset.theme=t;
+  }
+  if(btn) btn.onclick=function(){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); };
+  document.addEventListener('keydown',function(e){
+    var t=e.target, tag=(t.tagName||'').toLowerCase();
+    if(tag==='input'||tag==='textarea'||t.isContentEditable) return;
+    if(e.key==='t'||e.key==='T'){ setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'); }
+  });
+  var bar=document.getElementById('progress');
+  var backTop=document.getElementById('backTop');
+  function onScroll(){
+    var st=window.scrollY||document.documentElement.scrollTop||0;
+    var max=document.documentElement.scrollHeight-window.innerHeight;
+    if(bar) bar.style.width=(max>0?Math.min(100,st/max*100):0)+'%';
+    if(backTop) backTop.classList.toggle('show',st>400);
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+  if(backTop) backTop.onclick=function(){ window.scrollTo({top:0,behavior:'smooth'}); };
+})();
+</script>
+</body>
+</html>
